@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT・Googleカレンダー・TimeTree比較 — カップルの共有カレンダー</title>
+<meta name="description" content="ふたりでひとつのカレンダーを使うとき、TT・Googleカレンダー・TimeTreeはどう違う？登録、相手の変更の通知、記念日と付き合った日数、広告と料金を比べました。">
+<link rel="canonical" href="https://tt-calendar.vercel.app/ja/compare/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/compare/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/compare/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/compare/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/compare/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/compare/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/compare/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/compare/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/compare/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/compare/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/compare/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT・Googleカレンダー・TimeTree比較 — カップルの共有カレンダー">
+<meta property="og:description" content="ふたりでひとつのカレンダーを使うとき、TT・Googleカレンダー・TimeTreeはどう違う？登録、相手の変更の通知、記念日と付き合った日数、広告と料金を比べました。">
+<meta property="og:url" content="https://tt-calendar.vercel.app/ja/compare/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"カップルの共有カレンダー、TT・Googleカレンダー・TimeTreeどれがいい？","url":"https://tt-calendar.vercel.app/ja/compare/","description":"ふたりでひとつのカレンダーを使うとき、TT・Googleカレンダー・TimeTreeはどう違う？登録、相手の変更の通知、記念日と付き合った日数、広告と料金を比べました。","inLanguage":"ja","isPartOf":{"@type":"WebSite","name":"TT","url":"https://tt-calendar.vercel.app/"},"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"カップル向けの共有カレンダーアプリはどれがいい？","acceptedAnswer":{"@type":"Answer","text":"何が必要かによります。予定がすべてGoogleカレンダーにあるなら、そこでカレンダーを共有しましょう。ふたりのためだけのもの、相手の変更を最初から知らせてくれて記念日を数えてくれるものがほしいなら、TTはまさにそのために作られています。"}},{"@type":"Question","name":"カップルでGoogleカレンダーを一緒に使える？","acceptedAnswer":{"@type":"Answer","text":"はい。ふたりともGoogleアカウントが必要で、ひとりがカレンダーを共有します。お互いの変更を知るには、それぞれがそのカレンダーのメール通知をオンにします。"}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/ja/">TT</a>
+<span class="badge">無料ベータ</span>
+</header>
+<main>
+<section class="hero">
+<h1>カップルの共有カレンダー、TT・Googleカレンダー・TimeTreeどれがいい？</h1>
+<p class="lede">どれもふたりで予定を共有できますが、作られた目的が違います。並べて比べました。</p>
+</section>
+<div class="table">
+<table>
+<thead><tr><td></td><th scope="col" class="us">TT</th><th scope="col">Googleカレンダー</th><th scope="col">TimeTree</th></tr></thead>
+<tbody>
+<tr><th scope="row">誰のためのもの</th><td class="us">ちょうどふたり</td><td>誰でも：仕事、学校、家族</td><td>グループ：家族、友だち、チーム、カップル</td></tr>
+<tr><th scope="row">はじめ方</th><td class="us">ユーザー名とパスワード、またはGoogleで登録。相手は招待リンクから参加</td><td>ふたりともGoogleアカウントが必要で、ひとりがカレンダーを共有</td><td>アプリを入れてカレンダーを作り、メンバーを招待</td></tr>
+<tr><th scope="row">相手が予定を変えたとき</th><td class="us">相手に通知が届きます。最初からオン</td><td>それぞれがそのカレンダーの「変更された予定」をオンにするとメールが届く</td><td>アプリの通知</td></tr>
+<tr><th scope="row">記念日と付き合った日数</th><td class="us">出会った日から数えて、100日ごとと毎年の記念日がカレンダーに出て、あと何日かも見える</td><td>自分で予定として入れる</td><td>自分で予定として入れる</td></tr>
+<tr><th scope="row">誰の予定か</th><td class="us">わたし・あなた・ふたりの予定を色で区別</td><td>カレンダーを分けて色で区別</td><td>ラベルと色</td></tr>
+<tr><th scope="row">写真</th><td class="us">ふたりの写真を30枚までカレンダーに表示</td><td>標準機能なし</td><td>プレミアムで予定に写真を添付</td></tr>
+<tr><th scope="row">広告と料金</th><td class="us">ベータ期間は無料、広告なし</td><td>無料、広告なし</td><td>無料版は広告あり。プレミアム（1人あたり月額約4.49米ドル）で広告なし</td></tr>
+<tr><th scope="row">使う場所</th><td class="us">ブラウザ。ホーム画面に追加してアプリのように</td><td>アプリまたはブラウザ</td><td>アプリまたはブラウザ</td></tr>
+</tbody>
+</table>
+</div>
+<p class="fine">ほかのアプリの情報を確認した日 <time datetime="2026-09-30">2026-09-30</time>. GoogleカレンダーとTimeTreeはそれぞれの会社のもので、TTとは関係ありません。内容が古くなっていたら tt.calendar.help@gmail.com までお知らせください。</p>
+<h2>ほかのほうが合うとき</h2>
+<ul class="better">
+<li>Googleカレンダー：予定がすでにそこにある、または会議の招待・ビデオ通話・仕事のカレンダーをまとめたいとき。</li>
+<li>TimeTree：家族やグループみんなでひとつのカレンダーを使う、またはアプリの中で予定にコメントしたいとき。</li>
+</ul>
+<h2>よくある質問</h2>
+<div class="faq">
+<div class="card"><h3>カップル向けの共有カレンダーアプリはどれがいい？</h3><p>何が必要かによります。予定がすべてGoogleカレンダーにあるなら、そこでカレンダーを共有しましょう。ふたりのためだけのもの、相手の変更を最初から知らせてくれて記念日を数えてくれるものがほしいなら、TTはまさにそのために作られています。</p></div>
+<div class="card"><h3>カップルでGoogleカレンダーを一緒に使える？</h3><p>はい。ふたりともGoogleアカウントが必要で、ひとりがカレンダーを共有します。お互いの変更を知るには、それぞれがそのカレンダーのメール通知をオンにします。</p></div>
+</div>
+<p class="more"><a class="cta" href="/?signup">TTを無料で使ってみる</a></p>
+<p class="more"><a href="/ja/">TT →</a></p>
+</main>
+<footer>
+<nav aria-label="言語"><a href="/en/compare/" hreflang="en" lang="en">English</a>
+<a href="/ko/compare/" hreflang="ko" lang="ko">한국어</a>
+<strong>日本語</strong>
+<a href="/zh-CN/compare/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/compare/" hreflang="es" lang="es">Español</a>
+<a href="/fr/compare/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/compare/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/compare/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/compare/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">TTを開く</a> <a href="/privacy.html">プライバシーポリシー</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

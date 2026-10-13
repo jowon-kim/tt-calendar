@@ -1,0 +1,53 @@
+name: ios
+
+# Mac 없이 iOS 앱을 빌드해 TestFlight에 올립니다. 공개 저장소면 macOS 러너가 무료입니다.
+# 실제 일은 fastlane/Fastfile의 beta 레인이 합니다.
+#
+# 시크릿 (Settings → Secrets and variables → Actions)
+#   APPLE_TEAM_ID                  애플 개발자 팀 ID (10자)
+#   ASC_KEY_ID, ASC_ISSUER_ID      App Store Connect → 사용자 및 액세스 → 통합 → API 키
+#   ASC_KEY_CONTENT                그 .p8 파일을 base64로 — `base64 -w0 AuthKey_XXXX.p8`
+#   MATCH_GIT_URL                  서명 인증서를 암호화해 담아둘 **비공개** 저장소 (예: https://github.com/you/certs.git)
+#   MATCH_GIT_BASIC_AUTHORIZATION  그 저장소를 읽고 쓸 권한 — `echo -n "사용자명:토큰" | base64`
+#   MATCH_PASSWORD                 인증서를 암호화할 암호 (아무 긴 문자열. 잃어버리면 새로 만들어야 합니다)
+#
+# App Store Connect에 앱(번들 ID com.jowonkim.couplediary)을 먼저 만들어 두어야 올라갑니다.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  testflight:
+    # 스토어는 최신 SDK로 빌드한 앱만 받습니다. 러너의 기본 Xcode가 모자라면 아래 xcode-select 줄로 고르세요
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx cap sync ios
+      - run: xcodebuild -version
+      # - run: sudo xcode-select -s /Applications/Xcode_26.0.app
+
+      - name: TestFlight
+        run: fastlane ios beta
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          BUILD_NUMBER: ${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-build
+          path: build/ios
+          if-no-files-found: ignore

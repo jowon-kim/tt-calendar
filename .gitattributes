@@ -1,0 +1,7 @@
+# Keep line endings LF in the repository whatever the contributor's OS does.
+# Without this, a Windows checkout with core.autocrlf=true rewrites every file
+# and the next diff looks like the whole repo changed.
+* text=auto eol=lf
+
+*.png binary
+*.woff2 binary

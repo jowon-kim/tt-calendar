@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT — calendário compartilhado grátis para casais</title>
+<meta name="description" content="Um calendário para os dois: planos, datas especiais e dias juntos, com um aviso quando seu par muda alguma coisa. Funciona no navegador, sem loja de apps. Grátis durante o beta.">
+<link rel="canonical" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT — calendário compartilhado grátis para casais">
+<meta property="og:description" content="Um calendário para os dois: planos, datas especiais e dias juntos, com um aviso quando seu par muda alguma coisa. Funciona no navegador, sem loja de apps. Grátis durante o beta.">
+<meta property="og:url" content="https://tt-calendar.vercel.app/pt-BR/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"Um calendário para os dois: planos, datas especiais e dias juntos, com um aviso quando seu par muda alguma coisa. Funciona no navegador, sem loja de apps. Grátis durante o beta.","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Meu, seu, nosso","Seu par fica sabendo","Lembretes na hora certa","Os dias juntos, contados","Com as fotos de vocês","Seu idioma, seus feriados"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"O TT é grátis?","acceptedAnswer":{"@type":"Answer","text":"Sim. O TT é grátis durante o beta, sem anúncios e sem recursos pagos."}},{"@type":"Question","name":"Precisa baixar numa loja de apps?","acceptedAnswer":{"@type":"Answer","text":"Não. O TT funciona no navegador do iPhone, Android e computador. Na tela inicial ele abre como um app, e é assim que as notificações chegam no iPhone."}},{"@type":"Question","name":"Funciona no iPhone?","acceptedAnswer":{"@type":"Answer","text":"Sim. Abra no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”. No iOS 16.4 ou mais novo, ele envia notificações depois de estar na tela inicial."}},{"@type":"Question","name":"Como convido meu par?","acceptedAnswer":{"@type":"Answer","text":"Nas Configurações, crie um link de convite e envie. Quando seu par se cadastrar por ele, vocês usam o mesmo calendário. Cada um tem sua própria conta."}},{"@type":"Question","name":"Que dados vocês coletam?","acceptedAnswer":{"@type":"Answer","text":"Um nome de usuário, sua senha (guardada com hash) e o que vocês colocam no calendário: planos, nomes, datas e fotos. Nenhum e-mail. Você pode excluir sua conta quando quiser nas Configurações."}},{"@type":"Question","name":"E se um de nós excluir a conta?","acceptedAnswer":{"@type":"Answer","text":"O calendário fica com a outra pessoa. Quando os dois saem, os planos e as fotos são apagados."}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/pt-BR/">TT</a>
+<span class="badge">Beta grátis</span>
+</header>
+<main>
+<section class="hero">
+<h1>Um calendário para os dois</h1>
+<p class="lede">Coloque um plano e o celular do seu par fica sabendo. As datas especiais e os “dias juntos” se contam sozinhos.</p>
+<a class="cta" href="/?signup">Começar grátis</a>
+<p class="note">Abre no navegador. Coloque na tela inicial e funciona como um app.</p>
+</section>
+<h2>O que ele faz</h2>
+<div class="grid">
+<div class="card"><h3>Meu, seu, nosso</h3><p>Cada plano é de um de vocês ou dos dois, cada um com sua cor.</p></div>
+<div class="card"><h3>Seu par fica sabendo</h3><p>Quando um adiciona, muda ou apaga um plano, o outro recebe uma notificação. As suas próprias mudanças não avisam você.</p></div>
+<div class="card"><h3>Lembretes na hora certa</h3><p>Um “Começa daqui a pouco” de 30 minutos a uma hora antes dos planos com horário, e um resumo do dia às 8 da manhã.</p></div>
+<div class="card"><h3>Os dias juntos, contados</h3><p>Coloque o dia em que se conheceram: 100 dias, 200 dias e cada aniversário aparecem no calendário, com contagem regressiva.</p></div>
+<div class="card"><h3>Com as fotos de vocês</h3><p>Adicione até 30 fotos e elas aparecem ao lado dos planos e nos dias vazios.</p></div>
+<div class="card"><h3>Seu idioma, seus feriados</h3><p>Nove idiomas, feriados de nove países e o fuso horário de vocês.</p></div>
+</div>
+<h2>Como começar</h2>
+<ol class="steps">
+<li>Cadastre-se com um nome de usuário e uma senha. Não precisa de e-mail.</li>
+<li>Mande para o seu par o link de convite das Configurações. Ele vale uma vez e dura 7 dias.</li>
+<li>Coloque na tela inicial e ative as notificações — no iPhone, pelo menu Compartilhar do Safari.</li>
+</ol>
+<h2>Perguntas</h2>
+<div class="faq">
+<div class="card"><h3>O TT é grátis?</h3><p>Sim. O TT é grátis durante o beta, sem anúncios e sem recursos pagos.</p></div>
+<div class="card"><h3>Precisa baixar numa loja de apps?</h3><p>Não. O TT funciona no navegador do iPhone, Android e computador. Na tela inicial ele abre como um app, e é assim que as notificações chegam no iPhone.</p></div>
+<div class="card"><h3>Funciona no iPhone?</h3><p>Sim. Abra no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”. No iOS 16.4 ou mais novo, ele envia notificações depois de estar na tela inicial.</p></div>
+<div class="card"><h3>Como convido meu par?</h3><p>Nas Configurações, crie um link de convite e envie. Quando seu par se cadastrar por ele, vocês usam o mesmo calendário. Cada um tem sua própria conta.</p></div>
+<div class="card"><h3>Que dados vocês coletam?</h3><p>Um nome de usuário, sua senha (guardada com hash) e o que vocês colocam no calendário: planos, nomes, datas e fotos. Nenhum e-mail. Você pode excluir sua conta quando quiser nas Configurações.</p></div>
+<div class="card"><h3>E se um de nós excluir a conta?</h3><p>O calendário fica com a outra pessoa. Quando os dois saem, os planos e as fotos são apagados.</p></div>
+</div>
+<p class="more"><a href="/pt-BR/days-together/">Há quanto tempo estamos juntos? Calcule →</a></p>
+<p class="more"><a href="/pt-BR/compare/">TT vs Google Agenda vs TimeTree →</a></p>
+</main>
+<footer>
+<nav aria-label="Idioma"><a href="/en/" hreflang="en" lang="en">English</a>
+<a href="/ko/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="/zh-CN/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/" hreflang="es" lang="es">Español</a>
+<a href="/fr/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/" hreflang="de" lang="de">Deutsch</a>
+<strong>Português (Brasil)</strong>
+<a href="/ru/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">Abrir o TT</a> <a href="/privacy.html">Privacidade</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

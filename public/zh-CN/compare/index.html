@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT、Google 日历、TimeTree 对比 — 情侣共享日历</title>
+<meta name="description" content="两个人共用一个日历时，TT、Google 日历和 TimeTree 有什么不同：注册、对方改日程时的通知、纪念日和在一起的天数、广告和价格。">
+<link rel="canonical" href="https://tt-calendar.vercel.app/zh-CN/compare/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/compare/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/compare/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/compare/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/compare/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/compare/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/compare/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/compare/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/compare/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/compare/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/compare/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT、Google 日历、TimeTree 对比 — 情侣共享日历">
+<meta property="og:description" content="两个人共用一个日历时，TT、Google 日历和 TimeTree 有什么不同：注册、对方改日程时的通知、纪念日和在一起的天数、广告和价格。">
+<meta property="og:url" content="https://tt-calendar.vercel.app/zh-CN/compare/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"情侣共享日历：TT、Google 日历还是 TimeTree？","url":"https://tt-calendar.vercel.app/zh-CN/compare/","description":"两个人共用一个日历时，TT、Google 日历和 TimeTree 有什么不同：注册、对方改日程时的通知、纪念日和在一起的天数、广告和价格。","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"TT","url":"https://tt-calendar.vercel.app/"},"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"情侣用哪个共享日历应用最好？","acceptedAnswer":{"@type":"Answer","text":"看你需要什么。如果所有日程都在 Google 日历里，就在那里共享一个日历。如果想要专门为两个人做的、一开始就通知对方的改动、还会自动计算纪念日的，TT 正是为此而做。"}},{"@type":"Question","name":"情侣可以一起用 Google 日历吗？","acceptedAnswer":{"@type":"Answer","text":"可以。两个人都需要 Google 账号，由一人共享日历。想知道对方的改动，各自要为该日历打开邮件通知。"}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/zh-CN/">TT</a>
+<span class="badge">免费测试版</span>
+</header>
+<main>
+<section class="hero">
+<h1>情侣共享日历：TT、Google 日历还是 TimeTree？</h1>
+<p class="lede">三者都能让两个人共享日程，但各自为不同的用途而做。下面并排比较。</p>
+</section>
+<div class="table">
+<table>
+<thead><tr><td></td><th scope="col" class="us">TT</th><th scope="col">Google 日历</th><th scope="col">TimeTree</th></tr></thead>
+<tbody>
+<tr><th scope="row">为谁而做</th><td class="us">正好两个人</td><td>任何人：工作、学校、家庭</td><td>群组：家人、朋友、团队、情侣</td></tr>
+<tr><th scope="row">怎么开始</th><td class="us">用户名和密码，或用 Google 注册。对方通过邀请链接加入</td><td>两个人都需要 Google 账号，由一人共享日历</td><td>安装应用，创建日历并邀请成员</td></tr>
+<tr><th scope="row">对方改了日程时</th><td class="us">通知另一个人，一开始就是开启的</td><td>各自为该日历打开“已更改的活动”后会收到邮件</td><td>应用内通知</td></tr>
+<tr><th scope="row">纪念日和在一起的天数</th><td class="us">从认识那天算起，每 100 天和每年的纪念日都会出现在日历上，还显示倒计时</td><td>自己添加为日程</td><td>自己添加为日程</td></tr>
+<tr><th scope="row">是谁的日程</th><td class="us">我的、你的、我们的，各有颜色</td><td>分开的日历和颜色</td><td>标签和颜色</td></tr>
+<tr><th scope="row">照片</th><td class="us">最多 30 张你们的照片显示在日历上</td><td>没有内置</td><td>高级版可在日程中附加照片</td></tr>
+<tr><th scope="row">广告和价格</th><td class="us">测试期间免费，无广告</td><td>免费，无广告</td><td>免费版有广告。高级版（每人每月约 4.49 美元）去除广告</td></tr>
+<tr><th scope="row">在哪里用</th><td class="us">浏览器；添加到主屏幕</td><td>应用或浏览器</td><td>应用或浏览器</td></tr>
+</tbody>
+</table>
+</div>
+<p class="fine">其他应用信息的核对日期 <time datetime="2026-09-30">2026-09-30</time>. Google 日历和 TimeTree 属于各自的公司，与 TT 没有关系。如有过时的内容，请写信到 tt.calendar.help@gmail.com。</p>
+<h2>什么时候选别的更合适</h2>
+<ul class="better">
+<li>Google 日历：日程本来就都在那里，或者你想把会议邀请、视频通话和工作日历放在一起。</li>
+<li>TimeTree：一家人或一个群组共用一个日历，或者想在应用里给日程写评论。</li>
+</ul>
+<h2>常见问题</h2>
+<div class="faq">
+<div class="card"><h3>情侣用哪个共享日历应用最好？</h3><p>看你需要什么。如果所有日程都在 Google 日历里，就在那里共享一个日历。如果想要专门为两个人做的、一开始就通知对方的改动、还会自动计算纪念日的，TT 正是为此而做。</p></div>
+<div class="card"><h3>情侣可以一起用 Google 日历吗？</h3><p>可以。两个人都需要 Google 账号，由一人共享日历。想知道对方的改动，各自要为该日历打开邮件通知。</p></div>
+</div>
+<p class="more"><a class="cta" href="/?signup">免费试用 TT</a></p>
+<p class="more"><a href="/zh-CN/">TT →</a></p>
+</main>
+<footer>
+<nav aria-label="语言"><a href="/en/compare/" hreflang="en" lang="en">English</a>
+<a href="/ko/compare/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/compare/" hreflang="ja" lang="ja">日本語</a>
+<strong>简体中文</strong>
+<a href="/es/compare/" hreflang="es" lang="es">Español</a>
+<a href="/fr/compare/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/compare/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/compare/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/compare/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">打开 TT</a> <a href="/privacy.html">隐私政策</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT — ふたりで使える無料のカップルカレンダー</title>
+<meta name="description" content="ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。ベータ期間は無料。">
+<link rel="canonical" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT — ふたりで使える無料のカップルカレンダー">
+<meta property="og:description" content="ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。ベータ期間は無料。">
+<meta property="og:url" content="https://tt-calendar.vercel.app/ja/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。ベータ期間は無料。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["わたし・あなた・ふたり","相手に知らせます","ちょうどいい通知","一緒にいる日数を数えます","ふたりの写真で","言語と祝日"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TTは無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。ベータ期間中は無料で、広告も有料機能もありません。"}},{"@type":"Question","name":"アプリストアからダウンロードが必要ですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。iPhone・Android・パソコンのブラウザでそのまま使えます。ホーム画面に追加するとアプリのように開き、iPhoneではそれで通知も届きます。"}},{"@type":"Question","name":"iPhoneでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。Safariで開いて共有 →「ホーム画面に追加」を押してください。iOS 16.4以降なら、ホーム画面から開いたアプリで通知を受け取れます。"}},{"@type":"Question","name":"相手はどうやって招待しますか？","acceptedAnswer":{"@type":"Answer","text":"設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。"}},{"@type":"Question","name":"どんな情報を集めますか？","acceptedAnswer":{"@type":"Answer","text":"ユーザー名、パスワード（ハッシュ化して保存）、カレンダーに入れた予定・名前・日付・写真です。メールアドレスは預かりません。アカウントは設定からいつでも削除できます。"}},{"@type":"Question","name":"どちらかがアカウントを削除したら？","acceptedAnswer":{"@type":"Answer","text":"カレンダーは残った人にそのまま残ります。ふたりとも抜けると予定と写真は削除されます。"}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/ja/">TT</a>
+<span class="badge">無料ベータ</span>
+</header>
+<main>
+<section class="hero">
+<h1>ふたりで使う、ひとつのカレンダー</h1>
+<p class="lede">予定を入れると相手のスマホにすぐ届きます。記念日と「一緒にいる日数」は自動で数えます。</p>
+<a class="cta" href="/?signup">無料ではじめる</a>
+<p class="note">ブラウザですぐ開けます。ホーム画面に追加すればアプリのように使えます。</p>
+</section>
+<h2>できること</h2>
+<div class="grid">
+<div class="card"><h3>わたし・あなた・ふたり</h3><p>予定ごとに、どちらのものか、ふたりのものかを決めて色で分けます。</p></div>
+<div class="card"><h3>相手に知らせます</h3><p>どちらかが予定を追加・変更・削除すると、相手に通知が届きます。自分の変更は自分には届きません。</p></div>
+<div class="card"><h3>ちょうどいい通知</h3><p>時刻のある予定は30分〜1時間前に「まもなく開始」、朝8時にはその日のまとめが届きます。</p></div>
+<div class="card"><h3>一緒にいる日数を数えます</h3><p>出会った日を入れると、100日・200日や毎年の記念日がカレンダーに出て、あと何日かもわかります。</p></div>
+<div class="card"><h3>ふたりの写真で</h3><p>写真を30枚まで入れると、予定の横や空いた日に出てきます。</p></div>
+<div class="card"><h3>言語と祝日</h3><p>9つの言語、9か国の祝日、ふたりのタイムゾーンに合わせて使えます。</p></div>
+</div>
+<h2>はじめかた</h2>
+<ol class="steps">
+<li>ユーザー名とパスワードで登録します。メールアドレスは不要です。</li>
+<li>設定で招待リンクを作って相手に送ります。1回だけ使えて、7日間有効です。</li>
+<li>ホーム画面に追加して通知をオンに。iPhoneはSafariの共有メニューから追加します。</li>
+</ol>
+<h2>よくある質問</h2>
+<div class="faq">
+<div class="card"><h3>TTは無料ですか？</h3><p>はい。ベータ期間中は無料で、広告も有料機能もありません。</p></div>
+<div class="card"><h3>アプリストアからダウンロードが必要ですか？</h3><p>いいえ。iPhone・Android・パソコンのブラウザでそのまま使えます。ホーム画面に追加するとアプリのように開き、iPhoneではそれで通知も届きます。</p></div>
+<div class="card"><h3>iPhoneでも使えますか？</h3><p>はい。Safariで開いて共有 →「ホーム画面に追加」を押してください。iOS 16.4以降なら、ホーム画面から開いたアプリで通知を受け取れます。</p></div>
+<div class="card"><h3>相手はどうやって招待しますか？</h3><p>設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。</p></div>
+<div class="card"><h3>どんな情報を集めますか？</h3><p>ユーザー名、パスワード（ハッシュ化して保存）、カレンダーに入れた予定・名前・日付・写真です。メールアドレスは預かりません。アカウントは設定からいつでも削除できます。</p></div>
+<div class="card"><h3>どちらかがアカウントを削除したら？</h3><p>カレンダーは残った人にそのまま残ります。ふたりとも抜けると予定と写真は削除されます。</p></div>
+</div>
+<p class="more"><a href="/ja/days-together/">付き合って何日？計算してみる →</a></p>
+<p class="more"><a href="/ja/compare/">TT・Googleカレンダー・TimeTree比較 →</a></p>
+</main>
+<footer>
+<nav aria-label="言語"><a href="/en/" hreflang="en" lang="en">English</a>
+<a href="/ko/" hreflang="ko" lang="ko">한국어</a>
+<strong>日本語</strong>
+<a href="/zh-CN/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/" hreflang="es" lang="es">Español</a>
+<a href="/fr/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">TTを開く</a> <a href="/privacy.html">プライバシーポリシー</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+name: test
+
+# 푸시와 PR마다 전체 테스트. DB는 PGlite(인메모리)라 비밀값이 필요 없습니다.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run i18n

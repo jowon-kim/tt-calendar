@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT — бесплатный общий календарь для пар</title>
+<meta name="description" content="Один календарь на двоих: планы, памятные даты и счётчик дней вместе, с уведомлением, когда партнёр что-то меняет. Работает в браузере, без магазина приложений. Бесплатно во время беты.">
+<link rel="canonical" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT — бесплатный общий календарь для пар">
+<meta property="og:description" content="Один календарь на двоих: планы, памятные даты и счётчик дней вместе, с уведомлением, когда партнёр что-то меняет. Работает в браузере, без магазина приложений. Бесплатно во время беты.">
+<meta property="og:url" content="https://tt-calendar.vercel.app/ru/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"Один календарь на двоих: планы, памятные даты и счётчик дней вместе, с уведомлением, когда партнёр что-то меняет. Работает в браузере, без магазина приложений. Бесплатно во время беты.","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Моё, твоё, наше","Партнёр узнает","Напоминания вовремя","Дни вместе — посчитаны","С вашими фото","Твой язык, твои праздники"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TT бесплатный?","acceptedAnswer":{"@type":"Answer","text":"Да. Во время беты TT бесплатный, без рекламы и платных функций."}},{"@type":"Question","name":"Нужно ли скачивать его из магазина приложений?","acceptedAnswer":{"@type":"Answer","text":"Нет. TT работает в браузере на iPhone, Android и компьютере. С главного экрана он открывается как приложение — и именно так на iPhone приходят уведомления."}},{"@type":"Question","name":"Работает ли на iPhone?","acceptedAnswer":{"@type":"Answer","text":"Да. Открой в Safari, нажми «Поделиться», затем «На экран „Домой“». В iOS 16.4 и новее он может присылать уведомления, когда он на главном экране."}},{"@type":"Question","name":"Как пригласить партнёра?","acceptedAnswer":{"@type":"Answer","text":"В настройках создай ссылку-приглашение и отправь её. Когда партнёр зарегистрируется по ней, у вас будет общий календарь. У каждого свой аккаунт."}},{"@type":"Question","name":"Какие данные вы собираете?","acceptedAnswer":{"@type":"Answer","text":"Логин, пароль (хранится в виде хеша) и то, что вы добавляете в календарь: планы, имена, даты и фото. Никакой почты. Аккаунт можно удалить в любой момент в настройках."}},{"@type":"Question","name":"Что если один из нас удалит аккаунт?","acceptedAnswer":{"@type":"Answer","text":"Календарь останется у второго. Когда уйдёте оба, планы и фото удалятся."}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/ru/">TT</a>
+<span class="badge">Бесплатная бета</span>
+</header>
+<main>
+<section class="hero">
+<h1>Один календарь на двоих</h1>
+<p class="lede">Добавь план — и телефон партнёра узнает. Памятные даты и «дни вместе» считаются сами.</p>
+<a class="cta" href="/?signup">Начать бесплатно</a>
+<p class="note">Открывается в браузере. Добавь на главный экран — и он работает как приложение.</p>
+</section>
+<h2>Что он умеет</h2>
+<div class="grid">
+<div class="card"><h3>Моё, твоё, наше</h3><p>Каждый план принадлежит одному из вас или обоим — у каждого свой цвет.</p></div>
+<div class="card"><h3>Партнёр узнает</h3><p>Когда один добавляет, меняет или удаляет план, другой получает уведомление. Твои собственные изменения тебя не тревожат.</p></div>
+<div class="card"><h3>Напоминания вовремя</h3><p>«Скоро начало» за 30 минут — час до планов со временем и сводка дня в 8 утра.</p></div>
+<div class="card"><h3>Дни вместе — посчитаны</h3><p>Укажи день знакомства: 100 дней, 200 дней и каждая годовщина появятся в календаре с обратным отсчётом.</p></div>
+<div class="card"><h3>С вашими фото</h3><p>Добавь до 30 фотографий — они появятся рядом с планами и в пустые дни.</p></div>
+<div class="card"><h3>Твой язык, твои праздники</h3><p>Девять языков, праздники девяти стран и ваш часовой пояс.</p></div>
+</div>
+<h2>Как начать</h2>
+<ol class="steps">
+<li>Зарегистрируйся с логином и паролем. Почта не нужна.</li>
+<li>Отправь партнёру ссылку-приглашение из настроек. Она работает один раз и действует 7 дней.</li>
+<li>Добавь на главный экран и включи уведомления — на iPhone через меню «Поделиться» в Safari.</li>
+</ol>
+<h2>Вопросы</h2>
+<div class="faq">
+<div class="card"><h3>TT бесплатный?</h3><p>Да. Во время беты TT бесплатный, без рекламы и платных функций.</p></div>
+<div class="card"><h3>Нужно ли скачивать его из магазина приложений?</h3><p>Нет. TT работает в браузере на iPhone, Android и компьютере. С главного экрана он открывается как приложение — и именно так на iPhone приходят уведомления.</p></div>
+<div class="card"><h3>Работает ли на iPhone?</h3><p>Да. Открой в Safari, нажми «Поделиться», затем «На экран „Домой“». В iOS 16.4 и новее он может присылать уведомления, когда он на главном экране.</p></div>
+<div class="card"><h3>Как пригласить партнёра?</h3><p>В настройках создай ссылку-приглашение и отправь её. Когда партнёр зарегистрируется по ней, у вас будет общий календарь. У каждого свой аккаунт.</p></div>
+<div class="card"><h3>Какие данные вы собираете?</h3><p>Логин, пароль (хранится в виде хеша) и то, что вы добавляете в календарь: планы, имена, даты и фото. Никакой почты. Аккаунт можно удалить в любой момент в настройках.</p></div>
+<div class="card"><h3>Что если один из нас удалит аккаунт?</h3><p>Календарь останется у второго. Когда уйдёте оба, планы и фото удалятся.</p></div>
+</div>
+<p class="more"><a href="/ru/days-together/">Сколько мы уже вместе? Посчитать →</a></p>
+<p class="more"><a href="/ru/compare/">TT, Google Календарь или TimeTree →</a></p>
+</main>
+<footer>
+<nav aria-label="Язык"><a href="/en/" hreflang="en" lang="en">English</a>
+<a href="/ko/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="/zh-CN/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/" hreflang="es" lang="es">Español</a>
+<a href="/fr/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<strong>Русский</strong></nav>
+<nav><a href="/?signup">Открыть TT</a> <a href="/privacy.html">Конфиденциальность</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

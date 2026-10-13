@@ -1,0 +1,61 @@
+name: backup
+
+# 매일 새벽 DB를 통째로 떠서 **암호화한 뒤** 아티팩트로 30일 보관합니다.
+# 저장소가 공개라 아티팩트는 누구나 받을 수 있습니다 — 그래서 암호를 모르면 열 수 없게 잠급니다.
+# 사진 파일(Vercel Blob)은 여기 들어가지 않습니다. 사진이 어디 있는지 적힌 줄만 들어가요.
+#
+# 시크릿 (Settings → Secrets and variables → Actions). 둘 중 하나라도 없으면 아무것도 안 하고 끝납니다
+#   BACKUP_DATABASE_URL  Neon의 **pooler가 아닌** 연결 문자열 (Vercel의 DATABASE_URL_UNPOOLED 값)
+#   BACKUP_PASSPHRASE    길고 무작위한 암호. 잃어버리면 백업을 못 엽니다 — 비밀번호 관리자에 따로 적어두세요
+#
+# 되살리기 (docs/RUNNING.md "백업"):
+#   gpg --decrypt diary-XXXX.dump.gpg > diary.dump
+#   pg_restore --no-owner --no-privileges -d "<새 DB 연결 문자열>" diary.dump
+
+on:
+  schedule:
+    - cron: '0 18 * * *' # 한국 시각 새벽 3시
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    env:
+      READY: ${{ secrets.BACKUP_DATABASE_URL != '' && secrets.BACKUP_PASSPHRASE != '' }}
+    steps:
+      - name: Skip without secrets
+        if: env.READY != 'true'
+        run: echo "BACKUP_DATABASE_URL or BACKUP_PASSPHRASE is not set — nothing to back up."
+
+      # pg_dump는 서버보다 버전이 낮으면 거절합니다. Neon은 18이라 PostgreSQL 공식 저장소에서 18을 받습니다
+      - name: Install pg_dump 18
+        if: env.READY == 'true'
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-18
+
+      - name: Dump and encrypt
+        if: env.READY == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -o pipefail
+          name="diary-$(date -u +%Y%m%d-%H%M).dump.gpg"
+          /usr/lib/postgresql/18/bin/pg_dump --format=custom --no-owner --no-privileges "$DATABASE_URL" \
+            | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 \
+                  --output "$name" 3<<<"$PASSPHRASE"
+          test -s "$name"
+          echo "NAME=$name" >> "$GITHUB_ENV"
+          ls -l "$name"
+
+      - uses: actions/upload-artifact@v4
+        if: env.READY == 'true'
+        with:
+          name: ${{ env.NAME }}
+          path: ${{ env.NAME }}
+          retention-days: 30
+          if-no-files-found: error
