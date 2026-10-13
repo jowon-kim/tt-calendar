@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT vs Google Agenda vs TimeTree — un calendrier partagé pour les couples</title>
+<meta name="description" content="Comment TT, Google Agenda et TimeTree se comparent quand deux personnes partagent un calendrier : inscription, notifications quand ton ou ta partenaire change quelque chose, anniversaires et jours ensemble, publicité et prix.">
+<link rel="canonical" href="https://tt-calendar.vercel.app/fr/compare/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/compare/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/compare/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/compare/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/compare/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/compare/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/compare/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/compare/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/compare/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/compare/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/compare/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT vs Google Agenda vs TimeTree — un calendrier partagé pour les couples">
+<meta property="og:description" content="Comment TT, Google Agenda et TimeTree se comparent quand deux personnes partagent un calendrier : inscription, notifications quand ton ou ta partenaire change quelque chose, anniversaires et jours ensemble, publicité et prix.">
+<meta property="og:url" content="https://tt-calendar.vercel.app/fr/compare/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"Calendrier partagé pour les couples : TT, Google Agenda ou TimeTree ?","url":"https://tt-calendar.vercel.app/fr/compare/","description":"Comment TT, Google Agenda et TimeTree se comparent quand deux personnes partagent un calendrier : inscription, notifications quand ton ou ta partenaire change quelque chose, anniversaires et jours ensemble, publicité et prix.","inLanguage":"fr","isPartOf":{"@type":"WebSite","name":"TT","url":"https://tt-calendar.vercel.app/"},"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quelle est la meilleure appli de calendrier partagé pour un couple ?","acceptedAnswer":{"@type":"Answer","text":"Ça dépend de ce qu’il vous faut. Si tout est déjà dans Google Agenda, partagez un agenda là-bas. Si vous voulez quelque chose fait pour deux, qui annonce les changements de l’autre dès le départ et compte les anniversaires pour vous, TT est fait exactement pour ça."}},{"@type":"Question","name":"Un couple peut-il utiliser Google Agenda ensemble ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Il vous faut chacun un compte Google, et l’un partage un agenda avec l’autre. Pour être prévenus des changements de l’autre, chacun active les notifications par e-mail pour cet agenda."}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/fr/">TT</a>
+<span class="badge">Bêta gratuite</span>
+</header>
+<main>
+<section class="hero">
+<h1>Calendrier partagé pour les couples : TT, Google Agenda ou TimeTree ?</h1>
+<p class="lede">Les trois permettent à deux personnes de partager leurs projets, mais chacun est fait pour autre chose. Les voici côte à côte.</p>
+</section>
+<div class="table">
+<table>
+<thead><tr><td></td><th scope="col" class="us">TT</th><th scope="col">Google Agenda</th><th scope="col">TimeTree</th></tr></thead>
+<tbody>
+<tr><th scope="row">Fait pour</th><td class="us">Deux personnes, pas plus</td><td>Tout le monde : travail, études, famille</td><td>Des groupes : famille, amis, équipes, couples</td></tr>
+<tr><th scope="row">Pour commencer</th><td class="us">Un identifiant et un mot de passe, ou Google. L’autre rejoint par un lien d’invitation</td><td>Il vous faut chacun un compte Google, puis l’un partage un agenda avec l’autre</td><td>Installer l’appli, créer un calendrier et inviter les membres</td></tr>
+<tr><th scope="row">Quand l’autre change un projet</th><td class="us">Une notification à l’autre personne, activée dès le départ</td><td>Un e-mail, si chacun active « Événements modifiés » pour cet agenda</td><td>Notifications dans l’appli</td></tr>
+<tr><th scope="row">Anniversaires et jours ensemble</th><td class="us">Comptés depuis le jour de votre rencontre : chaque centaine de jours et chaque anniversaire apparaissent sur le calendrier avec un compte à rebours</td><td>À ajouter soi-même comme événements</td><td>À ajouter soi-même comme événements</td></tr>
+<tr><th scope="row">À qui est le projet</th><td class="us">À moi, à toi ou à nous, chacun dans sa couleur</td><td>Agendas et couleurs séparés</td><td>Étiquettes et couleurs</td></tr>
+<tr><th scope="row">Photos</th><td class="us">Jusqu’à 30 de vos photos sur le calendrier</td><td>Non intégré</td><td>Photos jointes aux événements avec Premium</td></tr>
+<tr><th scope="row">Publicité et prix</th><td class="us">Gratuit pendant la bêta, sans publicité</td><td>Gratuit, sans publicité</td><td>Gratuit avec publicité. Premium (environ 4,49 $ US par mois et par personne) la retire</td></tr>
+<tr><th scope="row">Où ça marche</th><td class="us">Dans le navigateur ; à ajouter à l’écran d’accueil</td><td>Appli ou navigateur</td><td>Appli ou navigateur</td></tr>
+</tbody>
+</table>
+</div>
+<p class="fine">Informations sur les autres applis vérifiées le <time datetime="2026-09-30">2026-09-30</time>. Google Agenda et TimeTree appartiennent à leurs propriétaires ; TT n’a aucun lien avec eux. Si quelque chose n’est plus à jour, écris à tt.calendar.help@gmail.com.</p>
+<h2>Quand un autre convient mieux</h2>
+<ul class="better">
+<li>Google Agenda, si tes projets y sont déjà, ou si tu veux les invitations aux réunions, la visio et les agendas de travail au même endroit.</li>
+<li>TimeTree, si toute une famille ou un groupe partage un calendrier, ou si tu veux commenter les projets dans l’appli.</li>
+</ul>
+<h2>Questions</h2>
+<div class="faq">
+<div class="card"><h3>Quelle est la meilleure appli de calendrier partagé pour un couple ?</h3><p>Ça dépend de ce qu’il vous faut. Si tout est déjà dans Google Agenda, partagez un agenda là-bas. Si vous voulez quelque chose fait pour deux, qui annonce les changements de l’autre dès le départ et compte les anniversaires pour vous, TT est fait exactement pour ça.</p></div>
+<div class="card"><h3>Un couple peut-il utiliser Google Agenda ensemble ?</h3><p>Oui. Il vous faut chacun un compte Google, et l’un partage un agenda avec l’autre. Pour être prévenus des changements de l’autre, chacun active les notifications par e-mail pour cet agenda.</p></div>
+</div>
+<p class="more"><a class="cta" href="/?signup">Essayer TT gratuitement</a></p>
+<p class="more"><a href="/fr/">TT →</a></p>
+</main>
+<footer>
+<nav aria-label="Langue"><a href="/en/compare/" hreflang="en" lang="en">English</a>
+<a href="/ko/compare/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/compare/" hreflang="ja" lang="ja">日本語</a>
+<a href="/zh-CN/compare/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/compare/" hreflang="es" lang="es">Español</a>
+<strong>Français</strong>
+<a href="/de/compare/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/compare/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/compare/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">Ouvrir TT</a> <a href="/privacy.html">Confidentialité</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

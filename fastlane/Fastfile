@@ -1,0 +1,53 @@
+# iOS 빌드와 TestFlight 올리기. GitHub Actions의 macOS 러너에서 돕니다 (.github/workflows/ios.yml).
+# Mac이 없어서 Xcode로 서명을 만질 수 없으니, 서명은 match가 App Store Connect API 키로
+# 만들고 비공개 git 저장소에 암호화해 둡니다. 두 번째부터는 그걸 꺼내 씁니다.
+
+default_platform(:ios)
+
+APP_ID = 'com.jowonkim.couplediary' # capacitor.config.json의 appId와 같아야 합니다
+PROJECT = 'ios/App/App.xcodeproj'
+
+platform :ios do
+  desc 'Sign, build and send to TestFlight'
+  lane :beta do
+    setup_ci # 러너에 임시 키체인을 만듭니다
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch('ASC_KEY_ID'),
+      issuer_id: ENV.fetch('ASC_ISSUER_ID'),
+      key_content: ENV.fetch('ASC_KEY_CONTENT'),
+      is_key_content_base64: true
+    )
+
+    # 처음엔 배포 인증서와 프로필을 만들어 저장소에 넣고, 그다음부터는 꺼내 씁니다
+    match(
+      type: 'appstore',
+      app_identifier: APP_ID,
+      team_id: ENV.fetch('APPLE_TEAM_ID'),
+      api_key: api_key
+    )
+
+    # 템플릿은 자동 서명(Xcode가 알아서)인데, 러너에는 애플 계정이 없어서 match가 준 것으로 고정합니다
+    update_code_signing_settings(
+      path: PROJECT,
+      targets: ['App'],
+      use_automatic_signing: false,
+      team_id: ENV.fetch('APPLE_TEAM_ID'),
+      bundle_identifier: APP_ID,
+      code_sign_identity: 'Apple Distribution',
+      profile_name: ENV.fetch("sigh_#{APP_ID}_appstore_profile-name")
+    )
+
+    # 빌드 번호는 올릴 때마다 커져야 합니다. 프로젝트에 agvtool 설정이 없어 xcodebuild에 바로 넘깁니다
+    build_app(
+      project: PROJECT,
+      scheme: 'App',
+      configuration: 'Release',
+      export_method: 'app-store',
+      output_directory: 'build/ios',
+      xcargs: "CURRENT_PROJECT_VERSION=#{ENV.fetch('BUILD_NUMBER', '1')}"
+    )
+
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+  end
+end

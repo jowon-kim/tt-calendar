@@ -1,0 +1,77 @@
+name: android
+
+# 서명한 .aab를 만들고, Play 서비스 계정이 있으면 내부 테스트 트랙에 올립니다.
+# Actions 탭에서 손으로 돌리거나 v로 시작하는 태그를 푸시하면 돕니다.
+#
+# 시크릿 (Settings → Secrets and variables → Actions)
+#   ANDROID_KEYSTORE_BASE64    업로드 키(.jks)를 base64로 — `base64 -w0 upload.jks`
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#   GOOGLE_SERVICES_JSON       Firebase 콘솔의 google-services.json 내용 (없으면 앱 알림만 꺼진 채로 빌드)
+#   PLAY_SERVICE_ACCOUNT_JSON  Play Console API 서비스 계정 JSON (없으면 올리지 않고 파일만 남김)
+#
+# Play는 **첫 번째 버전만큼은 Play Console에서 손으로** 올려야 API로 올릴 수 있습니다.
+# 처음엔 아래 "aab" 아티팩트를 받아 직접 올리세요.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    env:
+      HAS_PLAY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+      HAS_FIREBASE: ${{ secrets.GOOGLE_SERVICES_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx cap sync android
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Firebase config
+        if: env.HAS_FIREBASE == 'true'
+        run: printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
+      - name: Upload key
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      # versionCode는 실행 번호 — 올릴 때마다 커져야 스토어가 받아줍니다 (android/app/build.gradle)
+      - name: Build
+        working-directory: android
+        run: ./gradlew bundleRelease -PversionCode=${{ github.run_number }}
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Play internal testing
+        if: env.HAS_PLAY == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.jowonkim.couplediary
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed

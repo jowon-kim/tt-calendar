@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сколько мы уже вместе? Калькулятор дней отношений</title>
+<meta name="description" content="Укажи день, когда вы начали встречаться, и узнай, сколько дней вы вместе, когда следующая сотня дней и следующая годовщина.">
+<link rel="canonical" href="https://tt-calendar.vercel.app/ru/days-together/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/days-together/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/days-together/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/days-together/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/days-together/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/days-together/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/days-together/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/days-together/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/days-together/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/days-together/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/days-together/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="Сколько мы уже вместе? Калькулятор дней отношений">
+<meta property="og:description" content="Укажи день, когда вы начали встречаться, и узнай, сколько дней вы вместе, когда следующая сотня дней и следующая годовщина.">
+<meta property="og:url" content="https://tt-calendar.vercel.app/ru/days-together/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"Сколько мы уже вместе?","url":"https://tt-calendar.vercel.app/ru/days-together/","description":"Укажи день, когда вы начали встречаться, и узнай, сколько дней вы вместе, когда следующая сотня дней и следующая годовщина.","applicationCategory":"UtilitiesApplication","operatingSystem":"Web browser","inLanguage":"ru","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"WebSite","name":"TT","url":"https://tt-calendar.vercel.app/"},"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Как посчитать, сколько дней мы вместе?","acceptedAnswer":{"@type":"Answer","text":"Вычти дату начала из сегодняшней. Например, с 14 февраля 2024 по 14 февраля 2025 — 366 дней, потому что 2024 был високосным."}},{"@type":"Question","name":"Когда наш 100-й день?","acceptedAnswer":{"@type":"Answer","text":"Если первый день считается днём 1, 100-й день наступает через 99 дней. Если вы начали 1 марта, 100-й день — 8 июня."}},{"@type":"Question","name":"Можно ли держать счётчик в телефоне?","acceptedAnswer":{"@type":"Answer","text":"Да. TT, бесплатный общий календарь для пар, показывает, сколько дней вы вместе, и отмечает каждую сотню дней и каждую годовщину в вашем общем календаре."}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/ru/">TT</a>
+<span class="badge">Бесплатная бета</span>
+</header>
+<main>
+<section class="hero">
+<h1>Сколько мы уже вместе?</h1>
+<p class="lede">Выбери день, когда вы начали встречаться. Всё считается в твоём браузере — никуда не отправляется.</p>
+</section>
+<div class="tool">
+<label for="since">День, когда всё началось</label>
+<input id="since" type="date" min="1900-01-01">
+<div id="result" aria-live="polite"></div>
+</div>
+<h2>Как считается</h2>
+<p>Считать можно двумя способами. «Дней с» — это разница между двумя датами, так что день после знакомства — это 1. Многие пары — особенно в Корее, Японии и Китае — считают первый день днём 1, поэтому у них всегда на день больше. Выше показаны оба варианта.</p>
+<p>Сотни дней считаются вторым способом: 100-й день наступает через 99 дней после первого. Годовщина каждый год приходится на ту же дату.</p>
+<h2>Вопросы</h2>
+<div class="faq">
+<div class="card"><h3>Как посчитать, сколько дней мы вместе?</h3><p>Вычти дату начала из сегодняшней. Например, с 14 февраля 2024 по 14 февраля 2025 — 366 дней, потому что 2024 был високосным.</p></div>
+<div class="card"><h3>Когда наш 100-й день?</h3><p>Если первый день считается днём 1, 100-й день наступает через 99 дней. Если вы начали 1 марта, 100-й день — 8 июня.</p></div>
+<div class="card"><h3>Можно ли держать счётчик в телефоне?</h3><p>Да. TT, бесплатный общий календарь для пар, показывает, сколько дней вы вместе, и отмечает каждую сотню дней и каждую годовщину в вашем общем календаре.</p></div>
+</div>
+<p class="more"><a class="cta" href="/?signup">Продолжить счёт в TT</a></p>
+<p class="more"><a href="/ru/">TT →</a></p>
+</main>
+<footer>
+<nav aria-label="Язык"><a href="/en/days-together/" hreflang="en" lang="en">English</a>
+<a href="/ko/days-together/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/days-together/" hreflang="ja" lang="ja">日本語</a>
+<a href="/zh-CN/days-together/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/days-together/" hreflang="es" lang="es">Español</a>
+<a href="/fr/days-together/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/days-together/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/days-together/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<strong>Русский</strong></nav>
+<nav><a href="/?signup">Открыть TT</a> <a href="/privacy.html">Конфиденциальность</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+<script type="application/json" id="calc-words">{"future":"Этот день ещё не наступил.","daysSince":"Дней с того дня","dayNumber":"Сегодня день (первый день считается днём 1)","breakdown":"Лет · месяцев · дней","nextMilestone":"Следующая сотня дней","nextAnniversary":"Следующая годовщина","daysLeft":"Осталось дней","milestoneValue":"День {n} — {date}"}</script>
+<script>
+(function () {
+  var L = document.documentElement.lang;
+  var T = JSON.parse(document.getElementById('calc-words').textContent);
+  var input = document.getElementById('since');
+  var out = document.getElementById('result');
+  var day = 864e5;
+  var fmt = new Intl.DateTimeFormat(L, { dateStyle: 'long', timeZone: 'UTC' });
+  var num = function (n) { return n.toLocaleString(L); };
+  function today() { var n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function row(label, value) { return '<dt>' + label + '</dt><dd>' + value + '</dd>'; }
+  function show() {
+    var v = input.value;
+    if (!v) { out.innerHTML = ''; return; }
+    var p = v.split('-').map(Number);
+    var start = Date.UTC(p[0], p[1] - 1, p[2]);
+    var now = today();
+    var diff = Math.round((now - start) / day);
+    if (diff < 0) { out.innerHTML = '<p class="future">' + T.future + '</p>'; return; }
+    var d0 = new Date(start), d1 = new Date(now);
+    var y = d1.getUTCFullYear() - d0.getUTCFullYear();
+    var m = d1.getUTCMonth() - d0.getUTCMonth();
+    var d = d1.getUTCDate() - d0.getUTCDate();
+    if (d < 0) { m -= 1; d += new Date(Date.UTC(d1.getUTCFullYear(), d1.getUTCMonth(), 0)).getUTCDate(); }
+    if (m < 0) { y -= 1; m += 12; }
+    var dayNo = diff + 1;
+    var next = (Math.floor(dayNo / 100) + 1) * 100;
+    var milestone = start + (next - 1) * day;
+    var ay = d1.getUTCFullYear();
+    var ann = Date.UTC(ay, d0.getUTCMonth(), d0.getUTCDate());
+    if (ann < now || ay === d0.getUTCFullYear()) ann = Date.UTC(ay + 1, d0.getUTCMonth(), d0.getUTCDate());
+    out.innerHTML = '<dl class="result">'
+      + row(T.daysSince, num(diff))
+      + row(T.dayNumber, num(dayNo))
+      + row(T.breakdown, num(y) + ' · ' + num(m) + ' · ' + num(d))
+      + row(T.nextMilestone, T.milestoneValue.replace('{n}', num(next)).replace('{date}', fmt.format(milestone)))
+      + row(T.daysLeft, num(Math.round((milestone - now) / day)))
+      + row(T.nextAnniversary, fmt.format(ann))
+      + row(T.daysLeft, num(Math.round((ann - now) / day)))
+      + '</dl>';
+  }
+  input.max = new Date(today()).toISOString().slice(0, 10);
+  input.addEventListener('input', show);
+  show();
+})();
+</script>
+</body>
+</html>

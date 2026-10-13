@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT — 两个人一起用的免费情侣日历</title>
+<meta name="description" content="两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。测试期间免费。">
+<link rel="canonical" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT — 两个人一起用的免费情侣日历">
+<meta property="og:description" content="两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。测试期间免费。">
+<meta property="og:url" content="https://tt-calendar.vercel.app/zh-CN/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。测试期间免费。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["我的、你的、我们的","对方会收到通知","及时的提醒","帮你数在一起的天数","放上你们的照片","语言和节假日"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TT 免费吗？","acceptedAnswer":{"@type":"Answer","text":"免费。测试期间完全免费，没有广告，也没有付费功能。"}},{"@type":"Question","name":"需要从应用商店下载吗？","acceptedAnswer":{"@type":"Answer","text":"不需要。在 iPhone、安卓和电脑的浏览器里都能直接用。添加到主屏幕后像应用一样打开，iPhone 也要这样才能收到通知。"}},{"@type":"Question","name":"iPhone 能用吗？","acceptedAnswer":{"@type":"Answer","text":"能。用 Safari 打开，点分享 →“添加到主屏幕”。iOS 16.4 及以上，从主屏幕打开的应用可以收到通知。"}},{"@type":"Question","name":"怎么邀请对方？","acceptedAnswer":{"@type":"Answer","text":"在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。"}},{"@type":"Question","name":"会收集哪些信息？","acceptedAnswer":{"@type":"Answer","text":"用户名、密码（加密后保存），以及你们放进日历的日程、名字、日期和照片。不收集邮箱。随时可以在设置里删除账号。"}},{"@type":"Question","name":"如果一方删除了账号呢？","acceptedAnswer":{"@type":"Answer","text":"日历会原样留给另一方。两个人都离开后，日程和照片会被删除。"}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/zh-CN/">TT</a>
+<span class="badge">免费测试版</span>
+</header>
+<main>
+<section class="hero">
+<h1>两个人，一个日历</h1>
+<p class="lede">你加一个日程，对方手机马上知道。纪念日和“在一起的天数”自动计算。</p>
+<a class="cta" href="/?signup">免费开始</a>
+<p class="note">在浏览器里直接打开。添加到主屏幕后就像应用一样。</p>
+</section>
+<h2>能做什么</h2>
+<div class="grid">
+<div class="card"><h3>我的、你的、我们的</h3><p>每个日程都可以设为其中一人的，或两个人的，用颜色区分。</p></div>
+<div class="card"><h3>对方会收到通知</h3><p>一方新增、修改或删除日程时，另一方会收到通知。自己的改动不会通知自己。</p></div>
+<div class="card"><h3>及时的提醒</h3><p>有时间的日程会在开始前30分钟到1小时提醒“即将开始”，早上8点发一次当天的汇总。</p></div>
+<div class="card"><h3>帮你数在一起的天数</h3><p>填上相识的日子，100天、200天和每年的纪念日都会出现在日历上，还能看到还剩几天。</p></div>
+<div class="card"><h3>放上你们的照片</h3><p>最多放30张照片，会出现在日程旁边和空白的日子里。</p></div>
+<div class="card"><h3>语言和节假日</h3><p>9种语言，9个国家的节假日，按你们的时区使用。</p></div>
+</div>
+<h2>怎么开始</h2>
+<ol class="steps">
+<li>用用户名和密码注册，不需要邮箱。</li>
+<li>在设置里生成邀请链接发给对方。只能用一次，7天内有效。</li>
+<li>添加到主屏幕并打开通知。iPhone 请从 Safari 的分享菜单添加。</li>
+</ol>
+<h2>常见问题</h2>
+<div class="faq">
+<div class="card"><h3>TT 免费吗？</h3><p>免费。测试期间完全免费，没有广告，也没有付费功能。</p></div>
+<div class="card"><h3>需要从应用商店下载吗？</h3><p>不需要。在 iPhone、安卓和电脑的浏览器里都能直接用。添加到主屏幕后像应用一样打开，iPhone 也要这样才能收到通知。</p></div>
+<div class="card"><h3>iPhone 能用吗？</h3><p>能。用 Safari 打开，点分享 →“添加到主屏幕”。iOS 16.4 及以上，从主屏幕打开的应用可以收到通知。</p></div>
+<div class="card"><h3>怎么邀请对方？</h3><p>在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。</p></div>
+<div class="card"><h3>会收集哪些信息？</h3><p>用户名、密码（加密后保存），以及你们放进日历的日程、名字、日期和照片。不收集邮箱。随时可以在设置里删除账号。</p></div>
+<div class="card"><h3>如果一方删除了账号呢？</h3><p>日历会原样留给另一方。两个人都离开后，日程和照片会被删除。</p></div>
+</div>
+<p class="more"><a href="/zh-CN/days-together/">我们在一起多少天了？算一算 →</a></p>
+<p class="more"><a href="/zh-CN/compare/">TT、Google 日历、TimeTree 对比 →</a></p>
+</main>
+<footer>
+<nav aria-label="语言"><a href="/en/" hreflang="en" lang="en">English</a>
+<a href="/ko/" hreflang="ko" lang="ko">한국어</a>
+<a href="/ja/" hreflang="ja" lang="ja">日本語</a>
+<strong>简体中文</strong>
+<a href="/es/" hreflang="es" lang="es">Español</a>
+<a href="/fr/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">打开 TT</a> <a href="/privacy.html">隐私政策</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>

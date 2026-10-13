@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "public",
+  "installCommand": "npm install --omit=dev",
+  "functions": {
+    "api/**/*.js": { "includeFiles": "schema.sql" }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:op(signup|login|logout|invite|account|google|devices)",
+      "destination": "/api/auth?op=:op"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/:path((?!photos/).*)",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    }
+  ]
+}

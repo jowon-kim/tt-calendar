@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT — 둘이 함께 쓰는 무료 커플 달력</title>
+<meta name="description" content="둘이 하나의 달력을 써요. 일정·기념일·사귄 날 계산, 상대가 일정을 바꾸면 알림까지. 앱스토어 없이 브라우저에서 바로. 베타 기간 무료.">
+<link rel="canonical" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="en" href="https://tt-calendar.vercel.app/en/">
+<link rel="alternate" hreflang="ko" href="https://tt-calendar.vercel.app/ko/">
+<link rel="alternate" hreflang="ja" href="https://tt-calendar.vercel.app/ja/">
+<link rel="alternate" hreflang="zh-CN" href="https://tt-calendar.vercel.app/zh-CN/">
+<link rel="alternate" hreflang="es" href="https://tt-calendar.vercel.app/es/">
+<link rel="alternate" hreflang="fr" href="https://tt-calendar.vercel.app/fr/">
+<link rel="alternate" hreflang="de" href="https://tt-calendar.vercel.app/de/">
+<link rel="alternate" hreflang="pt-BR" href="https://tt-calendar.vercel.app/pt-BR/">
+<link rel="alternate" hreflang="ru" href="https://tt-calendar.vercel.app/ru/">
+<link rel="alternate" hreflang="x-default" href="https://tt-calendar.vercel.app/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TT">
+<meta property="og:title" content="TT — 둘이 함께 쓰는 무료 커플 달력">
+<meta property="og:description" content="둘이 하나의 달력을 써요. 일정·기념일·사귄 날 계산, 상대가 일정을 바꾸면 알림까지. 앱스토어 없이 브라우저에서 바로. 베타 기간 무료.">
+<meta property="og:url" content="https://tt-calendar.vercel.app/ko/">
+<meta property="og:image" content="https://tt-calendar.vercel.app/landing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF3F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#fbf3f4;--card:#fff;--ink:#40323a;--soft:#6e5b63;--muted:#a08a91;--line:#ead4d6;--accent:#d96570;--accent-2:#f4a0a8;--plum:#a06cb0;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1719;--card:#271f22;--ink:#f3e7ea;--soft:#cdb8be;--muted:#9c878d;--line:#3d2f34;--accent:#f08a94;--accent-2:#f4a0a8;--plum:#c9a2d4;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Hiragino Sans","PingFang SC","Malgun Gothic",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:44px;height:44px}
+.brand{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none;color:var(--ink)}
+.badge{font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent-2);border-radius:999px;padding:2px 10px}
+.hero{padding:40px 0 8px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.15;margin:0 0 12px;text-wrap:balance}
+.lede{font-size:18px;color:var(--soft);margin:0 0 24px;max-width:60ch}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:16px;box-shadow:0 10px 24px -12px var(--accent)}
+.cta:hover{filter:brightness(1.05)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+h2{font-size:24px;margin:48px 0 16px}
+h3{font-size:17px;margin:0 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0;color:var(--soft);font-size:15px}
+ol.steps{padding-left:22px;margin:0}
+ol.steps li{margin:0 0 8px}
+.faq{display:grid;gap:12px}
+.faq p{margin:0;color:var(--soft)}
+.more{margin:32px 0 0;font-weight:600}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:10px}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+footer a{color:var(--soft)}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px}
+.tool label{font-weight:700}
+.tool input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);max-width:260px}
+dl.result{display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0}
+dl.result dt{color:var(--soft)}
+dl.result dd{margin:0;font-weight:700;text-align:right}
+.future{color:var(--accent);margin:0}
+.table{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.table th,.table td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.table tr:last-child th,.table tr:last-child td{border-bottom:0}
+.table thead th{font-size:14px;color:var(--soft)}
+.table tbody th{font-weight:700;width:22%}
+.table .us{background:color-mix(in srgb,var(--accent-2) 14%,transparent)}
+ul.better{padding-left:22px;margin:0;color:var(--soft)}
+ul.better li{margin:0 0 8px}
+.fine{font-size:14px;color:var(--muted)}
+</style>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"둘이 하나의 달력을 써요. 일정·기념일·사귄 날 계산, 상대가 일정을 바꾸면 알림까지. 앱스토어 없이 브라우저에서 바로. 베타 기간 무료.","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["내 일정, 네 일정, 우리 일정","상대에게 알려줘요","때맞춰 오는 알림","함께한 날을 세어줘요","우리 사진으로","언어와 공휴일"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TT는 무료인가요?","acceptedAnswer":{"@type":"Answer","text":"네. 베타 기간 동안 무료이고, 광고나 유료 기능이 없어요."}},{"@type":"Question","name":"앱스토어에서 받아야 하나요?","acceptedAnswer":{"@type":"Answer","text":"아니요. 아이폰·안드로이드·컴퓨터 브라우저에서 바로 돼요. 홈 화면에 추가하면 앱처럼 열리고, 아이폰은 그래야 알림도 와요."}},{"@type":"Question","name":"아이폰에서도 되나요?","acceptedAnswer":{"@type":"Answer","text":"네. 사파리에서 열고 공유 → “홈 화면에 추가”를 누르세요. iOS 16.4 이상이면 홈 화면에서 연 앱으로 알림을 받을 수 있어요."}},{"@type":"Question","name":"상대는 어떻게 초대하나요?","acceptedAnswer":{"@type":"Answer","text":"설정에서 초대 링크를 만들어 보내면 돼요. 그 링크로 가입하면 같은 달력을 함께 써요. 계정은 각자 따로예요."}},{"@type":"Question","name":"어떤 정보를 모으나요?","acceptedAnswer":{"@type":"Answer","text":"아이디, 비밀번호(암호화해서 저장), 그리고 달력에 넣은 일정·이름·날짜·사진이에요. 이메일은 받지 않아요. 계정은 설정에서 언제든 지울 수 있어요."}},{"@type":"Question","name":"한 사람이 계정을 지우면요?","acceptedAnswer":{"@type":"Answer","text":"달력은 남은 사람에게 그대로 있어요. 둘 다 나가면 일정과 사진이 지워져요."}}]}]</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img src="/landing/mascot.webp" alt="" width="44" height="44">
+<a class="brand" href="/ko/">TT</a>
+<span class="badge">무료 베타</span>
+</header>
+<main>
+<section class="hero">
+<h1>둘이 함께 쓰는 달력</h1>
+<p class="lede">일정을 넣으면 상대 폰에 바로 알려줘요. 기념일과 “함께한 날”은 저절로 세어져요.</p>
+<a class="cta" href="/?signup">무료로 시작하기</a>
+<p class="note">브라우저에서 바로 열려요. 홈 화면에 추가하면 앱처럼 써요.</p>
+</section>
+<h2>이런 걸 해요</h2>
+<div class="grid">
+<div class="card"><h3>내 일정, 네 일정, 우리 일정</h3><p>일정마다 한 사람 것인지, 둘 다의 것인지 정하고 색으로 구분해요.</p></div>
+<div class="card"><h3>상대에게 알려줘요</h3><p>한 사람이 일정을 넣거나 고치거나 지우면 상대에게 알림이 가요. 내가 바꾼 건 나한테 오지 않아요.</p></div>
+<div class="card"><h3>때맞춰 오는 알림</h3><p>시간 있는 일정은 30분~1시간 전에 “곧 시작”, 아침 8시에는 그날 일정 요약이 와요.</p></div>
+<div class="card"><h3>함께한 날을 세어줘요</h3><p>처음 만난 날을 넣으면 100일·200일과 해마다 오는 기념일이 달력에 뜨고, 며칠 남았는지도 보여요.</p></div>
+<div class="card"><h3>우리 사진으로</h3><p>사진을 30장까지 넣으면 일정 옆과 빈 날에 골고루 나와요.</p></div>
+<div class="card"><h3>언어와 공휴일</h3><p>9개 언어, 9개 나라 공휴일, 우리 시간대에 맞춰 써요.</p></div>
+</div>
+<h2>시작하는 법</h2>
+<ol class="steps">
+<li>아이디와 비밀번호로 가입해요. 이메일은 필요 없어요.</li>
+<li>설정에서 초대 링크를 만들어 상대에게 보내요. 한 번만 쓸 수 있고 7일 동안 살아 있어요.</li>
+<li>홈 화면에 추가하고 알림을 켜요. 아이폰은 사파리 공유 버튼에서 추가해요.</li>
+</ol>
+<h2>자주 묻는 것</h2>
+<div class="faq">
+<div class="card"><h3>TT는 무료인가요?</h3><p>네. 베타 기간 동안 무료이고, 광고나 유료 기능이 없어요.</p></div>
+<div class="card"><h3>앱스토어에서 받아야 하나요?</h3><p>아니요. 아이폰·안드로이드·컴퓨터 브라우저에서 바로 돼요. 홈 화면에 추가하면 앱처럼 열리고, 아이폰은 그래야 알림도 와요.</p></div>
+<div class="card"><h3>아이폰에서도 되나요?</h3><p>네. 사파리에서 열고 공유 → “홈 화면에 추가”를 누르세요. iOS 16.4 이상이면 홈 화면에서 연 앱으로 알림을 받을 수 있어요.</p></div>
+<div class="card"><h3>상대는 어떻게 초대하나요?</h3><p>설정에서 초대 링크를 만들어 보내면 돼요. 그 링크로 가입하면 같은 달력을 함께 써요. 계정은 각자 따로예요.</p></div>
+<div class="card"><h3>어떤 정보를 모으나요?</h3><p>아이디, 비밀번호(암호화해서 저장), 그리고 달력에 넣은 일정·이름·날짜·사진이에요. 이메일은 받지 않아요. 계정은 설정에서 언제든 지울 수 있어요.</p></div>
+<div class="card"><h3>한 사람이 계정을 지우면요?</h3><p>달력은 남은 사람에게 그대로 있어요. 둘 다 나가면 일정과 사진이 지워져요.</p></div>
+</div>
+<p class="more"><a href="/ko/days-together/">우리 사귄 지 며칠? 계산해 보기 →</a></p>
+<p class="more"><a href="/ko/compare/">TT vs 구글 캘린더 vs TimeTree 비교 →</a></p>
+</main>
+<footer>
+<nav aria-label="언어"><a href="/en/" hreflang="en" lang="en">English</a>
+<strong>한국어</strong>
+<a href="/ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="/zh-CN/" hreflang="zh-CN" lang="zh-CN">简体中文</a>
+<a href="/es/" hreflang="es" lang="es">Español</a>
+<a href="/fr/" hreflang="fr" lang="fr">Français</a>
+<a href="/de/" hreflang="de" lang="de">Deutsch</a>
+<a href="/pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="/ru/" hreflang="ru" lang="ru">Русский</a></nav>
+<nav><a href="/?signup">TT 열기</a> <a href="/privacy.html">개인정보 처리방침</a></nav>
+<p><time datetime="2026-09-30">2026-09-30</time></p>
+</footer>
+</div>
+</body>
+</html>
