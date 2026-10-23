@@ -1042,7 +1042,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .day .bar[data-color] { --tone: var(--ev); }
 .cherry-dot[data-color] { background: var(--ev); }
 .entry .tag[data-color] { background: color-mix(in srgb, var(--ev) 22%, var(--surface)); outline-color: var(--ev); }
-.color-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.color-picker { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+/* 제목 칸은 오른쪽을 조금 비워 색 동그라미를 둡니다 */
+.title-row { display: flex; align-items: center; gap: 10px; }
+.title-row input { flex: 1; min-width: 0; }
+.title-row .color-opt { flex: none; width: 34px; height: 34px; }
 .color-opt {
   width: 30px; height: 30px; padding: 0; border-radius: 50%;
   border: 2px solid var(--line-2); background: var(--ev); cursor: pointer;

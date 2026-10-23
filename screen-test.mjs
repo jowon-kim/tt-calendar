@@ -386,7 +386,11 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('the editor offers default plus every color on the list',
     swatches.length === run('globalThis.DIARY_LIMITS.eventColors.length') + 1 && swatches[0].getAttribute('aria-checked') === 'true',
     swatches.length);
+  ok('the colors stay folded until the dot beside the title is tapped', $('f-color').hidden && !$('f-color-btn').dataset.color);
+  $('f-color-btn').click();
+  ok('tapping it unfolds them', !$('f-color').hidden && $('f-color-btn').getAttribute('aria-expanded') === 'true');
   swatches.find((c) => c.dataset.color === 'red').click();
+  ok('picking one paints the dot and folds the row', $('f-color-btn').dataset.color === 'red' && $('f-color').hidden);
   $('f-title').value = 'exam';
   fetches.length = 0;
   $('editor-form').dispatchEvent({ type: 'submit' });
@@ -398,7 +402,8 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('the calendar paints that color, but never on an anniversary', tag === 'blue' && !mile, [tag, mile]);
   run(`openEditor({ id: 'x', title: 'exam', date: '2026-09-21', owner: 'both', repeat: 'none', color: 'red' })`);
   ok('opening a colored event shows its color picked',
-    [...$('f-color').children].find((c) => c.getAttribute('aria-checked') === 'true')?.dataset.color === 'red');
+    [...$('f-color').children].find((c) => c.getAttribute('aria-checked') === 'true')?.dataset.color === 'red'
+    && $('f-color-btn').dataset.color === 'red');
   run(`$('editor').close()`);
 
   /* 이름을 안 적었으면 "나"는 보는 사람 쪽입니다 — b 자리 사람에겐 a가 "너" */
