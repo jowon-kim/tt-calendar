@@ -30,9 +30,9 @@ push itself, to the browser or to the iOS and Android apps.
 - **Three runtime dependencies** — `@neondatabase/serverless`, `web-push`,
   `@vercel/blob`. Android (FCM) and iPhone (APNs) notifications are plain `fetch`
   and Node's `http2`, not SDKs
-- **Accounts and one calendar per couple** — a username and password, or
-  Google (the ID token is checked against Google’s keys with plain `crypto`),
-  invite links and account deletion. No email is collected. Every query is scoped to the
+- **Accounts and one calendar per couple** — Google only, no passwords (the ID
+  token is checked against Google’s keys with plain `crypto`; native account
+  chooser in the Android app), invite links and account deletion. Every query is scoped to the
   couple, and a two-couple test knocks on every endpoint to prove it
 - **Store apps** — thin Capacitor shells (`android/`, `ios/`) with native
   notifications, built in CI without a Mac ([docs/APPS.md](docs/APPS.md))
@@ -225,9 +225,8 @@ wrapper), register it under a short code, load it in `index.html`, and add
 - **The first request takes a second or two.** Neon sleeps after five idle
   minutes and wakes on the next query. That's the price of the free tier, and
   the reason it stays free
-- **Sign-in is a cookie the page cannot read** (HttpOnly, SameSite). Passwords are
-  scrypt hashes; sign-in and invite tokens are stored only as hashes. Ten
-  wrong passwords lock a username for 15 minutes
+- **Sign-in is a cookie the page cannot read** (HttpOnly, SameSite). There are no
+  passwords; sign-in and invite tokens are stored only as hashes
 - **You don't get notified about your own edits.** Only the other person does
 - **iOS web push dies quietly sometimes.** The app re-subscribes on open when it
   notices the subscription is gone; if notifications still don't arrive, toggle
