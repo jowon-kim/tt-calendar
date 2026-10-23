@@ -331,27 +331,22 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run(`$('editor').close()`);
 }
 
-/* 로그인 화면 — 한 폼이 로그인·가입·비밀번호 찾기를 번갈아 합니다 */
+/* 로그인 화면 — 구글 하나로 들어옵니다. 아이디 폼은 예전 아이디 계정만 쓰는 접힌 문이에요 */
 {
   await sleep(1300); // 인트로가 끝나고 로그인 화면이 뜰 때까지
-  ok('someone not signed in lands on the sign-in form', !$('gate').hidden && $('app').hidden);
+  ok('someone not signed in lands on the sign-in screen', !$('gate').hidden && $('app').hidden);
 
-  run(`i18n.setLocale('en', { remember: false }); setGateMode('login')`);
+  run(`i18n.setLocale('en', { remember: false }); showGateNote()`);
   const tr = (key) => run(`t('${key}')`);
-  ok('it starts on signing in with a username',
-    $('gate-submit').textContent === tr('gate.enter') && $('gate-username').autocomplete === 'username',
-    $('gate-submit').textContent);
-
-  $('gate-switch').click();
-  ok('the link below switches to signing up',
-    $('gate-submit').textContent === tr('gate.signUp') && $('gate-username').placeholder === tr('gate.newUsername')
-    && $('gate-password').autocomplete === 'new-password',
-    [$('gate-submit').textContent, $('gate-password').autocomplete]);
-  ok('signing up warns that a forgotten password is gone for good',
-    !$('gate-note').hidden && $('gate-note').textContent === tr('gate.noRecovery'), $('gate-note').textContent);
-  $('gate-switch').click();
-  ok('and back again', $('gate-submit').textContent === tr('gate.enter'));
-  ok('signing in does not repeat the warning', $('gate-note').hidden);
+  const gateHtml = /<section id="gate"[\s\S]*?<\/section>/.exec(readFileSync('public/index.html', 'utf8'))[0];
+  ok('there is no sign-up form any more — only google, and a folded door for old username accounts',
+    !gateHtml.includes('gate-switch') && gateHtml.includes('<details id="gate-legacy" class="gate-legacy">')
+    && gateHtml.indexOf('gate-google') < gateHtml.indexOf('gate-legacy')
+    && /id="gate-password"[^>]*autocomplete="current-password"/.test(gateHtml));
+  ok('nothing to warn about without an invite', $('gate-note').hidden);
+  run(`pendingInvite = 'abc'; showGateNote()`);
+  ok('an invite says to continue with google', !$('gate-note').hidden && $('gate-note').textContent === tr('gate.invited'));
+  run(`pendingInvite = ''; showGateNote()`);
 
   /* 소개 페이지(landing.mjs)와 오가는 길 */
   ok('the sign-in screen links to the about page in the screen language', $('gate-about').href === '/ko/', $('gate-about').href);
@@ -359,23 +354,19 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.history = { replaceState: (state, title, url) => replaced.push(url) };
   Object.assign(location, { search: '?signup', pathname: '/' });
   run('readLinkCodes()');
-  ok('"start free" on the about page asks for signing up', run('wantsSignup') === true, run('wantsSignup'));
-  ok('and the address bar is cleaned', replaced[0] === '/', replaced);
+  ok('"start free" on the about page lands here with a clean address bar', replaced[0] === '/' && run('pendingInvite') === '', replaced);
   Object.assign(location, { search: '' });
-  run('readLinkCodes()');
-  ok('a plain visit does not', run('wantsSignup') === false);
 
-  run(`setGateMode('signup')`);
   globalThis.__settings = run('({ ...state.settings })'); // 서버는 설정을 늘 온전한 모양으로 줍니다
   fetches.length = 0;
   $('gate-username').value = ' we ';
   $('gate-password').value = 'long enough';
   $('gate-form').dispatchEvent({ type: 'submit' });
   await sleep(50);
-  const signed = fetches.find((f) => f.url === '/api/signup');
-  ok('signing up sends the username and password, and no email',
-    signed?.method === 'POST' && JSON.parse(signed.body).username === 'we' && JSON.parse(signed.body).password === 'long enough'
-    && !('email' in JSON.parse(signed.body)),
+  ok('the old door never signs anyone up', !fetches.some((f) => f.url === '/api/signup'), fetches.map((f) => f.url));
+  const signed = fetches.find((f) => f.url === '/api/login');
+  ok('an old username account signs in with its username and password',
+    signed?.method === 'POST' && JSON.parse(signed.body).username === 'we' && JSON.parse(signed.body).password === 'long enough',
     fetches.map((f) => f.url));
   ok('then opens the calendar', !$('app').hidden && $('gate').hidden && fetches.some((f) => f.url === '/api/state'));
   ok('seated where the account says', run('state.me') === 'b', run('state.me'));
@@ -679,7 +670,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   /* 로그인 화면 — 나가고 나면 구글 버튼이 다시 놓입니다 */
   ok('the sign-in screen offers google when the server has it on',
     !$('gate-google').hidden && rendered.at(-1) === $('gate-google-button'));
-  ok('and it says sign up with google', asked.at(-1) === 'signup_with', asked);
+  ok('one button for new and returning people: continue with google', asked.at(-1) === 'continue_with', asked);
   fetches.length = 0;
   run(`onGoogleCredential('google-token')`);
   await sleep(50);
@@ -689,7 +680,8 @@ ok('and is left alone', savedLocale().length === 0, fetches);
 
   run(`googleReady = Promise.resolve(false); offerGoogle()`);
   await sleep(10);
-  ok('a server without google shows no google button', $('gate-google').hidden);
+  ok('a server without google shows no google button, and says why',
+    $('gate-google').hidden && $('gate-error').textContent === run(`t('error.googleOff')`), $('gate-error').textContent);
   delete globalThis.google;
 }
 

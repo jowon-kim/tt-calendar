@@ -64,27 +64,25 @@
     </div>
     <h1 class="gate-title app-name">TT</h1>
     <p class="gate-sub app-sub">what are we up to today</p>
-    <!-- 로그인 · 가입 · 비밀번호 찾기 · 새 비밀번호, 네 가지를 한 폼이 번갈아 합니다 (app.js setGateMode) -->
     <p id="gate-note" class="gate-note" hidden></p>
-    <form id="gate-form" class="gate-form">
-      <div class="gate-input-wrap">
-        <input id="gate-username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" data-i18n-attr="placeholder:gate.username;aria-label:gate.username">
-      </div>
-      <div class="gate-input-wrap" id="gate-password-wrap">
-        <input id="gate-password" type="password" autocomplete="current-password" data-i18n-attr="placeholder:gate.password;aria-label:gate.password">
-      </div>
-      <button type="submit" id="gate-submit" class="btn btn-solid"></button>
-    </form>
-    <!-- 가로선 위는 로그인, 아래는 가입 — 회원가입과 구글을 한데 모읍니다 (2026-09-30) -->
-    <p class="gate-or" data-i18n="gate.or"></p>
-    <div class="gate-alt">
-      <button type="button" id="gate-switch" class="btn btn-ghost"></button>
-      <!-- 구글로 들어오기 — 서버에 GOOGLE_CLIENT_IDS가 있을 때만 보입니다. 버튼은 구글이 그려줍니다 -->
-      <div id="gate-google" class="gate-google" hidden>
-        <div id="gate-google-button" class="google-button"></div>
-      </div>
+    <!-- 구글 하나로 들어옵니다 (2026-10-23). 처음이면 그 자리에서 가입돼요. 버튼은 구글이 그려줍니다 -->
+    <div id="gate-google" class="gate-google" hidden>
+      <div id="gate-google-button" class="google-button"></div>
     </div>
     <p id="gate-error" class="gate-error" role="alert"></p>
+    <!-- 구글 전에 아이디로 가입한 사람만 쓰는 문. 새 아이디 가입은 없습니다 -->
+    <details id="gate-legacy" class="gate-legacy">
+      <summary data-i18n="gate.legacy"></summary>
+      <form id="gate-form" class="gate-form">
+        <div class="gate-input-wrap">
+          <input id="gate-username" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" data-i18n-attr="placeholder:gate.username;aria-label:gate.username">
+        </div>
+        <div class="gate-input-wrap" id="gate-password-wrap">
+          <input id="gate-password" type="password" required autocomplete="current-password" data-i18n-attr="placeholder:gate.password;aria-label:gate.password">
+        </div>
+        <button type="submit" id="gate-submit" class="btn btn-ghost" data-i18n="gate.enter"></button>
+      </form>
+    </details>
     <div class="gate-links">
       <a href="/en/" id="gate-about" class="gate-link" data-i18n="gate.about"></a>
       <a href="/privacy.html" class="gate-link" target="_blank" rel="noopener" data-i18n="settings.privacy"></a>

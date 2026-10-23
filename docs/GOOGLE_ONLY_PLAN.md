@@ -9,6 +9,10 @@
 - 앱 안(`inApp()`)에서는 `loadGoogle()`이 false를 돌려 구글 버튼을 숨긴다 — WebView에서 구글 팝업이 막혀서(disallowed_useragent)
 - 서버 `lib/google.js`는 `GOOGLE_CLIENT_IDS`(쉼표로 여러 개)에 aud가 있으면 받는다
 
+## 진행 상황
+- ✅ 1단계 웹 (2026-10-23): 구글 버튼만 크게, 초대 안내 문구 변경, 아이디 폼은 `<details id="gate-legacy">`로 접어서 **로그인만** (가입 폼 제거). 비번 변경·탈퇴는 예전 계정용으로 그대로 둠. 9개 언어 `gate.legacy` 추가, 안 쓰는 gate 키 6개 삭제. `npm test` 전부 통과
+- ⬜ 2단계부터 이어서. 운영 DB 확인은 .env 읽기가 막혀 있어서 못 함 → 사용자에게 Neon 콘솔 SQL을 부탁하거나 `npm run verify`에 카운트 추가
+
 ## 할 일 (순서대로, 단계마다 `npm test`)
 
 ### 1. 웹: 구글만 보이게

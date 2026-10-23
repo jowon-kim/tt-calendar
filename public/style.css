@@ -472,6 +472,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
   cursor: pointer;
 }
 .gate-link:hover { color: var(--ink); }
+/* 예전 아이디 계정만 쓰는 접힌 문 — 구글 버튼보다 눈에 덜 띄게 */
+.gate-legacy { margin-top: 6px; }
+.gate-legacy summary { list-style: none; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.gate-legacy summary::-webkit-details-marker { display: none; }
+.gate-legacy[open] summary { margin-bottom: 11px; }
 
 /* 흩날리는 꽃잎 (배경) */
 .petal {

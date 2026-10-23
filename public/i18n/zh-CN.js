@@ -27,15 +27,10 @@ globalThis.I18N['zh-CN'] = {
   'gate.enter': '进入',
   'gate.opening': '正在打开…',
   'gate.username': '用户名',
-  'gate.newUsername': '用户名（3–20 位小写字母或数字）',
   'gate.newPassword': '新密码（至少 8 个字符）',
-  'gate.signUp': '开始使用',
-  'gate.toSignup': '注册',
-  'gate.toLogin': '登录',
-  'gate.or': '或',
   'gate.about': 'TT 是什么？',
-  'gate.invited': '你收到了邀请。注册一个账号，或者已有账号就直接登录，即可加入这个日历。',
-  'gate.noRecovery': '我们不收集邮箱，忘记密码后无法找回。请妥善记下。',
+  'gate.invited': '你收到了邀请。用 Google 继续即可加入这个日历。',
+  'gate.legacy': '以前用用户名注册过？在这里登录',
   'gate.failed': '没能进去',
 
   /* ── Calendar ── */

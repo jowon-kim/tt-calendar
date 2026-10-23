@@ -27,15 +27,10 @@ globalThis.I18N.ko = {
   'gate.enter': '들어가기',
   'gate.opening': '여는 중…',
   'gate.username': '아이디',
-  'gate.newUsername': '아이디 (영문 소문자·숫자 3~20자)',
   'gate.newPassword': '새 비밀번호 (8자 이상)',
-  'gate.signUp': '시작하기',
-  'gate.toSignup': '회원가입',
-  'gate.toLogin': '로그인',
-  'gate.or': '또는',
   'gate.about': 'TT는 어떤 앱인가요?',
-  'gate.invited': '초대받았어요. 가입하거나, 계정이 있다면 로그인하면 그 달력에 함께 들어가요.',
-  'gate.noRecovery': '이메일을 받지 않아서 비밀번호를 잊으면 되찾을 수 없어요. 잘 적어두세요.',
+  'gate.invited': '초대받았어요. Google로 계속하면 그 달력에 함께 들어가요.',
+  'gate.legacy': '예전에 아이디로 가입했나요? 여기서 로그인',
   'gate.failed': '들어가지 못했어요',
 
   /* ── 달력 ── */

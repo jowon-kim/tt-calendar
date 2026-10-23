@@ -27,15 +27,10 @@ globalThis.I18N['pt-BR'] = {
   'gate.enter': 'Entrar',
   'gate.opening': 'Abrindo…',
   'gate.username': 'Usuário',
-  'gate.newUsername': 'Usuário (3–20: a–z, 0–9, . _ -)',
   'gate.newPassword': 'Nova senha (8+ caracteres)',
-  'gate.signUp': 'Começar',
-  'gate.toSignup': 'Criar conta',
-  'gate.toLogin': 'Entrar',
-  'gate.or': 'ou',
   'gate.about': 'O que é o TT?',
-  'gate.invited': 'Você foi convidado. Cadastre-se, ou entre se já tiver conta, para participar do calendário.',
-  'gate.noRecovery': 'Não pedimos e-mail, então uma senha esquecida não pode ser recuperada. Guarde-a em um lugar seguro.',
+  'gate.invited': 'Você foi convidado. Continue com o Google para participar do calendário.',
+  'gate.legacy': 'Se cadastrou antes com um usuário? Entre aqui',
   'gate.failed': 'Não deu para entrar',
 
   /* ── Calendar ── */
