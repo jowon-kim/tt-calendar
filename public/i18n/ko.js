@@ -162,6 +162,7 @@ globalThis.I18N.ko = {
   'settings.inviteMake': '초대 링크 만들기',
   'settings.inviteNote': '링크를 상대에게 보내세요. 한 번만 쓸 수 있고 7일 동안 살아 있어요. 새로 만들면 예전 링크는 죽어요.',
   'invite.shareText': '우리 같이 달력 써요',
+  'invite.copy': '링크 복사',
   'invite.copied': '링크를 복사했어요',
   'invite.joined': '들어왔어요. 이제 이게 둘의 달력이에요.',
 

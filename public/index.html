@@ -352,7 +352,13 @@
     <div class="field" id="s-invite-field" hidden>
       <span class="label" data-i18n="settings.invite"></span>
       <button type="button" id="s-invite" class="btn btn-solid btn-wide" data-i18n="settings.inviteMake"></button>
-      <input id="s-invite-link" type="text" readonly spellcheck="false" autocomplete="off" hidden>
+      <!-- 링크 오른쪽 복사 버튼 — 흔히 쓰는 종이 두 장 겹친 아이콘 -->
+      <div id="s-invite-row" class="invite-row" hidden>
+        <input id="s-invite-link" type="text" readonly spellcheck="false" autocomplete="off">
+        <button type="button" id="s-invite-copy" class="icon-btn" data-i18n-attr="aria-label:invite.copy;title:invite.copy">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+      </div>
       <p class="note" data-i18n="settings.inviteNote"></p>
     </div>
 

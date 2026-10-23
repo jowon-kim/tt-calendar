@@ -161,6 +161,7 @@ globalThis.I18N.ja = {
   'settings.inviteMake': '招待リンクを作る',
   'settings.inviteNote': 'リンクを相手に送ってください。1回だけ使えて、7日間有効です。新しく作ると前のリンクは無効になります。',
   'invite.shareText': '一緒にカレンダーを使おう',
+  'invite.copy': 'リンクをコピー',
   'invite.copied': 'リンクをコピーしました',
   'invite.joined': '参加しました。これがふたりのカレンダーです。',
 

@@ -169,6 +169,7 @@ globalThis.I18N['pt-BR'] = {
   'settings.inviteMake': 'Criar link de convite',
   'settings.inviteNote': 'Envie o link para a outra pessoa. Ele vale uma vez e dura 7 dias; criar um novo cancela o anterior.',
   'invite.shareText': 'Vamos dividir um calendário',
+  'invite.copy': 'Copiar link',
   'invite.copied': 'Link copiado',
   'invite.joined': 'Pronto, você entrou. Este agora é o calendário de vocês.',
 

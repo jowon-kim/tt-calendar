@@ -502,6 +502,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .icon-btn:hover { background: var(--surface-sink); }
 .icon-btn:active { transform: scale(.9); }
 .icon-btn svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* 초대 링크 칸과 그 오른쪽 복사 버튼 */
+.invite-row { display: flex; align-items: center; gap: 6px; }
+.invite-row input { flex: 1; min-width: 0; }
 
 .pill {
   border: 1.5px solid var(--line-2);

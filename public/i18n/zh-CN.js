@@ -162,6 +162,7 @@ globalThis.I18N['zh-CN'] = {
   'settings.inviteMake': '生成邀请链接',
   'settings.inviteNote': '把链接发给对方。只能用一次，有效期 7 天；重新生成后旧链接会失效。',
   'invite.shareText': '一起用这个日历吧',
+  'invite.copy': '复制链接',
   'invite.copied': '链接已复制',
   'invite.joined': '已加入。这就是你们共用的日历了。',
 
