@@ -1458,18 +1458,24 @@ async function makeInvite() {
       const url = `${location.origin}/?invite=${encodeURIComponent(code)}`;
       const box = $('s-invite-link');
       box.value = url;
-      box.hidden = false;
+      $('s-invite-row').hidden = false;
       // 폰이면 공유 시트로 바로 보냅니다. 닫아버려도 링크는 칸에 남아 있어요
       if (navigator.share) {
         await navigator.share({ text: t('invite.shareText'), url }).catch(() => {});
         return;
       }
-      box.select();
-      await navigator.clipboard?.writeText(url).then(() => toast(t('invite.copied')), () => {});
+      await copyInvite();
     } catch (err) {
       toast(err.message || t('error.saveFailed'));
     }
   });
+}
+
+/** 칸에 있는 초대 링크를 복사합니다. 클립보드를 못 쓰면 골라 두기만 해서 길게 눌러 복사하게 */
+async function copyInvite() {
+  const box = $('s-invite-link');
+  box.select();
+  await navigator.clipboard?.writeText(box.value).then(() => toast(t('invite.copied')), () => {});
 }
 
 /** 초대 링크로 들어왔는데 이미 로그인해 있었다면, 지금 달력을 떠나 상대 달력으로 옮겨갑니다. */
@@ -2648,6 +2654,7 @@ $('install-banner-close').addEventListener('click', () => {
 });
 if (safariTab()) showInstallBanner(true);
 $('s-invite').addEventListener('click', makeInvite);
+$('s-invite-copy').addEventListener('click', copyInvite);
 $('s-invite-link').addEventListener('focus', (e) => e.target.select()); // 누르면 통째로 골라져서 복사하기 쉽게
 $('guide-open').addEventListener('click', () => openGuide('use'));
 $('guide-tab-setup').addEventListener('click', () => showGuideTab('setup'));

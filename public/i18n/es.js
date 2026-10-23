@@ -169,6 +169,7 @@ globalThis.I18N.es = {
   'settings.inviteMake': 'Crear enlace de invitación',
   'settings.inviteNote': 'Envía el enlace a la otra persona. Sirve una sola vez y dura 7 días; si creas otro, el anterior deja de funcionar.',
   'invite.shareText': 'Compartamos un calendario',
+  'invite.copy': 'Copiar enlace',
   'invite.copied': 'Enlace copiado',
   'invite.joined': 'Ya estás dentro. Este es ahora el calendario compartido.',
 

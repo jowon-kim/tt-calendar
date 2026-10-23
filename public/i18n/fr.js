@@ -169,6 +169,7 @@ globalThis.I18N.fr = {
   'settings.inviteMake': 'Créer un lien d\'invitation',
   'settings.inviteNote': 'Envoie-lui le lien. Il ne sert qu\'une fois et dure 7 jours ; en créer un nouveau annule l\'ancien.',
   'invite.shareText': 'Partageons un calendrier',
+  'invite.copy': 'Copier le lien',
   'invite.copied': 'Lien copié',
   'invite.joined': 'C\'est fait. Voici maintenant votre calendrier commun.',
 

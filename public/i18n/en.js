@@ -179,6 +179,7 @@ globalThis.I18N.en = {
   'settings.inviteMake': 'Make an invite link',
   'settings.inviteNote': 'Send the link to them. It works once and lasts 7 days; making a new one cancels the old one.',
   'invite.shareText': 'Let\'s share a calendar',
+  'invite.copy': 'Copy link',
   'invite.copied': 'Link copied',
   'invite.joined': 'You\'re in. This is your shared calendar now.',
 

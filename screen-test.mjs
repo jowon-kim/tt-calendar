@@ -413,6 +413,23 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run('openSettings()');
   ok('settings offer an invite while they are one', !$('s-invite-field').hidden);
   ok('and say who is signed in', $('s-account').textContent.includes('we'), $('s-account').textContent);
+
+  /* 초대 링크를 만들면 칸 오른쪽에 복사 버튼(종이 두 장 아이콘)이 같이 뜹니다 */
+  const copied = [];
+  navigator.clipboard = { writeText: async (text) => { copied.push(text); } };
+  ok('the link row waits until there is a link', /<div id="s-invite-row"[^>]* hidden>/.test(readFileSync('public/index.html', 'utf8')));
+  const realCall = run('api.call');
+  run(`api.call = async (method, url) => (url === '/api/invite' ? { code: 'abc 123' } : {})`);
+  await run('makeInvite()');
+  ok('making a link shows it with a copy button beside it',
+    !$('s-invite-row').hidden && $('s-invite-link').value.endsWith('/?invite=abc%20123') && !!$('s-invite-copy'), $('s-invite-link').value);
+  copied.length = 0;
+  $('s-invite-copy').click();
+  await sleep(10);
+  ok('the copy button copies the link', copied[0] === $('s-invite-link').value && $('toast').textContent === run(`t('invite.copied')`), copied);
+  globalThis.__realCall = realCall;
+  run('api.call = globalThis.__realCall');
+  delete navigator.clipboard;
   run(`state.paired = true; renderInvite()`);
   ok('once they are two the invite goes away', $('s-invite-field').hidden);
   run(`$('settings').close()`);

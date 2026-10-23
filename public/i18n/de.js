@@ -168,6 +168,7 @@ globalThis.I18N.de = {
   'settings.inviteMake': 'Einladungslink erstellen',
   'settings.inviteNote': 'Schick den Link weiter. Er gilt einmal und 7 Tage lang; ein neuer macht den alten ungültig.',
   'invite.shareText': 'Lass uns einen Kalender teilen',
+  'invite.copy': 'Link kopieren',
   'invite.copied': 'Link kopiert',
   'invite.joined': 'Du bist drin. Das ist jetzt euer gemeinsamer Kalender.',
 
