@@ -26,15 +26,10 @@ globalThis.I18N.de = {
   'gate.enter': 'Reinkommen',
   'gate.opening': 'Wird geöffnet…',
   'gate.username': 'Benutzername',
-  'gate.newUsername': 'Benutzername (3–20: a–z, 0–9, . _ -)',
   'gate.newPassword': 'Neues Passwort (mind. 8 Zeichen)',
-  'gate.signUp': 'Loslegen',
-  'gate.toSignup': 'Registrieren',
-  'gate.toLogin': 'Anmelden',
-  'gate.or': 'oder',
   'gate.about': 'Was ist TT?',
-  'gate.invited': 'Du wurdest eingeladen. Registriere dich oder melde dich an, falls du schon ein Konto hast, um dem Kalender beizutreten.',
-  'gate.noRecovery': 'Wir fragen keine E-Mail ab – ein vergessenes Passwort lässt sich nicht wiederherstellen. Bewahre es gut auf.',
+  'gate.invited': 'Du wurdest eingeladen. Mach mit Google weiter, um dem Kalender beizutreten.',
+  'gate.legacy': 'Früher mit Benutzernamen registriert? Hier anmelden',
   'gate.failed': 'Das hat nicht geklappt',
 
   /* ── Calendar ── */

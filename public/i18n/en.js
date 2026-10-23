@@ -37,15 +37,10 @@ globalThis.I18N.en = {
   'gate.enter': 'Come in',
   'gate.opening': 'Opening…',
   'gate.username': 'Username',
-  'gate.newUsername': 'Username (3–20: a–z, 0–9, . _ -)',
   'gate.newPassword': 'New password (8+ characters)',
-  'gate.signUp': 'Get started',
-  'gate.toSignup': 'Sign up',
-  'gate.toLogin': 'Sign in',
-  'gate.or': 'or',
   'gate.about': 'What is TT?',
-  'gate.invited': 'You\'ve been invited. Sign up, or sign in if you already have an account, to join the calendar.',
-  'gate.noRecovery': 'There is no email, so a forgotten password cannot be recovered. Keep it somewhere safe.',
+  'gate.invited': 'You\'ve been invited. Continue with Google to join the calendar.',
+  'gate.legacy': 'Signed up with a username before? Sign in here',
   'gate.failed': 'That didn\'t let you in',
 
   /* ── Calendar ── */

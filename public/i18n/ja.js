@@ -26,15 +26,10 @@ globalThis.I18N.ja = {
   'gate.enter': '入る',
   'gate.opening': '開いています…',
   'gate.username': 'ユーザーID',
-  'gate.newUsername': 'ユーザーID(英小文字・数字 3〜20文字)',
   'gate.newPassword': '新しいパスワード（8文字以上）',
-  'gate.signUp': 'はじめる',
-  'gate.toSignup': '新規登録',
-  'gate.toLogin': 'ログイン',
-  'gate.or': 'または',
   'gate.about': 'TTってどんなアプリ？',
-  'gate.invited': '招待されました。登録するか、アカウントがあればログインすると、そのカレンダーに入れます。',
-  'gate.noRecovery': 'メールアドレスを登録しないため、パスワードを忘れると元に戻せません。大切に控えておいてください。',
+  'gate.invited': '招待されました。Googleで続けると、そのカレンダーに入れます。',
+  'gate.legacy': '以前ユーザー名で登録しましたか？こちらからログイン',
   'gate.failed': '入れませんでした',
 
   /* ── Calendar ── */

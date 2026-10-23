@@ -27,15 +27,10 @@ globalThis.I18N.es = {
   'gate.enter': 'Entrar',
   'gate.opening': 'Abriendo…',
   'gate.username': 'Usuario',
-  'gate.newUsername': 'Usuario (3–20: a–z, 0–9, . _ -)',
   'gate.newPassword': 'Nueva contraseña (8+ caracteres)',
-  'gate.signUp': 'Empezar',
-  'gate.toSignup': 'Crear cuenta',
-  'gate.toLogin': 'Iniciar sesión',
-  'gate.or': 'o',
   'gate.about': '¿Qué es TT?',
-  'gate.invited': 'Te han invitado. Regístrate, o inicia sesión si ya tienes cuenta, para unirte al calendario.',
-  'gate.noRecovery': 'No pedimos correo, así que una contraseña olvidada no se puede recuperar. Guárdala en un lugar seguro.',
+  'gate.invited': 'Te han invitado. Continúa con Google para unirte al calendario.',
+  'gate.legacy': '¿Te registraste antes con un usuario? Inicia sesión aquí',
   'gate.failed': 'No se pudo entrar',
 
   /* ── Calendar ── */

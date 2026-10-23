@@ -2109,7 +2109,7 @@ function signOut() {
   state.photos = [];
   state.me = null;
   state.login = '';
-  setGateMode('login');
+  showGateNote();
   show('gate');
   offerGoogle();
 }
@@ -2201,35 +2201,15 @@ async function keepShell() {
 }
 
 /* ── 로그인 화면 ─────────────────────────────
-   한 폼이 두 가지를 번갈아 합니다.
-   login  아이디·비밀번호로 들어오기
-   signup 새 계정 (초대 링크로 왔으면 그 달력에 바로 앉습니다)
-   이메일을 안 받으니 비밀번호 찾기는 없습니다 — 잊을까 걱정되면 구글로 들어옵니다. */
-let gateMode = 'login';
+   구글 하나로 들어옵니다 (2026-10-23). 처음 보는 구글 계정이면 그 자리에서 가입하고,
+   초대 링크로 왔으면 그 달력에 바로 앉습니다 (api/_auth/google.js).
+   아이디 폼은 구글 전에 아이디로 가입한 사람이 들어오는 문으로만 접어 둡니다 — 새 아이디 가입은 없어요. */
 let pendingInvite = '';  // ?invite= 로 들어왔을 때
-let wantsSignup = false; // ?signup — 소개 페이지의 "시작하기"에서 왔을 때
 
-const GATE = {
-  login:  { username: 'username', password: 'current-password', submit: 'gate.enter',  switchTo: 'signup' },
-  signup: { username: 'off',      password: 'new-password',     submit: 'gate.signUp', switchTo: 'login' },
-};
-
-function setGateMode(mode) {
-  gateMode = mode;
-  const how = GATE[mode];
-  $('gate-username').required = true;
-  $('gate-username').autocomplete = how.username;
-  $('gate-username').placeholder = t(mode === 'signup' ? 'gate.newUsername' : 'gate.username');
-  $('gate-password').required = true;
-  $('gate-password').autocomplete = how.password;
-  $('gate-password').placeholder = t(how.password === 'new-password' ? 'gate.newPassword' : 'gate.password');
-  $('gate-password').minLength = how.password === 'new-password' ? 8 : 0;
-  $('gate-submit').textContent = t(how.submit);
-  $('gate-switch').textContent = t(how.switchTo === 'signup' ? 'gate.toSignup' : 'gate.toLogin');
-  // 가입할 때는 비밀번호를 잊으면 끝이라는 것부터 — 이메일이 없어 되찾을 길이 없습니다
-  const note = [pendingInvite && t('gate.invited'), mode === 'signup' && t('gate.noRecovery')].filter(Boolean).join(' ');
-  $('gate-note').textContent = note;
-  $('gate-note').hidden = !note;
+/** 초대 링크로 왔으면 그렇다고 한 줄 알려줍니다 */
+function showGateNote() {
+  $('gate-note').textContent = pendingInvite ? t('gate.invited') : '';
+  $('gate-note').hidden = !pendingInvite;
   $('gate-error').textContent = '';
 }
 
@@ -2237,8 +2217,8 @@ function setGateMode(mode) {
 function readLinkCodes() {
   const params = new URLSearchParams(location.search);
   pendingInvite = params.get('invite') || '';
-  wantsSignup = params.has('signup');
-  if (pendingInvite || wantsSignup) history.replaceState(null, '', location.pathname);
+  // ?signup은 소개 페이지의 "시작하기"가 붙이던 것 — 이제 들어오는 길이 하나라 걷어내기만 합니다
+  if (pendingInvite || params.has('signup')) history.replaceState(null, '', location.pathname);
 }
 
 async function post(url, method, body) {
@@ -2257,18 +2237,12 @@ async function post(url, method, body) {
 async function submitGate() {
   const username = $('gate-username').value.trim();
   const password = $('gate-password').value;
-
-  if (gateMode === 'signup') {
-    await post('/api/signup', 'POST', { username, password, invite: pendingInvite || undefined });
-    pendingInvite = ''; // 가입하면서 이미 그 달력에 앉았습니다
-  } else {
-    await post('/api/login', 'POST', { username, password });
-    // 이미 계정이 있는 사람이 초대 링크로 왔다면, 들어온 김에 그 달력으로 옮겨갑니다
-    if (pendingInvite) {
-      localStorage.setItem(SIGNED_IN, '1');
-      await acceptInvite(pendingInvite);
-      pendingInvite = '';
-    }
+  await post('/api/login', 'POST', { username, password });
+  // 이미 계정이 있는 사람이 초대 링크로 왔다면, 들어온 김에 그 달력으로 옮겨갑니다
+  if (pendingInvite) {
+    localStorage.setItem(SIGNED_IN, '1');
+    await acceptInvite(pendingInvite);
+    pendingInvite = '';
   }
   $('gate-password').value = '';
   localStorage.setItem(SIGNED_IN, '1');
@@ -2308,8 +2282,8 @@ function loadGoogle() {
   return googleReady;
 }
 
-/* text는 구글이 정해둔 문구 중 하나 — 로그인 화면은 가입 쪽이라 'signup_with'(Google로 가입하기),
-   탈퇴 전 본인 확인은 'continue_with'. 언어는 화면 언어를 따라 구글이 옮겨줍니다. */
+/* text는 구글이 정해둔 문구 중 하나 — 로그인 화면은 가입과 로그인이 한 버튼이라 'continue_with'(Google로 계속하기).
+   언어는 화면 언어를 따라 구글이 옮겨줍니다. */
 async function googleButton(el, handler, text = 'continue_with') {
   if (!(await loadGoogle())) return false;
   onGoogleCredential = handler;
@@ -2320,9 +2294,11 @@ async function googleButton(el, handler, text = 'continue_with') {
   return true;
 }
 
-/** 로그인 화면에 구글 버튼을 놓습니다. 서버가 구글을 안 켰으면 조용히 아무것도 안 합니다. */
+/** 로그인 화면에 구글 버튼을 놓습니다. 들어오는 문이 이것뿐이라, 못 놓으면 왜 비었는지 말해줍니다. */
 async function offerGoogle() {
-  $('gate-google').hidden = !(await googleButton($('gate-google-button'), signInWithGoogle, 'signup_with'));
+  const shown = await googleButton($('gate-google-button'), signInWithGoogle);
+  $('gate-google').hidden = !shown;
+  if (!shown) $('gate-error').textContent = t('error.googleOff');
 }
 
 async function signInWithGoogle(credential) {
@@ -2373,11 +2349,9 @@ $('gate-form').addEventListener('submit', async (e) => {
     $('gate-error').textContent = err.message || t('gate.failed');
   } finally {
     button.disabled = false;
-    // 보내는 사이 모드가 바뀌었을 수 있어서(찾기 → 로그인) 원래 글자가 아니라 지금 모드의 글자로
-    button.textContent = t(GATE[gateMode].submit);
+    button.textContent = t('gate.enter');
   }
 });
-$('gate-switch').addEventListener('click', () => setGateMode(GATE[gateMode].switchTo));
 
 function goToMonth(delta) {
   state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth() + delta, 1);
@@ -2732,7 +2706,7 @@ let pendingState = null;
   paintTheme(localStorage.getItem('diary_theme') || 'peach');
 
   readLinkCodes();
-  setGateMode((pendingInvite || wantsSignup) && !signedIn() ? 'signup' : 'login');
+  showGateNote();
 
   /* 인트로가 도는 1초를 그냥 흘려보내지 않고 미리 받아옵니다. 초대를 받으러 왔으면
      곧 다른 달력으로 옮겨가니 지금 달력을 받아둘 필요가 없어요. */
@@ -2771,14 +2745,13 @@ let pendingState = null;
   });
   if (!goingIn) {
     show('gate');
-    $('gate-username').focus();
     offerGoogle();
     return;
   }
   if (pendingInvite) {
     await acceptInvite(pendingInvite);
     pendingInvite = '';
-    setGateMode('login');
+    showGateNote();
   }
   await enter();
 })();
