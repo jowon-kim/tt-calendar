@@ -27,6 +27,7 @@ globalThis.I18N['pt-BR'] = {
   'gate.newPassword': 'Nova senha (8+ caracteres)',
   'gate.about': 'O que é o TT?',
   'gate.invited': 'Você foi convidado. Continue com o Google para participar do calendário.',
+  'gate.continueGoogle': 'Continuar com o Google',
   'gate.failed': 'Não deu para entrar',
 
   /* ── Calendar ── */

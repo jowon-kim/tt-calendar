@@ -27,6 +27,7 @@ globalThis.I18N['zh-CN'] = {
   'gate.newPassword': '新密码（至少 8 个字符）',
   'gate.about': 'TT 是什么？',
   'gate.invited': '你收到了邀请。用 Google 继续即可加入这个日历。',
+  'gate.continueGoogle': '使用 Google 继续',
   'gate.failed': '没能进去',
 
   /* ── Calendar ── */

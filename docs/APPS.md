@@ -31,6 +31,16 @@
 - [ ] 프로젝트 설정 → 서비스 계정 → 새 비공개 키 → JSON을 Vercel 환경변수 `FIREBASE_SERVICE_ACCOUNT`에 통째로
 - [ ] `google-services.json` 내용을 GitHub 시크릿 `GOOGLE_SERVICES_JSON`에 (저장소에는 넣지 않습니다)
 
+### 2-1. 안드로이드 구글 로그인 (사용자, 구글 클라우드 콘솔)
+로그인은 구글 하나뿐이라 이게 없으면 앱에서 아무도 못 들어옵니다. 웹과 **같은 프로젝트**에서
+사용자 인증 정보 → OAuth 클라이언트 ID 만들기 → **Android**, 패키지 `com.jowonkim.couplediary`, SHA-1은 아래 셋 각각 하나씩:
+- [ ] 디버그 키: `97:CC:FF:32:5D:76:83:B3:2A:4B:C2:CC:74:87:BE:D7:5C:2E:4A:31` (이 PC, `cd android && ./gradlew signingReport`)
+- [ ] 업로드 키: `keytool -list -v -keystore <업로드 키 .jks> -alias <별칭>` (비밀번호는 Documents/tt-keys)
+- [ ] **Play 앱 서명 키**: Play Console → 앱 → 테스트 및 출시 → 설정 → 앱 서명 (스토어로 받은 앱은 이 키로 서명됨)
+
+앱은 Android 클라이언트 ID를 쓰지 않고 웹 클라이언트 ID로 `initialize`합니다 (`@capawesome/capacitor-google-sign-in`).
+그래서 `GOOGLE_CLIENT_IDS`는 그대로 둡니다. 아이폰 앱은 애플 로그인을 같이 넣기 전까지 구글을 숨깁니다(심사 4.8).
+
 ### 3. iPhone 알림 (APNs)
 - [ ] developer.apple.com → Certificates, Identifiers & Profiles → Identifiers에서 앱 ID 만들고 **Push Notifications** 켜기
 - [ ] Keys → 새 키, **Apple Push Notifications service (APNs)** 체크 → `.p8` 받기 (한 번만 받을 수 있음)

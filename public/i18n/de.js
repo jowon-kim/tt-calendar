@@ -26,6 +26,7 @@ globalThis.I18N.de = {
   'gate.newPassword': 'Neues Passwort (mind. 8 Zeichen)',
   'gate.about': 'Was ist TT?',
   'gate.invited': 'Du wurdest eingeladen. Mach mit Google weiter, um dem Kalender beizutreten.',
+  'gate.continueGoogle': 'Weiter mit Google',
   'gate.failed': 'Das hat nicht geklappt',
 
   /* ── Calendar ── */

@@ -26,6 +26,7 @@
     "@capacitor/core": "^8.5.2",
     "@capacitor/ios": "^8.5.2",
     "@capacitor/push-notifications": "^8.1.2",
+    "@capawesome/capacitor-google-sign-in": "^0.1.4",
     "@electric-sql/pglite": "^0.2.17"
   }
 }

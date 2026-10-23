@@ -1731,15 +1731,22 @@ let appPush = null;
 let appPermission = 'prompt';
 let tokenWaiters = [];
 
-async function nativePush() {
-  if (appPush) return appPush;
-  await new Promise((resolve, reject) => {
+/* 앱 다리(capacitor.js)는 한 번만 붙입니다 — 알림과 구글 로그인이 같이 씁니다 */
+let bridgeReady = null;
+function loadBridge() {
+  bridgeReady ??= new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = '/vendor/capacitor.js';
     script.onload = resolve;
     script.onerror = reject;
     document.head.append(script);
   });
+  return bridgeReady;
+}
+
+async function nativePush() {
+  if (appPush) return appPush;
+  await loadBridge();
   appPush = window.Capacitor.registerPlugin('PushNotifications');
   // register()는 토큰을 돌려주지 않고 이벤트로 알려줍니다. 한 번만 걸어두고 기다리는 쪽에 나눠줘요
   await appPush.addListener('registration', ({ value }) => {
@@ -2236,17 +2243,27 @@ async function post(url, method, body) {
 /* ── 구글로 들어오기 ─────────────────────────
    버튼은 구글이 그려주고, 누르면 구글 창이 떠서 구글이 서명한 ID 토큰(credential)을
    돌려줍니다. 서버가 그 서명을 확인합니다 (lib/google.js).
-   스토어 앱(WebView) 안에서는 구글이 이 창을 막아서(disallowed_useragent) 아직 숨깁니다 —
-   앱은 폰의 구글 계정 선택 창을 써야 하고, 그건 네이티브 플러그인이 붙는 다음 단계입니다. */
+   스토어 앱(WebView) 안에서는 구글이 이 창을 막아서(disallowed_useragent) 폰의 구글 계정 선택 창을 씁니다
+   (@capawesome/capacitor-google-sign-in — 안드로이드는 Credential Manager). 웹 클라이언트 ID를 그대로 넘겨서
+   ID 토큰이 웹과 같은 앞으로 발급돼요 — 서버는 그대로입니다. 버튼은 우리가 그립니다.
+   아이폰 앱은 구글을 넣으면 애플 로그인도 같이 넣어야 해서(심사 4.8) 아직 숨깁니다. */
 let googleReady = null;
 let onGoogleCredential = null; // 구글이 부르는 곳은 하나뿐이라, 지금 떠 있는 버튼의 할 일을 여기 둡니다
+let appGoogle = null;          // 스토어 앱의 구글 플러그인
 
 function loadGoogle() {
   googleReady ??= (async () => {
-    if (inApp()) return false;
+    const native = inApp();
+    if (native && window.Capacitor.getPlatform() !== 'android') return false;
     const res = await fetch('/api/google', { credentials: 'same-origin' }).catch(() => null);
     const clientId = res?.ok ? (await res.json().catch(() => ({}))).clientId : '';
     if (!clientId) return false;
+    if (native) {
+      await loadBridge();
+      appGoogle = window.Capacitor.registerPlugin('GoogleSignIn');
+      await appGoogle.initialize({ clientId });
+      return true;
+    }
     await new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = 'https://accounts.google.com/gsi/client';
@@ -2271,6 +2288,25 @@ function loadGoogle() {
 async function googleButton(el, handler, text = 'continue_with') {
   if (!(await loadGoogle())) return false;
   onGoogleCredential = handler;
+  if (appGoogle) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-solid';
+    button.textContent = t('gate.continueGoogle');
+    button.addEventListener('click', async () => {
+      let idToken = '';
+      try {
+        ({ idToken } = await appGoogle.signIn());
+      } catch (err) {
+        // 계정 선택 창을 그냥 닫은 건 실패가 아닙니다
+        if (!/cancel/i.test(`${err?.code} ${err?.message}`)) toast(t('error.googleFailed'));
+        return;
+      }
+      if (idToken) onGoogleCredential?.(idToken);
+    });
+    el.replaceChildren(button);
+    return true;
+  }
   el.replaceChildren();
   window.google.accounts.id.renderButton(el, {
     theme: 'outline', size: 'large', shape: 'pill', text, locale: i18n.getLocale(), width: 260,

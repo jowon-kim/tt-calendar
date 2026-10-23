@@ -471,14 +471,45 @@ ok('and is left alone', savedLocale().length === 0, fetches);
     registerPlugin: (name) => (name === 'PushNotifications' ? fakePush : null),
   };
 
-  /* 앱 안에서는 구글 로그인을 숨깁니다 — 웹 방식 구글 버튼은 앱 웹뷰에서 막히고,
-     아이폰 앱에 구글을 넣으면 애플 로그인도 같이 넣어야 해서(심사 4.8) */
-  fetches.length = 0;
+  /* 안드로이드 앱은 웹 구글 창이 막혀서 폰의 구글 계정 선택 창을 씁니다. 웹 클라이언트 ID를 그대로 넘겨요 */
+  const initialized = [];
+  let signInAnswer = { idToken: 'phone-google-token' };
+  const fakeGoogle = {
+    initialize: async (opts) => { initialized.push(opts); },
+    signIn: async () => { if (signInAnswer instanceof Error) throw signInAnswer; return signInAnswer; },
+  };
+  globalThis.Capacitor.registerPlugin = (name) => (name === 'PushNotifications' ? fakePush : name === 'GoogleSignIn' ? fakeGoogle : null);
+  const plainFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init = {}) => (url === '/api/google' && !init.method
+    ? (fetches.push({ url, method: 'GET', headers: {} }), { ok: true, status: 200, json: async () => ({ clientId: 'web-client.apps' }) })
+    : plainFetch(url, init));
   run('googleReady = null');
-  const google = await run('loadGoogle()');
+  ok('the android app offers google', (await run('loadGoogle()')) === true, initialized);
+  ok('with the web client id, so the token is made out like the web one', initialized[0]?.clientId === 'web-client.apps', initialized);
   await run('offerGoogle()');
-  ok('the store app never offers google', google === false && $('gate-google').hidden
-    && !fetches.some((f) => f.url === '/api/google'), fetches);
+  const appButton = $('gate-google-button').children?.[0];
+  ok('it draws its own button', !$('gate-google').hidden && appButton?.textContent === run(`t('gate.continueGoogle')`), appButton?.textContent);
+  fetches.length = 0;
+  let handed = null;
+  run('onGoogleCredential = (c) => { globalThis.__handed = c; }');
+  appButton.click();
+  await sleep(10);
+  handed = globalThis.__handed;
+  ok('pressing it hands over the phone\'s google token', handed === 'phone-google-token', handed);
+  signInAnswer = Object.assign(new Error('The user canceled the sign-in flow.'), { code: 'SIGN_IN_CANCELED' });
+  globalThis.__handed = null;
+  $('toast').textContent = '';
+  appButton.click();
+  await sleep(10);
+  ok('closing the account chooser is not an error', globalThis.__handed === null && $('toast').textContent === '', $('toast').textContent);
+
+  /* 아이폰 앱은 아직 숨깁니다 — 구글을 넣으면 애플 로그인도 같이 넣어야 해서(심사 4.8) */
+  globalThis.Capacitor.getPlatform = () => 'ios';
+  run('googleReady = null; appGoogle = null');
+  ok('the iphone app does not offer google yet', (await run('loadGoogle()')) === false);
+  globalThis.Capacitor.getPlatform = () => 'android';
+  globalThis.fetch = plainFetch;
+  run('appGoogle = null');
   run('googleReady = null'); // 아래 브라우저 검사는 다시 물어보게
 
   /* 아이폰 앱의 웹뷰도 사파리처럼 보이지만, 이미 앱이라 홈 화면에 추가하라고 하면 안 됩니다 */

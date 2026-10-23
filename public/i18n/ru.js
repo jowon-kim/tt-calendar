@@ -27,6 +27,7 @@ globalThis.I18N.ru = {
   'gate.newPassword': 'Новый пароль (от 8 символов)',
   'gate.about': 'Что такое TT?',
   'gate.invited': 'Тебя пригласили. Продолжи через Google, чтобы присоединиться к календарю.',
+  'gate.continueGoogle': 'Продолжить с Google',
   'gate.failed': 'Не получилось войти',
 
   /* ── Calendar ── */
