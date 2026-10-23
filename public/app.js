@@ -272,6 +272,7 @@ const state = {
   photos: [], // 설정에서 올린 달력 사진 id
   editing: null,
   formOwner: 'both',
+  formColor: null, // null = 누구 일정인지의 색
   formRepeat: 'none',
   formTime: null, // "HH:MM" 또는 null (단일 시각 / 범위 시작)
   formEndTime: null, // "HH:MM" 또는 null (범위 끝, formTimeMode === 'range' 일 때만)
@@ -341,6 +342,7 @@ function expand(from, to) {
         put(ymd(addDays(s, i)), {
           event,
           owner: event.owner,
+          color: event.color || null, // 고른 색이 있으면 누구 일정인지의 색 대신 (paintColor)
           title: event.title,
           time: span > 0 ? null : event.time,
           endTime: span > 0 ? null : event.endTime,
@@ -444,6 +446,7 @@ function spanBars(date, key, items, lanes, rowLanes) {
     const item = byLane[lane];
     if (!item) { bar.className = 'bar vacant'; box.append(bar); continue; }
     bar.className = `bar ${item.owner}`;
+    paintColor(bar, item);
     if (key === item.start) bar.classList.add('from');
     if (key === item.end) bar.classList.add('to');
     // 제목은 시작하는 칸과, 주가 바뀌어 새 줄이 시작되는 칸에만 답니다
@@ -527,6 +530,7 @@ function buildMonthCells(year, monthIndex) {
     dotted.slice(0, 3).forEach((item, index) => {
       const dot = document.createElement('span');
       dot.className = `cherry-dot ${item.milestone ? 'milestone' : item.owner}`;
+      paintColor(dot, item);
       dot.style.animationDelay = `${index * 50}ms`;
       branch.append(dot);
     });
@@ -645,6 +649,7 @@ function entryRow(date, item, showDate, photoNo) {
   const kind = item.milestone ? 'milestone' : item.owner;
   const tag = document.createElement('span');
   tag.className = `tag ${kind}`;
+  paintColor(tag, item);
   const photoAt = photoNo ?? photoIndex(`${item.event?.id ?? item.title}|${date}`);
   if (photoAt < 0) {
     tag.append(budIcon(kind));
@@ -737,6 +742,33 @@ function closeSheet() {
   $('sheet-backdrop').hidden = true;
   state.picked = null;
   render();
+}
+
+/* ── 일정 색 ─────────────────────────────
+   고른 색이 있으면 data-color를 달고, style.css가 누구 일정인지의 색 위에 덮어 칠합니다.
+   기념일처럼 일정이 아닌 것엔 색이 없어요. */
+function paintColor(el, item) {
+  if (item.color && !item.milestone) el.dataset.color = item.color;
+}
+
+/** 색 고르기 — 맨 앞은 "기본"(누구 일정인지의 색), 나머지는 limits.js의 목록 */
+function colorPicker(container, current, onPick) {
+  container.replaceChildren();
+  [null, ...globalThis.DIARY_LIMITS.eventColors].forEach((color) => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'color-opt';
+    if (color) option.dataset.color = color;
+    option.setAttribute('role', 'radio');
+    option.setAttribute('aria-checked', String(color === current));
+    option.setAttribute('aria-label', t(color ? `color.${color}` : 'color.none'));
+    option.title = option.getAttribute('aria-label');
+    option.addEventListener('click', () => {
+      onPick(color);
+      [...container.children].forEach((c) => c.setAttribute('aria-checked', String(c === option)));
+    });
+    container.append(option);
+  });
 }
 
 /* ── 누구/반복 세그먼트 ──────────────────── */
@@ -1201,6 +1233,8 @@ function openEditor(event, date) {
 
   state.formOwner = event?.owner || state.me || 'both';
   ownerPicker($('f-owner'), state.formOwner, (owner) => { state.formOwner = owner; });
+  state.formColor = event?.color || null;
+  colorPicker($('f-color'), state.formColor, (color) => { state.formColor = color; });
 
   setRepeat(event?.repeat || 'none');
   renderRepeatNote();
@@ -1259,6 +1293,7 @@ async function saveEvent(e) {
     memo: $('f-memo').value,
     owner: state.formOwner,
     repeat: state.formRepeat,
+    color: state.formColor,
   };
 
   const problems = checkEvent(payload);

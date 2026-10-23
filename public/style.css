@@ -1027,6 +1027,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .owner-opt[data-owner="b"][aria-checked="true"] { border-color: var(--plum); background: var(--wash-b); color: var(--plum-ink); }
 .owner-opt[data-owner="both"][aria-checked="true"] { border-color: var(--leaf); background: var(--wash-both); color: var(--leaf-ink); }
 
+/* 일정마다 고른 색 (limits.js eventColors) — 누구 일정인지의 색 위에 덮어 칠합니다.
+   테마마다 바꾸지 않습니다: 색으로 중요도·종류를 나누는 사람에게 빨강은 어느 테마에서나 빨강이어야 해서 */
+[data-color="red"]    { --ev: #E5484D; }
+[data-color="orange"] { --ev: #F0913A; }
+[data-color="yellow"] { --ev: #E2B93B; }
+[data-color="green"]  { --ev: #4BAE78; }
+[data-color="blue"]   { --ev: #4A8FE0; }
+[data-color="purple"] { --ev: #9A6AD6; }
+[data-color="gray"]   { --ev: #979DA5; }
+.day .bar[data-color] { --tone: var(--ev); }
+.cherry-dot[data-color] { background: var(--ev); }
+.entry .tag[data-color] { background: color-mix(in srgb, var(--ev) 22%, var(--surface)); outline-color: var(--ev); }
+.color-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.color-opt {
+  width: 30px; height: 30px; padding: 0; border-radius: 50%;
+  border: 2px solid var(--line-2); background: var(--ev); cursor: pointer;
+}
+/* "기본" — 누구 일정인지의 세 색을 반씩 */
+.color-opt:not([data-color]) { background: conic-gradient(var(--cherry) 0 33%, var(--plum) 0 66%, var(--leaf) 0); }
+.color-opt[aria-checked="true"] { border-color: var(--surface); box-shadow: 0 0 0 2px var(--ink); }
+
 /* 두 사람 — 이름 적는 칸과 "내가 누구인지"를 한 카드에 뒀습니다.
    누가 나인지는 로그인한 계정이 정하니, 카드는 눌러서 고르는 게 아니라 보여주기만 합니다. */
 .people { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }

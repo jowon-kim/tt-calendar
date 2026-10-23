@@ -378,6 +378,28 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   await sleep(30);
   const saved = fetches.find((f) => f.url === '/api/events');
   ok('saving an event names no actor', saved && !('actor' in JSON.parse(saved.body)), saved?.body);
+  ok('no color picked means none is sent', JSON.parse(saved.body).color === null, saved?.body);
+
+  /* 일정마다 색 — 고르면 같이 보내고, 달력은 그 색을 씁니다 */
+  run(`openEditor(null, '2026-09-21')`);
+  const swatches = [...$('f-color').children];
+  ok('the editor offers default plus every color on the list',
+    swatches.length === run('globalThis.DIARY_LIMITS.eventColors.length') + 1 && swatches[0].getAttribute('aria-checked') === 'true',
+    swatches.length);
+  swatches.find((c) => c.dataset.color === 'red').click();
+  $('f-title').value = 'exam';
+  fetches.length = 0;
+  $('editor-form').dispatchEvent({ type: 'submit' });
+  await sleep(30);
+  const red = fetches.find((f) => f.url === '/api/events');
+  ok('a picked color goes with the event', JSON.parse(red.body).color === 'red', red?.body);
+  const tag = run(`(() => { const el = document.createElement('span'); paintColor(el, { color: 'blue' }); return el.dataset.color; })()`);
+  const mile = run(`(() => { const el = document.createElement('span'); paintColor(el, { color: 'blue', milestone: true }); return el.dataset.color; })()`);
+  ok('the calendar paints that color, but never on an anniversary', tag === 'blue' && !mile, [tag, mile]);
+  run(`openEditor({ id: 'x', title: 'exam', date: '2026-09-21', owner: 'both', repeat: 'none', color: 'red' })`);
+  ok('opening a colored event shows its color picked',
+    [...$('f-color').children].find((c) => c.getAttribute('aria-checked') === 'true')?.dataset.color === 'red');
+  run(`$('editor').close()`);
 
   /* 이름을 안 적었으면 "나"는 보는 사람 쪽입니다 — b 자리 사람에겐 a가 "너" */
   run(`state.settings.names = { a: '', b: '' }`);
