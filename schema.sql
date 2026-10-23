@@ -110,6 +110,8 @@ create table if not exists events (
 
 -- 이미 만들어진 테이블에도 안전하게 반영됩니다 (기존 DB에는 이 줄만 다시 실행하면 됩니다).
 alter table events add column if not exists end_time text;
+-- 일정마다 고르는 색 (public/limits.js eventColors). 비어 있으면 누구 일정인지의 색
+alter table events add column if not exists color text;
 
 create index if not exists events_start_date_idx on events (start_date);
 

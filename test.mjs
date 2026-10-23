@@ -337,6 +337,20 @@ r = await call(eventsCreate, { method: 'POST', token, body: { title: 'x', date: 
 ok('bad enums fall back', r.body.owner === 'both' && r.body.repeat === 'none');
 await call(eventById, { method: 'DELETE', token, query: { id: r.body.id } });
 
+/* 일정마다 색 — 고르지 않으면 null(누구 일정인지의 색), 목록에 없는 색은 버립니다 */
+r = await call(eventsCreate, { method: 'POST', token, body: { title: '시험', date: '2026-08-11', color: 'red' } });
+ok('a picked color round-trips', r.status === 201 && r.body.color === 'red', r.body);
+const colored = r.body.id;
+r = await call(eventById, { method: 'PATCH', token, query: { id: colored }, body: { title: '시험 (변경)', date: '2026-08-11' } });
+ok('editing something else keeps the color', r.body.color === 'red', r.body.color);
+r = await call(eventById, { method: 'PATCH', token, query: { id: colored }, body: { date: '2026-08-11', color: null } });
+ok('null takes the color off again', r.body.color === null, r.body.color);
+r = await call(eventsCreate, { method: 'POST', token, body: { title: 'x', date: '2026-08-11', color: 'red; background:url(x)' } });
+ok('a color not on the list is dropped', r.status === 201 && r.body.color === null, r.body.color);
+ok('no color by default', movie.color === null, movie.color);
+await call(eventById, { method: 'DELETE', token, query: { id: r.body.id } });
+await call(eventById, { method: 'DELETE', token, query: { id: colored } });
+
 r = await call(eventsCreate, { method: 'POST', token, body: { title: 'a'.repeat(200), date: '2026-08-10' } });
 ok('long title clipped to 80', r.body.title.length === 80);
 await call(eventById, { method: 'DELETE', token, query: { id: r.body.id } });
