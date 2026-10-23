@@ -23,13 +23,9 @@ globalThis.I18N.ja = {
   /* ── Getting in ── */
   'intro.label': 'カレンダーの紹介',
   'gate.password': 'パスワード',
-  'gate.enter': '入る',
-  'gate.opening': '開いています…',
-  'gate.username': 'ユーザーID',
   'gate.newPassword': '新しいパスワード（8文字以上）',
   'gate.about': 'TTってどんなアプリ？',
   'gate.invited': '招待されました。Googleで続けると、そのカレンダーに入れます。',
-  'gate.legacy': '以前ユーザー名で登録しましたか？こちらからログイン',
   'gate.failed': '入れませんでした',
 
   /* ── Calendar ── */
@@ -311,6 +307,7 @@ globalThis.I18N.ja = {
   'error.wrongPassword': 'パスワードが違います',
   'error.googleFailed': 'Googleでログインできませんでした。もう一度お試しください',
   'error.googleOff': 'このサーバーではGoogleログインがまだ使えません',
+  'error.googleOnly': 'ログインはGoogleのみになりました。Googleで続けてください。',
   'toast.accountDeleted': 'アカウントを削除しました',
   'toast.passwordChanged': 'パスワードを変更しました。ほかの端末はログアウトしました',
   'toast.deviceSignedOut': 'その端末からログアウトしました',

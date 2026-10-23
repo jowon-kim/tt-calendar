@@ -24,13 +24,9 @@ globalThis.I18N['pt-BR'] = {
   /* ── Getting in ── */
   'intro.label': 'Apresentação do calendário',
   'gate.password': 'Senha',
-  'gate.enter': 'Entrar',
-  'gate.opening': 'Abrindo…',
-  'gate.username': 'Usuário',
   'gate.newPassword': 'Nova senha (8+ caracteres)',
   'gate.about': 'O que é o TT?',
   'gate.invited': 'Você foi convidado. Continue com o Google para participar do calendário.',
-  'gate.legacy': 'Se cadastrou antes com um usuário? Entre aqui',
   'gate.failed': 'Não deu para entrar',
 
   /* ── Calendar ── */
@@ -321,6 +317,7 @@ globalThis.I18N['pt-BR'] = {
   'error.wrongPassword': 'Essa senha não confere',
   'error.googleFailed': 'Não deu para entrar com o Google. Tente de novo',
   'error.googleOff': 'Este servidor ainda não tem login com Google',
+  'error.googleOnly': 'Agora o acesso é com o Google. Continue com o Google, por favor.',
   'toast.accountDeleted': 'Sua conta foi excluída',
   'toast.passwordChanged': 'Senha alterada. Os outros aparelhos foram desconectados',
   'toast.deviceSignedOut': 'Você saiu nesse aparelho',

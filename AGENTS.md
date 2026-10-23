@@ -6,8 +6,8 @@ user says **"how do I use this?"**, follow [First install](#first-install).
 ## What this is
 
 A calendar two people share, run as **one service for many couples**. Each
-person signs up with a username and password, or with Google; one of them sends the other an
-invite link and from then on they share one calendar. Add an event and it lands
+person signs in with Google (that is the only way in; a first sign-in creates the
+account); one of them sends the other an invite link and from then on they share one calendar. Add an event and it lands
 on the other person's lock screen, and it speaks up again on the morning of the
 day itself.
 
@@ -34,12 +34,13 @@ Vercel Pro. A test deployment for yourself is fine on Hobby.
 ## What the user has to do themselves
 
 - **`vercel login`** — opens a browser. Ask them to sign in
-- **A Google client ID** for "Continue with Google" — in the Google Cloud Console:
+- **A Google client ID** — required: Google is the only way in. In the Google Cloud Console:
   OAuth consent screen (External), then Credentials → Create OAuth client ID →
   **Web application**, with the site address (`https://…vercel.app`) under
-  Authorized JavaScript origins. No redirect URI is needed. Without it the Google
-  button just doesn’t show. There is no email and so no "forgot my password":
-  tell people who worry about forgetting to use Google
+  Authorized JavaScript origins. No redirect URI is needed. Without it the sign-in
+  screen says Google is not set up and nobody can get in.
+  (`PASSWORD_SIGNIN=on` reopens the old username/password API for a deployment
+  without Google; the screen has no form for it)
 - **Registering the outside clock** — for the reminders on the day
   ([Reminders on the day](#reminders-on-the-day))
 - **Store accounts** — only for the phone apps ([docs/APPS.md](docs/APPS.md))

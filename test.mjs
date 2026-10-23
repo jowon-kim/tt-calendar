@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import { useClient } from './lib/db.js';
 
 process.env.DIARY_URL = 'https://diary.test';
+process.env.PASSWORD_SIGNIN = 'on'; // 계정을 아이디로 만들어 씁니다. 꺼진 기본값은 맨 아래에서 따로 봅니다
 process.env.DATABASE_URL = 'postgres://pglite.test'; // 실제로 붙지는 않습니다 — 아래 useClient가 가로챕니다
 
 /* 표를 미리 만들지 않습니다. Deploy 버튼으로 막 만든 DB처럼 텅 빈 채로 시작해서,
@@ -1518,6 +1519,15 @@ ok('zones west of UTC read the earlier day',
 
   r = await call(auth, { method: 'POST', query: { op: 'toString' } });
   ok('the account door knows only its own', r.status === 404);
+
+  /* 기본은 구글 하나 — 아이디로 새로 가입하거나 들어오는 문은 닫혀 있습니다 */
+  delete process.env.PASSWORD_SIGNIN;
+  r = await call(signup, { method: 'POST', body: { username: 'closed', password: PW } });
+  ok('without PASSWORD_SIGNIN nobody signs up with a username', r.status === 410 && r.body.error === 'error.googleOnly', r);
+  ok('and nothing was made', (await pg.query(`select count(*)::int as n from users where username = 'closed'`)).rows[0].n === 0);
+  r = await call(login, { method: 'POST', body: { username: 'nana', password: PW } });
+  ok('nor signs in with one', r.status === 410 && r.body.error === 'error.googleOnly', r);
+  process.env.PASSWORD_SIGNIN = 'on';
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

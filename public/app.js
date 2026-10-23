@@ -2202,8 +2202,7 @@ async function keepShell() {
 
 /* ── 로그인 화면 ─────────────────────────────
    구글 하나로 들어옵니다 (2026-10-23). 처음 보는 구글 계정이면 그 자리에서 가입하고,
-   초대 링크로 왔으면 그 달력에 바로 앉습니다 (api/_auth/google.js).
-   아이디 폼은 구글 전에 아이디로 가입한 사람이 들어오는 문으로만 접어 둡니다 — 새 아이디 가입은 없어요. */
+   초대 링크로 왔으면 그 달력에 바로 앉습니다 (api/_auth/google.js). 아이디·비밀번호 폼은 없습니다. */
 let pendingInvite = '';  // ?invite= 로 들어왔을 때
 
 /** 초대 링크로 왔으면 그렇다고 한 줄 알려줍니다 */
@@ -2232,21 +2231,6 @@ async function post(url, method, body) {
   // 서버는 문구가 아니라 키를 돌려줍니다
   if (!res.ok) throw new Error(info.error ? t(info.error) : t('gate.failed'));
   return info;
-}
-
-async function submitGate() {
-  const username = $('gate-username').value.trim();
-  const password = $('gate-password').value;
-  await post('/api/login', 'POST', { username, password });
-  // 이미 계정이 있는 사람이 초대 링크로 왔다면, 들어온 김에 그 달력으로 옮겨갑니다
-  if (pendingInvite) {
-    localStorage.setItem(SIGNED_IN, '1');
-    await acceptInvite(pendingInvite);
-    pendingInvite = '';
-  }
-  $('gate-password').value = '';
-  localStorage.setItem(SIGNED_IN, '1');
-  await load();
 }
 
 /* ── 구글로 들어오기 ─────────────────────────
@@ -2337,21 +2321,6 @@ function spawnPetals(id = 'gate') {
 }
 
 /* ── 연결 ────────────────────────────────── */
-$('gate-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  $('gate-error').textContent = '';
-  const button = $('gate-submit');
-  button.disabled = true;
-  button.textContent = t('gate.opening');
-  try {
-    await submitGate();
-  } catch (err) {
-    $('gate-error').textContent = err.message || t('gate.failed');
-  } finally {
-    button.disabled = false;
-    button.textContent = t('gate.enter');
-  }
-});
 
 function goToMonth(delta) {
   state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth() + delta, 1);

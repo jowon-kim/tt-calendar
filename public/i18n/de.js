@@ -23,13 +23,9 @@ globalThis.I18N.de = {
   /* ── Getting in ── */
   'intro.label': 'Kalender-Intro',
   'gate.password': 'Passwort',
-  'gate.enter': 'Reinkommen',
-  'gate.opening': 'Wird geöffnet…',
-  'gate.username': 'Benutzername',
   'gate.newPassword': 'Neues Passwort (mind. 8 Zeichen)',
   'gate.about': 'Was ist TT?',
   'gate.invited': 'Du wurdest eingeladen. Mach mit Google weiter, um dem Kalender beizutreten.',
-  'gate.legacy': 'Früher mit Benutzernamen registriert? Hier anmelden',
   'gate.failed': 'Das hat nicht geklappt',
 
   /* ── Calendar ── */
@@ -320,6 +316,7 @@ globalThis.I18N.de = {
   'error.wrongPassword': 'Das Passwort stimmt nicht',
   'error.googleFailed': 'Anmelden mit Google hat nicht geklappt. Versuch es noch mal',
   'error.googleOff': 'Anmelden mit Google ist auf diesem Server noch nicht eingerichtet',
+  'error.googleOnly': 'Die Anmeldung läuft jetzt über Google. Bitte mach mit Google weiter.',
   'toast.accountDeleted': 'Dein Konto wurde gelöscht',
   'toast.passwordChanged': 'Passwort geändert. Andere Geräte wurden abgemeldet',
   'toast.deviceSignedOut': 'Auf dem Gerät abgemeldet',
