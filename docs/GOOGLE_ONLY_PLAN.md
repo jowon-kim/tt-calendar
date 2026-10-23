@@ -11,7 +11,8 @@
 
 ## 진행 상황
 - ✅ 1단계 웹 (2026-10-23): 구글 버튼만 크게, 초대 안내 문구 변경, 아이디 폼은 `<details id="gate-legacy">`로 접어서 **로그인만** (가입 폼 제거). 비번 변경·탈퇴는 예전 계정용으로 그대로 둠. 9개 언어 `gate.legacy` 추가, 안 쓰는 gate 키 6개 삭제. `npm test` 전부 통과
-- ⬜ 2단계부터 이어서. 운영 DB 확인은 .env 읽기가 막혀 있어서 못 함 → 사용자에게 Neon 콘솔 SQL을 부탁하거나 `npm run verify`에 카운트 추가
+- ✅ 2단계 (2026-10-23, 사용자: "아직 아무도 안 씀" → 예전 아이디 문도 제거, main 직행 OK): `/api/signup`·`/api/login` → 410 `error.googleOnly`, `PASSWORD_SIGNIN=on`일 때만 열림(test.mjs가 켜고 씀, 꺼진 기본값 테스트 추가, red→green 확인). 화면에서 아이디 폼·CSS·안 쓰는 키 전부 제거. AGENTS.md 반영
+- ⬜ 3단계(안드로이드 네이티브 구글)부터 이어서
 
 ## 할 일 (순서대로, 단계마다 `npm test`)
 

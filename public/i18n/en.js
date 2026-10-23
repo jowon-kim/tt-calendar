@@ -34,13 +34,9 @@ globalThis.I18N.en = {
   /* ── Getting in ── */
   'intro.label': 'Calendar intro',
   'gate.password': 'Password',
-  'gate.enter': 'Come in',
-  'gate.opening': 'Opening…',
-  'gate.username': 'Username',
   'gate.newPassword': 'New password (8+ characters)',
   'gate.about': 'What is TT?',
   'gate.invited': 'You\'ve been invited. Continue with Google to join the calendar.',
-  'gate.legacy': 'Signed up with a username before? Sign in here',
   'gate.failed': 'That didn\'t let you in',
 
   /* ── Calendar ── */
@@ -331,6 +327,7 @@ globalThis.I18N.en = {
   'error.wrongPassword': 'That password doesn\'t match',
   'error.googleFailed': 'Couldn\'t sign in with Google. Try again',
   'error.googleOff': 'Google sign-in isn\'t set up on this server',
+  'error.googleOnly': 'Sign-in is with Google now. Please continue with Google.',
   'toast.accountDeleted': 'Your account has been deleted',
   'toast.passwordChanged': 'Password changed. Other devices were signed out',
   'toast.deviceSignedOut': 'Signed out on that device',

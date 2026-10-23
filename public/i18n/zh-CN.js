@@ -24,13 +24,9 @@ globalThis.I18N['zh-CN'] = {
   /* ── Getting in ── */
   'intro.label': '日历简介',
   'gate.password': '密码',
-  'gate.enter': '进入',
-  'gate.opening': '正在打开…',
-  'gate.username': '用户名',
   'gate.newPassword': '新密码（至少 8 个字符）',
   'gate.about': 'TT 是什么？',
   'gate.invited': '你收到了邀请。用 Google 继续即可加入这个日历。',
-  'gate.legacy': '以前用用户名注册过？在这里登录',
   'gate.failed': '没能进去',
 
   /* ── Calendar ── */
@@ -312,6 +308,7 @@ globalThis.I18N['zh-CN'] = {
   'error.wrongPassword': '密码不对',
   'error.googleFailed': '没能用 Google 登录，请再试一次',
   'error.googleOff': '这台服务器还没有开启 Google 登录',
+  'error.googleOnly': '现在只能用 Google 登录。请用 Google 继续。',
   'toast.accountDeleted': '账号已删除',
   'toast.passwordChanged': '密码已修改，其他设备已退出登录',
   'toast.deviceSignedOut': '已在该设备上退出登录',

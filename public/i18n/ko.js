@@ -24,13 +24,9 @@ globalThis.I18N.ko = {
   /* ── 들어오기 ── */
   'intro.label': '달력 인트로',
   'gate.password': '비밀번호',
-  'gate.enter': '들어가기',
-  'gate.opening': '여는 중…',
-  'gate.username': '아이디',
   'gate.newPassword': '새 비밀번호 (8자 이상)',
   'gate.about': 'TT는 어떤 앱인가요?',
   'gate.invited': '초대받았어요. Google로 계속하면 그 달력에 함께 들어가요.',
-  'gate.legacy': '예전에 아이디로 가입했나요? 여기서 로그인',
   'gate.failed': '들어가지 못했어요',
 
   /* ── 달력 ── */
@@ -254,6 +250,7 @@ globalThis.I18N.ko = {
   'error.wrongPassword': '비밀번호가 맞지 않아요',
   'error.googleFailed': '구글로 들어가지 못했어요. 다시 해 주세요',
   'error.googleOff': '이 서버는 구글 로그인이 아직 켜져 있지 않아요',
+  'error.googleOnly': '이제 Google로만 들어올 수 있어요. Google로 계속해 주세요.',
   'toast.accountDeleted': '계정을 삭제했어요',
   'toast.passwordChanged': '비밀번호를 바꿨어요. 다른 기기는 로그아웃됐어요',
   'toast.deviceSignedOut': '그 기기에서 로그아웃했어요',

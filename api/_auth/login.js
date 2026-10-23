@@ -1,5 +1,5 @@
 import { ready, body, guard, methodNotAllowed, setSessionCookie, deviceName } from '../../lib/http.js';
-import { checkPassword, cleanLogin, wasteTime } from '../../lib/auth.js';
+import { checkPassword, cleanLogin, wasteTime, passwordSignIn } from '../../lib/auth.js';
 import {
   findUserByLogin, createSession, recentFailures, recordFailure, clearFailures,
 } from '../../lib/accounts.js';
@@ -16,6 +16,8 @@ const slowDown = () => new Promise((r) => setTimeout(r, 400)); // 무차별 대�
  */
 export default guard(async (req, res) => {
   if (req.method !== 'POST') return methodNotAllowed(res, ['POST']);
+  // 구글 하나로 들어옵니다 (lib/auth.js passwordSignIn). 옛 화면이 부르면 왜 안 되는지 알려줘요
+  if (!passwordSignIn()) return res.status(410).json({ error: 'error.googleOnly' });
   if (!(await ready(res))) return;
 
   const input = body(req);

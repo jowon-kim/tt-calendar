@@ -24,13 +24,9 @@ globalThis.I18N.ru = {
   /* ── Getting in ── */
   'intro.label': 'Знакомство с календарём',
   'gate.password': 'Пароль',
-  'gate.enter': 'Войти',
-  'gate.opening': 'Открываем…',
-  'gate.username': 'Логин',
   'gate.newPassword': 'Новый пароль (от 8 символов)',
   'gate.about': 'Что такое TT?',
   'gate.invited': 'Тебя пригласили. Продолжи через Google, чтобы присоединиться к календарю.',
-  'gate.legacy': 'Раньше регистрировался по логину? Войди здесь',
   'gate.failed': 'Не получилось войти',
 
   /* ── Calendar ── */
@@ -328,6 +324,7 @@ globalThis.I18N.ru = {
   'error.wrongPassword': 'Пароль не подходит',
   'error.googleFailed': 'Не получилось войти через Google. Попробуй ещё раз',
   'error.googleOff': 'На этом сервере вход через Google ещё не включён',
+  'error.googleOnly': 'Теперь вход только через Google. Продолжи через Google.',
   'toast.accountDeleted': 'Аккаунт удалён',
   'toast.passwordChanged': 'Пароль изменён. На других устройствах выполнен выход',
   'toast.deviceSignedOut': 'Выход на этом устройстве выполнен',

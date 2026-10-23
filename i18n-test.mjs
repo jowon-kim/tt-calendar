@@ -56,7 +56,7 @@ ok('the browser language is honoured', preferred() === 'ko', preferred());
 
 /* 영어 */
 setLocale('en');
-ok('english reads from its own pack', t('gate.enter') === 'Come in', t('gate.enter'));
+ok('english reads from its own pack', t('common.cancel') === 'Cancel', t('common.cancel'));
 ok('a single thing takes the singular', t('day.daysLeft', { n: 1, count: 1 }) === '1 day to go', t('day.daysLeft', { n: 1, count: 1 }));
 ok('several take the plural', t('day.daysLeft', { n: 5, count: 5 }) === '5 days to go', t('day.daysLeft', { n: 5, count: 5 }));
 ok('{name} is filled in', t('guide.titleFor', { name: 'Nabi' }) === 'How Nabi works', t('guide.titleFor', { name: 'Nabi' }));
@@ -65,7 +65,7 @@ ok('markup inside a value survives', t('settings.autosave').includes('<b>'), t('
 
 /* 한국어 — 복수형이 없는 언어 */
 setLocale('ko');
-ok('korean reads from its own pack', t('gate.enter') === '들어가기', t('gate.enter'));
+ok('korean reads from its own pack', t('common.cancel') === '취소', t('common.cancel'));
 ok('a language without plurals keeps its own wording',
   t('day.daysLeft', { n: 5, count: 5 }) === '5일 남았어요', t('day.daysLeft', { n: 5, count: 5 }));
 ok('the lang attribute follows', doc.documentElement.lang === 'ko', doc.documentElement.lang);
@@ -94,16 +94,16 @@ ok('data-i18n-html fills the markup', els[1].innerHTML.includes('<b>'), els[1].i
 ok('data-i18n-attr sets the attribute', els[2].attrs['aria-label'] === 'Close', els[2].attrs);
 
 /* 반쯤 옮긴 언어팩도 화면을 비우지 않습니다 */
-globalThis.I18N.xx = { 'gate.enter': 'Entrez' };
+globalThis.I18N.xx = { 'common.cancel': 'Annuler' };
 LOCALE_NAMES.xx = 'Test';                     // 등록해야 고를 수 있습니다
 setLocale('xx');
-ok('a partial pack uses what it has', t('gate.enter') === 'Entrez', t('gate.enter'));
+ok('a partial pack uses what it has', t('common.cancel') === 'Annuler', t('common.cancel'));
 ok('and falls back to english for the rest', t('common.save') === 'Save', t('common.save'));
 
 /* 등록하지 않은 언어는 없는 것으로 봅니다 */
-globalThis.I18N.zz = { 'gate.enter': 'Nope' };
+globalThis.I18N.zz = { 'common.cancel': 'Nope' };
 setLocale('zz');
-ok('a pack missing from LOCALE_NAMES is ignored', t('gate.enter') === 'Come in', t('gate.enter'));
+ok('a pack missing from LOCALE_NAMES is ignored', t('common.cancel') === 'Cancel', t('common.cancel'));
 
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed) process.exit(1);

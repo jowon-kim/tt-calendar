@@ -24,13 +24,9 @@ globalThis.I18N.es = {
   /* ── Getting in ── */
   'intro.label': 'Presentación del calendario',
   'gate.password': 'Contraseña',
-  'gate.enter': 'Entrar',
-  'gate.opening': 'Abriendo…',
-  'gate.username': 'Usuario',
   'gate.newPassword': 'Nueva contraseña (8+ caracteres)',
   'gate.about': '¿Qué es TT?',
   'gate.invited': 'Te han invitado. Continúa con Google para unirte al calendario.',
-  'gate.legacy': '¿Te registraste antes con un usuario? Inicia sesión aquí',
   'gate.failed': 'No se pudo entrar',
 
   /* ── Calendar ── */
@@ -321,6 +317,7 @@ globalThis.I18N.es = {
   'error.wrongPassword': 'La contraseña no coincide',
   'error.googleFailed': 'No se pudo entrar con Google. Inténtalo de nuevo',
   'error.googleOff': 'Este servidor aún no tiene activado el acceso con Google',
+  'error.googleOnly': 'Ahora se entra con Google. Continúa con Google, por favor.',
   'toast.accountDeleted': 'Tu cuenta se ha eliminado',
   'toast.passwordChanged': 'Contraseña cambiada. Se cerró la sesión en los otros dispositivos',
   'toast.deviceSignedOut': 'Sesión cerrada en ese dispositivo',
