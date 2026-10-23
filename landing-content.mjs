@@ -28,7 +28,7 @@ export const CONTENT = {
     ],
     stepsTitle: 'How to start',
     steps: [
-      'Sign up with a username and password. No email needed.',
+      'Continue with Google — one tap, no password to remember.',
       'Send your partner the invite link from Settings. It works once and lasts 7 days.',
       'Add it to your home screen and turn on notifications — on iPhone, from Safari’s Share menu.',
     ],
@@ -38,7 +38,7 @@ export const CONTENT = {
       ['Do we need to download it from an app store?', 'No. TT runs in the browser on iPhone, Android and computers. Adding it to the home screen makes it open like an app, and that is also how notifications work on iPhone.'],
       ['Does it work on iPhone?', 'Yes. Open it in Safari, tap Share, then “Add to Home Screen”. On iOS 16.4 and later it can send notifications once it is on the home screen.'],
       ['How do I invite my partner?', 'In Settings, make an invite link and send it. When your partner signs up through it, you share the same calendar. Each of you keeps your own account.'],
-      ['What do you collect?', 'A username, your password (stored hashed), and what you put in the calendar: plans, names, dates and photos. No email address. You can delete your account at any time from Settings.'],
+      ['What do you collect?', 'Your Google account number and email address (to know it is you), and what you put in the calendar: plans, names, dates and photos. No password. You can delete your account at any time from Settings.'],
       ['What if one of us deletes their account?', 'The calendar stays with the other person. When both of you have left, the plans and photos are deleted.'],
     ],
     calcLink: 'How long have we been together? Count it',
@@ -92,7 +92,7 @@ export const CONTENT = {
     ],
     stepsTitle: '시작하는 법',
     steps: [
-      '아이디와 비밀번호로 가입해요. 이메일은 필요 없어요.',
+      'Google로 한 번에 시작해요. 외울 비밀번호가 없어요.',
       '설정에서 초대 링크를 만들어 상대에게 보내요. 한 번만 쓸 수 있고 7일 동안 살아 있어요.',
       '홈 화면에 추가하고 알림을 켜요. 아이폰은 사파리 공유 버튼에서 추가해요.',
     ],
@@ -102,7 +102,7 @@ export const CONTENT = {
       ['앱스토어에서 받아야 하나요?', '아니요. 아이폰·안드로이드·컴퓨터 브라우저에서 바로 돼요. 홈 화면에 추가하면 앱처럼 열리고, 아이폰은 그래야 알림도 와요.'],
       ['아이폰에서도 되나요?', '네. 사파리에서 열고 공유 → “홈 화면에 추가”를 누르세요. iOS 16.4 이상이면 홈 화면에서 연 앱으로 알림을 받을 수 있어요.'],
       ['상대는 어떻게 초대하나요?', '설정에서 초대 링크를 만들어 보내면 돼요. 그 링크로 가입하면 같은 달력을 함께 써요. 계정은 각자 따로예요.'],
-      ['어떤 정보를 모으나요?', '아이디, 비밀번호(암호화해서 저장), 그리고 달력에 넣은 일정·이름·날짜·사진이에요. 이메일은 받지 않아요. 계정은 설정에서 언제든 지울 수 있어요.'],
+      ['어떤 정보를 모으나요?', '본인 확인용 구글 계정 번호와 이메일, 그리고 달력에 넣은 일정·이름·날짜·사진이에요. 비밀번호는 받지 않아요. 계정은 설정에서 언제든 지울 수 있어요.'],
       ['한 사람이 계정을 지우면요?', '달력은 남은 사람에게 그대로 있어요. 둘 다 나가면 일정과 사진이 지워져요.'],
     ],
     calcLink: '우리 사귄 지 며칠? 계산해 보기',
@@ -603,7 +603,7 @@ export const COMPARE = {
     names: ['TT', 'Google Calendar', 'TimeTree'],
     rows: [
       ['Made for', 'Exactly two people', 'Anyone: work, school, family', 'Groups: family, friends, teams, couples'],
-      ['Getting started', 'A username and password, or Google. Your partner joins through an invite link', 'Both of you need a Google account, then one shares a calendar with the other', 'Install the app, make a calendar and invite members'],
+      ['Getting started', 'Continue with Google. Your partner joins through an invite link', 'Both of you need a Google account, then one shares a calendar with the other', 'Install the app, make a calendar and invite members'],
       ['When your partner changes a plan', 'A notification to the other person, on from the start', 'An email, if each of you turns on “Changed events” for that calendar', 'Notifications in the app'],
       ['Anniversaries and days together', 'Counted from the day you met: every 100 days and each anniversary appear on the calendar with a countdown', 'Add them yourself as events', 'Add them yourself as events'],
       ['Whose plan it is', 'Mine, yours or ours, each in its own colour', 'Separate calendars and colours', 'Labels and colours'],
@@ -634,7 +634,7 @@ export const COMPARE = {
     names: ['TT', '구글 캘린더', 'TimeTree'],
     rows: [
       ['누구를 위한 것', '딱 두 사람', '누구나: 회사, 학교, 가족', '여럿: 가족, 친구, 팀, 커플'],
-      ['시작하는 법', '아이디와 비밀번호, 또는 구글로 가입. 상대는 초대 링크로 들어와요', '둘 다 구글 계정이 있어야 하고, 한 사람이 달력을 공유해요', '앱을 깔고 달력을 만든 뒤 멤버를 초대해요'],
+      ['시작하는 법', 'Google로 바로 시작. 상대는 초대 링크로 들어와요', '둘 다 구글 계정이 있어야 하고, 한 사람이 달력을 공유해요', '앱을 깔고 달력을 만든 뒤 멤버를 초대해요'],
       ['상대가 일정을 바꾸면', '상대에게 알림이 가요. 처음부터 켜져 있어요', '각자 그 달력의 “변경된 일정” 알림을 켜면 이메일이 와요', '앱 알림'],
       ['기념일과 함께한 날', '처음 만난 날부터 세서 100일마다, 해마다 기념일이 달력에 뜨고 남은 날도 보여요', '직접 일정으로 넣어요', '직접 일정으로 넣어요'],
       ['누구 일정인지', '내 일정, 네 일정, 우리 일정을 색으로 구분', '달력을 나눠서 색으로 구분', '라벨과 색'],

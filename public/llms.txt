@@ -19,7 +19,7 @@ TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers
 - Do we need to download it from an app store? No. TT runs in the browser on iPhone, Android and computers. Adding it to the home screen makes it open like an app, and that is also how notifications work on iPhone.
 - Does it work on iPhone? Yes. Open it in Safari, tap Share, then “Add to Home Screen”. On iOS 16.4 and later it can send notifications once it is on the home screen.
 - How do I invite my partner? In Settings, make an invite link and send it. When your partner signs up through it, you share the same calendar. Each of you keeps your own account.
-- What do you collect? A username, your password (stored hashed), and what you put in the calendar: plans, names, dates and photos. No email address. You can delete your account at any time from Settings.
+- What do you collect? Your Google account number and email address (to know it is you), and what you put in the calendar: plans, names, dates and photos. No password. You can delete your account at any time from Settings.
 - What if one of us deletes their account? The calendar stays with the other person. When both of you have left, the plans and photos are deleted.
 
 ## Pages

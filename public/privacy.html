@@ -35,15 +35,12 @@
 <h2>1. 받는 정보와 쓰는 곳</h2>
 <table>
 <tr><th>정보</th><th>쓰는 곳</th><th>보관 기간</th></tr>
-<tr><td>아이디</td><td>로그인</td><td>탈퇴할 때까지</td></tr>
-<tr><td>구글 계정 번호와 이메일 주소(구글로 들어온 경우만)</td><td>로그인, 누구로 로그인했는지 내 화면에 표시</td><td>탈퇴할 때까지</td></tr>
-<tr><td>비밀번호(아이디로 가입한 경우)</td><td>로그인. <b>원문은 저장하지 않고</b> 되돌릴 수 없는 해시(scrypt)만 둡니다</td><td>탈퇴할 때까지</td></tr>
+<tr><td>구글 계정 번호와 이메일 주소</td><td>로그인, 누구로 로그인했는지 내 화면에 표시</td><td>탈퇴할 때까지</td></tr>
 <tr><td>일정, 메모, 두 사람 이름, 처음 만난 날, 달력 설정</td><td>달력을 보여주고 두 사람이 나눠 쓰기</td><td>탈퇴할 때까지</td></tr>
 <tr><td>달력 사진</td><td>달력 꾸미기</td><td>지우거나 탈퇴할 때까지</td></tr>
 <tr><td>알림 받을 기기 주소(웹푸시 구독, 앱 알림 토큰)</td><td>상대가 일정을 바꿨을 때와 오늘 일정 알림</td><td>알림을 끄거나 로그아웃·탈퇴할 때까지</td></tr>
 <tr><td>로그인 상태(쿠키)</td><td>다시 로그인하지 않고 쓰기. 서버엔 해시만 둡니다</td><td>마지막 사용 후 최대 60일</td></tr>
 <tr><td>로그인한 기기의 이름(브라우저와 기기 종류만, 예: "Chrome · Windows")과 마지막으로 쓴 날</td><td>설정의 "로그인된 기기" 목록 — 어디에 로그인해 있는지 보고, 다른 기기를 로그아웃시키기</td><td>그 로그인이 끝날 때까지</td></tr>
-<tr><td>틀린 비밀번호 기록(아이디, 시각)</td><td>무차별 대입 막기</td><td>하루</td></tr>
 <tr><td>계정을 만든 곳의 IP 주소(되돌릴 수 없는 해시로만)와 시각</td><td>한 곳에서 계정을 대량으로 만드는 것 막기</td><td>하루</td></tr>
 <tr><td>알림을 보냈다는 기록</td><td>같은 알림이 두 번 가지 않게</td><td>7일</td></tr>
 </table>
@@ -72,14 +69,14 @@
 
 <h2>4. 내 정보 다루기</h2>
 <ul>
-<li><b>고치기</b>: 일정·이름·설정은 앱에서 바로 고칩니다. 비밀번호는 설정 → 계정 → 비밀번호 변경에서 바꾸며, 바꾸면 다른 기기의 로그인은 끊깁니다. 이메일을 받지 않아서 잊어버린 비밀번호는 되찾을 수 없습니다.</li>
+<li><b>고치기</b>: 일정·이름·설정은 앱에서 바로 고칩니다.</li>
 <li><b>탈퇴</b>: 설정 → 계정 → 계정 삭제. 상대가 남아 있으면 내 계정과 내 기기 알림만 지워지고 달력은
 상대에게 남습니다. 내가 마지막이면 달력 전체(일정·사진·설정)가 곧바로 지워지며 되돌릴 수 없습니다.</li>
 <li>그 밖의 요청은 <a href="mailto:tt.calendar.help@gmail.com">tt.calendar.help@gmail.com</a>로 보내 주세요.</li>
 </ul>
 
 <h2>5. 지키는 방법</h2>
-<p>모든 연결은 HTTPS로 암호화됩니다. 비밀번호와 로그인·초대 토큰은 해시로만 저장합니다.
+<p>모든 연결은 HTTPS로 암호화됩니다. 로그인은 구글로만 하며 비밀번호를 받지 않습니다. 로그인·초대 토큰은 해시로만 저장합니다.
 로그인 쿠키는 화면의 스크립트가 읽을 수 없게(HttpOnly) 두고, 다른 사이트에서 보낸 요청에는 실리지
 않게(SameSite) 합니다. 사진은 로그인한 그 달력 사람에게만 보입니다.</p>
 
@@ -92,18 +89,18 @@
 <h2>8. 유럽(EEA·영국·스위스)에서 쓰는 경우</h2>
 <p>GDPR에 따른 처리자는 운영자 김조원입니다(연락처는 위와 같습니다).</p>
 <ul>
-<li><b>처리 근거</b>: 계정·달력 내용·사진·알림 주소·로그인 쿠키는 가입한 서비스를 제공하기 위해(계약 이행, 6조 1항 b). 틀린 비밀번호 기록, 가입 IP 해시, 요청 기록은 서비스를 안전하게 지키려는 정당한 이익(6조 1항 f). 알림은 여기에 더해 기기에서 허락해야 하며, 기기나 앱 설정에서 언제든 거둘 수 있습니다.</li>
+<li><b>처리 근거</b>: 계정·달력 내용·사진·알림 주소·로그인 쿠키는 가입한 서비스를 제공하기 위해(계약 이행, 6조 1항 b). 가입 IP 해시, 요청 기록은 서비스를 안전하게 지키려는 정당한 이익(6조 1항 f). 알림은 여기에 더해 기기에서 허락해야 하며, 기기나 앱 설정에서 언제든 거둘 수 있습니다.</li>
 <li><b>내 권리</b>: 열람, 정정, 삭제, 처리 제한, 반대, 이동(기계가 읽을 수 있는 형식의 사본), 동의 철회. 대부분은 앱에서 바로 할 수 있고, 사본 요청이나 그 밖의 요청은 이메일로 보내 주세요. 한 달 안에 답합니다.</li>
 <li><b>이의 제기</b>: 사는 곳의 개인정보 감독기관에 신고할 수 있습니다.</li>
 <li><b>국외 이전</b>: 2번의 회사들이 미국과 싱가포르에서 처리합니다. 이 회사들의 데이터 처리 약관에 있는 보호 장치(EU 표준계약조항, 인증받은 회사는 EU–미국 데이터 프라이버시 프레임워크)에 따릅니다.</li>
 <li><b>자동 결정</b>: 자동으로 사람을 평가하거나 프로파일링하지 않습니다.</li>
-<li>계정을 만들려면 아이디와 비밀번호(또는 구글)가 필요합니다. 그 밖의 정보는 넣지 않아도 됩니다.</li>
+<li>계정을 만들려면 구글 계정이 필요합니다. 그 밖의 정보는 넣지 않아도 됩니다.</li>
 </ul>
 
 <h2>9. 미국 캘리포니아 등에서 쓰는 경우</h2>
 <ul>
 <li>개인정보를 팔지 않고, 맞춤 광고를 위해 공유하지 않습니다. 민감한 정보로 사람을 추측하지 않습니다.</li>
-<li><b>받는 정보의 종류</b>: 식별자(아이디, 구글 이메일, IP 해시), 달력에 넣은 내용(일정, 메모, 이름, 날짜, 사진), 알림 받을 기기 주소. 모두 이용자와 이용자의 기기에서 받고, 1번의 목적에만 쓰며, 2번의 회사에만 맡깁니다.</li>
+<li><b>받는 정보의 종류</b>: 식별자(구글 계정 번호와 이메일, IP 해시), 달력에 넣은 내용(일정, 메모, 이름, 날짜, 사진), 알림 받을 기기 주소. 모두 이용자와 이용자의 기기에서 받고, 1번의 목적에만 쓰며, 2번의 회사에만 맡깁니다.</li>
 <li><b>내 권리</b>: 무엇을 가졌는지 알 권리, 삭제·정정할 권리, 권리를 썼다고 차별받지 않을 권리. 대리인을 통해서도 요청할 수 있습니다. 로그인한 계정으로 본인임을 확인한 뒤 45일 안에 답합니다.</li>
 </ul>
 
@@ -123,15 +120,12 @@ calendar, and uses it for nothing else. There are no ads, and your data is never
 <h2>1. What we keep and why</h2>
 <table>
 <tr><th>Data</th><th>Used for</th><th>Kept for</th></tr>
-<tr><td>Username</td><td>Signing in</td><td>Until you delete your account</td></tr>
-<tr><td>Google account number and email address (only if you use Google)</td><td>Signing in, showing you who you are signed in as</td><td>Until you delete your account</td></tr>
-<tr><td>Password (username accounts)</td><td>Signing in. <b>Never stored as typed</b> — only a one-way hash (scrypt)</td><td>Until you delete your account</td></tr>
+<tr><td>Google account number and email address</td><td>Signing in, showing you who you are signed in as</td><td>Until you delete your account</td></tr>
 <tr><td>Events, notes, your two names, the day you met, calendar settings</td><td>Showing and sharing the calendar</td><td>Until you delete your account</td></tr>
 <tr><td>Calendar photos</td><td>Decorating the calendar</td><td>Until removed or the account is deleted</td></tr>
 <tr><td>Device addresses for notifications (web push subscription, app push token)</td><td>Telling you when the other one changes something, and today's reminders</td><td>Until you turn notifications off, sign out or delete the account</td></tr>
 <tr><td>Sign-in state (cookie)</td><td>Staying signed in. Only a hash is kept on the server</td><td>Up to 60 days after last use</td></tr>
 <tr><td>The name of each signed-in device (browser and device type only, such as "Chrome · Windows") and the day it was last used</td><td>The "Signed-in devices" list in settings — seeing where you are signed in and signing another device out</td><td>Until that sign-in ends</td></tr>
-<tr><td>Failed sign-in attempts (username, time)</td><td>Stopping password guessing</td><td>One day</td></tr>
 <tr><td>The IP address an account was created from (only as a one-way hash) and the time</td><td>Stopping mass account creation from one place</td><td>One day</td></tr>
 <tr><td>Records of sent reminders</td><td>Not sending the same reminder twice</td><td>7 days</td></tr>
 </table>
@@ -160,13 +154,13 @@ else does, unless the law requires it.</p>
 
 <h2>4. Your choices</h2>
 <ul>
-<li><b>Correct</b>: edit events, names and settings in the app. Change the password in Settings → Account → Change password; this signs out your other devices. No email is collected, so a forgotten password can't be recovered.</li>
+<li><b>Correct</b>: edit events, names and settings in the app.</li>
 <li><b>Delete</b>: Settings → Account → Delete account. If the other one is still there, only your account and your devices are removed and the calendar stays with them. If you are the last one, the whole calendar — events, photos, settings — is deleted at once and cannot be recovered.</li>
 <li>For anything else, write to <a href="mailto:tt.calendar.help@gmail.com">tt.calendar.help@gmail.com</a>.</li>
 </ul>
 
 <h2>5. How it is protected</h2>
-<p>Every connection is encrypted (HTTPS). Passwords and sign-in and invite tokens are stored only as
+<p>Every connection is encrypted (HTTPS). Sign-in is with Google only; we never receive a password. Sign-in and invite tokens are stored only as
 hashes. The sign-in cookie cannot be read by scripts on the page (HttpOnly) and is not sent with requests
 from other sites (SameSite). Photos are shown only to the signed-in people of that calendar.</p>
 
@@ -176,18 +170,18 @@ from other sites (SameSite). Photos are shown only to the signed-in people of th
 <h2>7. If you are in the EEA, the UK or Switzerland</h2>
 <p>The controller under the GDPR is the operator, Jowon Kim (contact above).</p>
 <ul>
-<li><b>Legal bases</b>: your account, calendar contents, photos, notification addresses and sign-in cookie are processed to provide the service you signed up for (contract, Art. 6(1)(b)). Failed sign-in records, the hashed sign-up IP and request logs are kept for our legitimate interest in keeping the service safe (Art. 6(1)(f)). Notifications also need your permission on the device, which you can withdraw at any time in your device or app settings.</li>
+<li><b>Legal bases</b>: your account, calendar contents, photos, notification addresses and sign-in cookie are processed to provide the service you signed up for (contract, Art. 6(1)(b)). The hashed sign-up IP and request logs are kept for our legitimate interest in keeping the service safe (Art. 6(1)(f)). Notifications also need your permission on the device, which you can withdraw at any time in your device or app settings.</li>
 <li><b>Your rights</b>: access, correction, deletion, restriction, objection, portability (a copy in a machine-readable format) and withdrawing consent. Most of this you can do in the app; for a copy of your data or anything else, email us. We answer within one month.</li>
 <li><b>Complaints</b>: you can complain to the data protection authority where you live.</li>
 <li><b>Transfers</b>: the providers in section 2 process data in the USA and Singapore. We rely on the safeguards in their data processing terms: the EU Standard Contractual Clauses and, for providers certified under it, the EU–US Data Privacy Framework.</li>
 <li><b>Automated decisions</b>: none. We do not profile you.</li>
-<li>A username and password (or Google) are needed to have an account. Everything else is up to you.</li>
+<li>A Google account is needed to have an account. Everything else is up to you.</li>
 </ul>
 
 <h2>8. If you are in California or another US state with a privacy law</h2>
 <ul>
 <li>We do not sell personal information or share it for cross-context behavioral advertising. We do not use sensitive personal information to infer anything about you.</li>
-<li><b>What we collect</b>: identifiers (username, Google email address, hashed IP), what you put in the calendar (events, notes, names, dates, photos), device addresses for notifications and the browser and device type of each sign-in. All of it comes from you and your device, is used only for the purposes in section 1, and is disclosed only to the providers in section 2.</li>
+<li><b>What we collect</b>: identifiers (Google account number and email address, hashed IP), what you put in the calendar (events, notes, names, dates, photos), device addresses for notifications and the browser and device type of each sign-in. All of it comes from you and your device, is used only for the purposes in section 1, and is disclosed only to the providers in section 2.</li>
 <li><b>Your rights</b>: to know what we hold, to delete and correct it, and not to be treated differently for using these rights. An authorized agent may ask for you. We confirm it is you through your signed-in account and answer within 45 days.</li>
 </ul>
 
