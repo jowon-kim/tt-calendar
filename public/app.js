@@ -751,6 +751,14 @@ function paintColor(el, item) {
   if (item.color && !item.milestone) el.dataset.color = item.color;
 }
 
+/** 제목 칸 오른쪽 동그라미에 지금 고른 색을 칠합니다 */
+function showFormColor() {
+  const button = $('f-color-btn');
+  if (state.formColor) button.dataset.color = state.formColor;
+  else delete button.dataset.color;
+  button.setAttribute('aria-expanded', String(!$('f-color').hidden));
+}
+
 /** 색 고르기 — 맨 앞은 "기본"(누구 일정인지의 색), 나머지는 limits.js의 목록 */
 function colorPicker(container, current, onPick) {
   container.replaceChildren();
@@ -1234,7 +1242,13 @@ function openEditor(event, date) {
   state.formOwner = event?.owner || state.me || 'both';
   ownerPicker($('f-owner'), state.formOwner, (owner) => { state.formOwner = owner; });
   state.formColor = event?.color || null;
-  colorPicker($('f-color'), state.formColor, (color) => { state.formColor = color; });
+  $('f-color').hidden = true;
+  showFormColor();
+  colorPicker($('f-color'), state.formColor, (color) => {
+    state.formColor = color;
+    showFormColor();
+    $('f-color').hidden = true; // 골랐으면 접습니다
+  });
 
   setRepeat(event?.repeat || 'none');
   renderRepeatNote();
@@ -2500,6 +2514,10 @@ $('sheet-close').addEventListener('click', closeSheet);
 $('sheet-backdrop').addEventListener('click', closeSheet);
 $('editor-form').addEventListener('submit', saveEvent);
 $('f-cancel').addEventListener('click', () => $('editor').close());
+$('f-color-btn').addEventListener('click', () => {
+  $('f-color').hidden = !$('f-color').hidden;
+  showFormColor();
+});
 $('editor-close').addEventListener('click', () => $('editor').close());
 $('f-delete').addEventListener('click', deleteEvent);
 $('f-multi').addEventListener('change', (e) => {

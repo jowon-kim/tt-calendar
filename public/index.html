@@ -161,19 +161,19 @@
       </button>
     </header>
 
-    <label class="field">
-      <span class="label" data-i18n="editor.what"></span>
-      <input id="f-title" type="text" maxlength="80" data-i18n-attr="placeholder:editor.whatHint">
-    </label>
+    <!-- 제목 칸 오른쪽의 동그라미가 이 일정의 색. 누르면 아래로 색이 펼쳐집니다 -->
+    <div class="field">
+      <label class="label" for="f-title" data-i18n="editor.what"></label>
+      <div class="title-row">
+        <input id="f-title" type="text" maxlength="80" data-i18n-attr="placeholder:editor.whatHint">
+        <button type="button" id="f-color-btn" class="color-opt" aria-expanded="false" aria-controls="f-color" data-i18n-attr="aria-label:editor.color;title:editor.color"></button>
+      </div>
+      <div id="f-color" class="color-picker" role="radiogroup" data-i18n-attr="aria-label:editor.color" hidden></div>
+    </div>
 
     <div class="field">
       <span class="label" data-i18n="editor.whose"></span>
       <div id="f-owner" class="owner-picker" role="radiogroup" data-i18n-attr="aria-label:editor.whose"></div>
-    </div>
-
-    <div class="field">
-      <span class="label" data-i18n="editor.color"></span>
-      <div id="f-color" class="color-picker" role="radiogroup" data-i18n-attr="aria-label:editor.color"></div>
     </div>
 
     <div class="field">
