@@ -14,7 +14,9 @@
 - ✅ 2단계 (2026-10-23, 사용자: "아직 아무도 안 씀" → 예전 아이디 문도 제거, main 직행 OK): `/api/signup`·`/api/login` → 410 `error.googleOnly`, `PASSWORD_SIGNIN=on`일 때만 열림(test.mjs가 켜고 씀, 꺼진 기본값 테스트 추가, red→green 확인). 화면에서 아이디 폼·CSS·안 쓰는 키 전부 제거. AGENTS.md 반영
 - ✅ 3단계 코드 (2026-10-23): `@capawesome/capacitor-google-sign-in@0.1.4` 설치·`app:sync`, `app.js` `loadGoogle`이 안드로이드 앱이면 플러그인 `initialize({ clientId: 웹 })` → 우리 버튼 → `signIn()`의 idToken을 `/api/google`로. 아이폰 앱은 숨김 유지. 닫기(cancel)는 조용히. 화면 테스트 추가, 디버그 APK 빌드 OK
 - ⬜ 사용자: 구글 콘솔에 Android OAuth 클라이언트 등록 (docs/APPS.md 2-1, 디버그 SHA-1 적어둠) → 실기기에서 가입·초대·탈퇴 확인 (아직 실기기 미확인)
-- ⬜ 4단계 문서: README*, privacy.html, LAUNCH.md, landing 문구
+- ✅ 4단계 문서 (2026-10-23): README·README.ko, privacy.html(한/영), landing(en/ko, 재생성), LAUNCH.md(심사 계정 ⚠, Data safety 이메일 행)
+- ⬜ 사용자: 심사용 **구글** 계정 2개 만들어 짝짓기 (LAUNCH.md 심사용 계정 행)
+- ⬜ 나중에: 5단계 iOS 애플 로그인
 
 ## 할 일 (순서대로, 단계마다 `npm test`)
 
