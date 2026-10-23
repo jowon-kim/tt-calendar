@@ -27,6 +27,7 @@ globalThis.I18N.ko = {
   'gate.newPassword': '새 비밀번호 (8자 이상)',
   'gate.about': 'TT는 어떤 앱인가요?',
   'gate.invited': '초대받았어요. Google로 계속하면 그 달력에 함께 들어가요.',
+  'gate.continueGoogle': 'Google로 계속하기',
   'gate.failed': '들어가지 못했어요',
 
   /* ── 달력 ── */

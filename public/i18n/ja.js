@@ -26,6 +26,7 @@ globalThis.I18N.ja = {
   'gate.newPassword': '新しいパスワード（8文字以上）',
   'gate.about': 'TTってどんなアプリ？',
   'gate.invited': '招待されました。Googleで続けると、そのカレンダーに入れます。',
+  'gate.continueGoogle': 'Googleで続ける',
   'gate.failed': '入れませんでした',
 
   /* ── Calendar ── */
