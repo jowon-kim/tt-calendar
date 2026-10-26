@@ -1030,7 +1030,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const packs = run('Object.keys(I18N)');
   ok('the guide no longer talks about a password to write down',
     packs.every((l) => !/password|비밀번호|パスワードは|密码|contraseña|mot de passe|Passwort|senha|пароль/i.test(run(`I18N['${l}']['guide.setup6.p1']`).replace(/no password|비밀번호가 없|忘れるパスワードはありません|没有会忘记的密码|no hay contraseña|pas de mot de passe|kein Passwort|não há senha|нет пароля/i, ''))));
-  ok('and points to the invite on the home screen', run(`I18N.ko['guide.setup2.p2']`).includes(run(`I18N.ko['home.inviteGo']`)));
+  ok('and points to the invite on the home screen', run(`I18N.ko['guide.setupInvite.p1']`).includes(run(`I18N.ko['home.inviteGo']`)));
   ok('its picture shows signed-in devices, not a password button', !readFileSync('public/index.html', 'utf8').includes('data-i18n="settings.changePassword"></text>'));
 }
 
@@ -1039,6 +1039,27 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const css = readFileSync('public/style.css', 'utf8');
   const night = css.slice(css.indexOf('[data-theme="night"] {'), css.indexOf('}', css.indexOf('[data-theme="night"] {')));
   ok('the night theme asks the browser for dark built-in controls', /color-scheme:\s*dark/.test(night));
+}
+
+/* 사용법 "처음 설정" — 첫 진입에서 이미 한 것(이름·설치)은 빼고 남은 할 일 셋, 끝난 건 숨기고 다시 셉니다 */
+{
+  const html = readFileSync('public/index.html', 'utf8');
+  const setup = html.slice(html.indexOf('id="guide-setup"'), html.indexOf('id="guide-use"'));
+  const steps = [...setup.matchAll(/data-step="([a-z]+)"/g)].map((m) => m[1]);
+  ok('the setup tab is three steps: invite, the day you met, notifications', JSON.stringify(steps) === '["invite","since","push"]', steps);
+  ok('without the name or the install it already did',
+    !/settings\.appName|settings\.people|guide\.addToHome|install\./.test(setup));
+  ok('looks, language and account moved to "day to day"', /guide\.setup4\.h[\s\S]*guide\.setup5\.h[\s\S]*guide\.setup6\.h/.test(html.slice(html.indexOf('id="guide-use"'))));
+
+  const fake = steps.map((step) => { const el = new El('section'); el.dataset.step = step; const n = new El('span'); el.querySelector = () => n; el.n = n; return el; });
+  $('guide-setup').querySelectorAll = () => fake;
+  run(`state.paired = true; state.settings.since = '2024-02-14'; renderSetupSteps()`);
+  ok('with them in and the day set, only notifications is left, as step 1',
+    fake[0].hidden && fake[1].hidden && !fake[2].hidden && fake[2].n.textContent === '1');
+  run(`state.paired = false; state.settings.since = null; renderSetupSteps()`);
+  ok('alone with no day, all three show as 1, 2, 3', fake.every((f, i) => !f.hidden && f.n.textContent === String(i + 1)));
+  $('guide-setup').querySelectorAll = () => [];
+  run('state.paired = true');
 }
 
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */

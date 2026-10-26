@@ -2206,9 +2206,21 @@ function showGuideTab(which) {
 
 /* 처음 온 사람은 설정할 게 있고, 다시 찾아온 사람은 쓰는 법이 궁금합니다. */
 function openGuide(tab = 'use') {
+  renderSetupSteps();
   showGuideTab(tab);
   renderGuideCta();
   $('guide').showModal();
+}
+
+/** "처음 설정"은 남은 할 일만 — 상대가 들어왔으면 부르기를, 처음 만난 날이 있으면 그 단계를 숨기고
+    보이는 것만 1, 2, 3으로 다시 셉니다. 알림 켜기는 마지막 단추가 그 자리에서 하니 늘 남겨요. */
+function renderSetupSteps() {
+  const done = { invite: state.paired, since: !!state.settings.since };
+  let n = 0;
+  for (const step of $('guide-setup').querySelectorAll('.guide-step')) {
+    step.hidden = !!done[step.dataset.step];
+    if (!step.hidden) step.querySelector('.guide-n').textContent = String(++n);
+  }
 }
 
 /** 이 기기에서 처음 열었으면 한 번 보여줍니다. */
