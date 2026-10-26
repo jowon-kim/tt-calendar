@@ -134,6 +134,7 @@ globalThis.I18N.ja = {
   'settings.people': 'ふたり',
   'settings.nameA': 'ひとりめの名前',
   'settings.nameB': 'ふたりめの名前',
+  'settings.partnerLater': '相手が決めます',
   'settings.thisIsMe': 'わたしです',
   'settings.peopleNote': '名前は<b>ふたりとも</b>に見えます。<b>「わたし」はログインしたアカウント</b>で決まるので、どの端末から入っても同じです。',
   'settings.since': '出会った日',

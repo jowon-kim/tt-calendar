@@ -142,6 +142,7 @@ globalThis.I18N.fr = {
   'settings.people': 'Vous deux',
   'settings.nameA': 'Un prénom',
   'settings.nameB': 'L\'autre prénom',
+  'settings.partnerLater': 'À son arrivée',
   'settings.thisIsMe': 'C\'est moi',
   'settings.peopleNote': 'Vous voyez tous les deux les noms. <b>Qui est « moi » dépend de ton compte</b>, c\'est donc pareil sur chaque appareil où tu te connectes.',
   'settings.since': 'Le jour de votre rencontre',

@@ -141,6 +141,7 @@ globalThis.I18N.de = {
   'settings.people': 'Ihr zwei',
   'settings.nameA': 'Ein Name',
   'settings.nameB': 'Der andere Name',
+  'settings.partnerLater': 'Wählt es selbst',
   'settings.thisIsMe': 'Das bin ich',
   'settings.peopleNote': 'Ihr seht beide die Namen. <b>Wer „ich“ bin, legt dein Konto fest</b> – auf jedem Gerät, auf dem du dich anmeldest, ist es gleich.',
   'settings.since': 'Der Tag, an dem ihr euch kennengelernt habt',

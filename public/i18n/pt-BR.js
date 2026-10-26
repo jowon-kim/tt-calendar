@@ -142,6 +142,7 @@ globalThis.I18N['pt-BR'] = {
   'settings.people': 'Vocês dois',
   'settings.nameA': 'Um nome',
   'settings.nameB': 'O outro nome',
+  'settings.partnerLater': 'Seu par escolhe',
   'settings.thisIsMe': 'Sou eu',
   'settings.peopleNote': 'Os dois veem os nomes. <b>Quem é “eu” vem da sua conta</b>, então é igual em qualquer aparelho em que você entrar.',
   'settings.since': 'O dia em que vocês se conheceram',

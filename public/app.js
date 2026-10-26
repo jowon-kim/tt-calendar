@@ -1724,6 +1724,13 @@ function renderPeople() {
     card.querySelector('.person-bud').replaceChildren(budIcon(owner));
     card.dataset.me = String(state.me === owner);
   });
+  // 상대가 아직 없으면 그 칸은 비워 둡니다 — 미리 적으면 상대에게 "뭐라고 불러 드릴까요?"가 안 뜨고,
+  // 먼저 와 있던 사람에게 "들어왔어요" 알림도 가지 않아요. 상대가 들어와 직접 정합니다
+  if (!state.me) return;
+  const other = $(`s-name-${state.me === 'a' ? 'b' : 'a'}`);
+  other.disabled = !state.paired;
+  other.placeholder = state.paired ? '' : t('settings.partnerLater');
+  $(`s-name-${state.me}`).disabled = false;
 }
 
 /* ── 달력 사진 넣고 빼기 ─────────────────── */
@@ -2059,6 +2066,13 @@ let settingsBefore = null; // 담기 전 값 — 실패하면 여기로 돌아�
 
 function saveSetting(patch, wait = 600) {
   if (settingsBefore === null) settingsBefore = { ...state.settings };
+  // 이름은 자리마다 따로 — 바꾼 자리만 모아 보내고, 화면의 다른 자리 이름은 그대로 둡니다
+  if (patch.names) {
+    settingsPatch.names = { ...settingsPatch.names, ...patch.names };
+    state.settings.names = { ...state.settings.names, ...patch.names };
+    const { names, ...rest } = patch;
+    patch = rest;
+  }
   Object.assign(settingsPatch, patch);
   Object.assign(state.settings, patch);
   renderTitle(); // 윗줄 이름은 적는 대로 따라옵니다
@@ -2079,7 +2093,9 @@ async function sendSettings() {
   try {
     const saved = await api.call('PATCH', '/api/settings', sending);
     // 보낸 칸만 서버가 다듬은 값으로 맞춥니다. 테마는 따로 담기니 그대로 둬요.
-    for (const key of Object.keys(sending)) state.settings[key] = saved[key];
+    for (const key of Object.keys(sending)) {
+      state.settings[key] = key === 'names' ? { ...state.settings.names, ...saved.names } : saved[key];
+    }
     // 이름이 안 돌아왔으면 조용히 넘기지 않습니다 (DB에 앱 이름 칸이 아직 없을 때)
     if (sending.title && saved.title !== sending.title) toast(t('error.titleOnlyFailed'));
   } catch (err) {
@@ -2093,10 +2109,12 @@ async function sendSettings() {
 
 /** 둘 다 채워져 있을 때만 보냅니다 — 비면 서버가 '나'/'너'로 바꿔버려요. */
 function saveNames(wait) {
-  const a = $('s-name-a').value.trim();
-  const b = $('s-name-b').value.trim();
-  if (!a || !b) return;
-  saveSetting({ names: { a, b } }, wait);
+  // 바뀐 자리만, 빈 칸은 빼고 보냅니다. 예전엔 둘 다 차 있어야만 보내서, 혼자일 때(상대 칸이 빔)
+  // 내 이름을 고쳐도 저장되지 않았습니다. 그새 상대가 고친 자기 이름을 덮지도 않아요
+  const typed = { a: $('s-name-a').value.trim(), b: $('s-name-b').value.trim() };
+  const changed = Object.fromEntries(Object.entries(typed)
+    .filter(([slot, name]) => name && name !== state.settings.names[slot]));
+  if (Object.keys(changed).length) saveSetting({ names: changed }, wait);
 }
 
 /* ── 테마 ────────────────────────────────── */
@@ -3035,6 +3053,7 @@ async function sync(force = false) {
       renderTitle();
       restoreTheme();
       renderInvite();
+      renderPeople(); // 상대가 막 들어왔으면 그 이름 칸을 엽니다
       state.picked ? openSheet(state.picked) : render();
     }
   } catch { /* 조용히 넘어감 */ } finally {
