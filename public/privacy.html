@@ -42,8 +42,9 @@
 <tr><td>로그인 상태(쿠키)</td><td>다시 로그인하지 않고 쓰기. 서버엔 해시만 둡니다</td><td>마지막 사용 후 최대 60일</td></tr>
 <tr><td>계정을 만든 곳의 IP 주소(되돌릴 수 없는 해시로만)와 시각</td><td>한 곳에서 계정을 대량으로 만드는 것 막기</td><td>하루</td></tr>
 <tr><td>알림을 보냈다는 기록</td><td>같은 알림이 두 번 가지 않게</td><td>7일</td></tr>
+<tr><td>접속한 날짜(날짜만, 시각과 한 일은 남기지 않음)</td><td>하루·주 단위로 몇 명이 쓰는지 세기</td><td>90일</td></tr>
 </table>
-<p>위치, 연락처, 광고 식별자, 사용 기록 분석은 받지 않습니다.</p>
+<p>위치, 연락처, 광고 식별자는 받지 않고, 사용 기록은 위의 접속한 날짜 말고는 남기지 않습니다.</p>
 <p>내 기기에는 빨리 열리도록 달력 사본과 설정(언어, 테마 등)을 브라우저 저장소에 둡니다. 로그아웃하면 사본은 지워집니다.
 서버를 빌려주는 회사는 서비스를 돌리고 지키려고 요청 기록(IP 주소, 시각 등)을 짧게 보관합니다.</p>
 
@@ -126,8 +127,9 @@ calendar, and uses it for nothing else. There are no ads, and your data is never
 <tr><td>Sign-in state (cookie)</td><td>Staying signed in. Only a hash is kept on the server</td><td>Up to 60 days after last use</td></tr>
 <tr><td>The IP address an account was created from (only as a one-way hash) and the time</td><td>Stopping mass account creation from one place</td><td>One day</td></tr>
 <tr><td>Records of sent reminders</td><td>Not sending the same reminder twice</td><td>7 days</td></tr>
+<tr><td>The days you used the app (the date only — no times, nothing about what you did)</td><td>Counting how many people use it each day and week</td><td>90 days</td></tr>
 </table>
-<p>We do not collect location, contacts, advertising IDs or usage analytics.</p>
+<p>We do not collect location, contacts or advertising IDs, and keep no record of use beyond the dates above.</p>
 <p>On your device, the app keeps a copy of your calendar and your settings (language, theme and so on) in the
 browser's storage so it opens quickly. Signing out clears the copy. Our hosting provider keeps short-lived
 request logs (such as IP address and time) to run and protect the service.</p>

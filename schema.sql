@@ -74,6 +74,14 @@ alter table sessions add column if not exists id uuid not null default gen_rando
 alter table sessions add column if not exists device text not null default '';
 alter table sessions add column if not exists seen_at timestamptz not null default now();
 update sessions set device = '' where device <> '';
+
+-- 접속한 날. 운영 대시보드의 하루·주 단위 이용자 수를 셉니다. 날짜만 — 시각도, 무엇을 했는지도 안 둡니다.
+-- 하루에 한 사람 한 줄(로그인이 여럿이어도), 날짜는 한국 시간 기준. 90일 지나면 지웁니다(lib/accounts.js markActive).
+create table if not exists active_days (
+  day     date not null,
+  user_id uuid not null references users (id) on delete cascade,
+  primary key (day, user_id)
+);
 create unique index if not exists sessions_id_idx on sessions (id);
 
 -- 틀린 비밀번호 기록. 아이디 하나에 15분 동안 열 번이 넘으면 잠깐 막습니다.
