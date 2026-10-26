@@ -1083,6 +1083,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run('state.paired = true');
 }
 
+/* 토스트 글자는 어느 테마에서나 어두운 바탕 위의 흰색 — 밤 테마에서 --on-accent(어두운 색)로 묻혔습니다 */
+{
+  const css = readFileSync('public/style.css', 'utf8');
+  const rule = (sel) => css.slice(css.indexOf(sel + ' {'), css.indexOf('}', css.indexOf(sel + ' {')));
+  ok('toast text is white on every theme', /color:\s*#fff/.test(rule('.toast')) && !/color:\s*var\(--on-accent\)/.test(rule('.toast')) && /color:\s*#fff/.test(rule('.toast-action')));
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');
