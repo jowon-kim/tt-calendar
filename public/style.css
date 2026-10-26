@@ -853,6 +853,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .invite-card-text strong { font-size: 15px; color: var(--ink); }
 .invite-card-text span { font-size: 13px; line-height: 1.45; color: var(--muted); }
 .invite-card .btn { flex: none; }
+.home-nudge { margin-bottom: 18px; }
+.home-nudge:empty { display: none; }
+.invite-card-close {
+  flex: none; width: 32px; height: 32px; margin: -8px -8px -8px -4px;
+  border: 0; border-radius: 50%; background: transparent;
+  color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer;
+}
+.invite-card-close:hover { background: var(--surface-sink); }
 
 /* ═══════════════ 추가 버튼 (FAB) ═══════════════ */
 .fab {

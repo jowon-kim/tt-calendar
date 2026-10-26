@@ -607,10 +607,10 @@ function renderUpcoming() {
   const map = expand(from, to);
   const list = $('upcoming-list');
   list.replaceChildren();
-  // 다음 할 일 하나를 첫 화면 맨 위에 — 혼자면 상대 부르기, 둘이 됐는데 처음 만난 날이 없으면 그 날 넣기.
+  // 다음 할 일 하나를 "다가오는 일" 제목 위에 — 혼자면 상대 부르기, 둘이 됐는데 처음 만난 날이 없으면 그 날 넣기.
   // 같은 자리, 같은 모양이고 한 번에 하나만 섭니다
   const nudge = nextNudge();
-  if (nudge) list.append(nudge);
+  $('home-nudge').replaceChildren(...(nudge ? [nudge] : []));
 
   /* 여러 날 일정은 처음 보이는 날에 한 줄만 — 날마다 한 줄씩이면 열하루짜리 하나가
      목록을 다 차지해서 다른 일정이 밀려납니다. 이미 시작했으면 오늘 줄에 섭니다.
@@ -629,8 +629,9 @@ function renderUpcoming() {
     })])
     .filter(([, items]) => items.length)
     .slice(0, 12);
+  // 카드가 서 있고 일정이 없으면 카드 하나만 — "+ 로 심어볼까요"도, 빈 "다가오는 일" 제목도 두지 않습니다
+  $('upcoming-title').hidden = !rows.length && !!nudge;
   if (!rows.length) {
-    // 카드가 서 있으면 그것 하나만 — "+ 로 심어볼까요"까지 같이 두면 할 일이 둘이 됩니다
     if (!nudge) list.append(emptyState(t('upcoming.emptyTitle'), t('upcoming.emptyHint'), TODAY));
     return;
   }
@@ -647,17 +648,26 @@ function nextNudge() {
   if (!state.paired) {
     return nudgeCard('home-invite', t('home.inviteTitle'), t('home.inviteHint'), t('home.inviteGo'), sendInvite);
   }
-  if (!state.settings.since) {
+  if (!state.settings.since && localStorage.getItem(SINCE_SKIPPED) !== '1') {
     // 누르면 바로 연도 고르기 — 비어 있으면 datePicker가 연도부터 엽니다
     return nudgeCard('home-since', t('home.sinceTitle'), t('home.sinceHint'), t('home.sinceGo'), () =>
-      datePicker.open('s-since', (key) => saveSetting({ since: key }, 0)));
+      datePicker.open('s-since', (key) => saveSetting({ since: key }, 0)), skipSince);
   }
   return null;
 }
 
-/** 할 일 카드 — 제목, 한 줄 설명, 단추 하나 */
-function nudgeCard(id, titleText, hintText, label, onTap) {
-  const li = document.createElement('li');
+/* 처음 만난 날을 안 넣을 커플도 있어서, 그 카드만은 닫을 수 있습니다(기기마다 기억). 설정에서는 언제든 넣어요.
+   초대 카드는 닫지 못합니다 — 혼자면 이 앱의 다음 할 일이 그것뿐이라서. */
+const SINCE_SKIPPED = 'diary_since_skipped';
+
+function skipSince() {
+  localStorage.setItem(SINCE_SKIPPED, '1');
+  renderUpcoming();
+}
+
+/** 할 일 카드 — 제목, 한 줄 설명, 단추 하나. onClose를 주면 닫기 ×도 답니다 */
+function nudgeCard(id, titleText, hintText, label, onTap, onClose) {
+  const li = document.createElement('div');
   li.className = 'invite-card';
   const text = document.createElement('div');
   text.className = 'invite-card-text';
@@ -673,6 +683,16 @@ function nudgeCard(id, titleText, hintText, label, onTap) {
   go.textContent = label;
   go.addEventListener('click', () => onTap(go));
   li.append(text, go);
+  if (onClose) {
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.id = `${id}-close`;
+    close.className = 'invite-card-close';
+    close.setAttribute('aria-label', t('common.close'));
+    close.textContent = '×';
+    close.addEventListener('click', onClose);
+    li.append(close);
+  }
   return li;
 }
 
@@ -1524,6 +1544,9 @@ function openSettings() {
    네이티브 앱 안에서 만들어도 맞는 주소가 나옵니다. */
 function renderInvite() {
   $('s-invite-field').hidden = state.paired;
+  // 공유 시트가 있는 폰은 누르면 바로 보내지니 "보내기", 없으면 링크를 만들어 칸에 보여줍니다
+  $('s-invite').dataset.i18n = navigator.share ? 'home.inviteGo' : 'settings.inviteMake';
+  $('s-invite').textContent = t($('s-invite').dataset.i18n);
 }
 
 /** 초대 링크를 새로 만들어 보냅니다. 설정의 버튼과 첫 화면의 초대 카드가 같이 씁니다. */
@@ -1532,14 +1555,18 @@ async function sendInvite(button) {
     try {
       const { code } = await api.call('POST', '/api/invite');
       const url = `${location.origin}/?invite=${encodeURIComponent(code)}`;
-      const box = $('s-invite-link');
-      box.value = url;
-      $('s-invite-row').hidden = false;
-      // 폰이면 공유 시트로 바로 보냅니다. 닫아버려도 링크는 칸에 남아 있어요
+      $('s-invite-link').value = url;
+      // 폰이면 공유 시트로 바로 보냅니다 — 긴 주소 칸은 띄우지 않아요. 닫았으면 그대로 끝, 다시 누르면 됩니다.
+      // 공유 시트가 없거나 못 열면 주소 칸과 복사 단추를 보여주고 복사해 둡니다
       if (navigator.share) {
-        await navigator.share({ text: t('invite.shareText'), url }).catch(() => {});
-        return;
+        try {
+          await navigator.share({ text: t('invite.shareText'), url });
+          return;
+        } catch (err) {
+          if (err?.name === 'AbortError') return;
+        }
       }
+      $('s-invite-row').hidden = false;
       await copyInvite();
     } catch (err) {
       toast(err.message || t('error.saveFailed'));
@@ -2267,6 +2294,7 @@ function signOut() {
   localStorage.removeItem(STATE_KEY);
   localStorage.removeItem('diary_title');
   localStorage.removeItem('diary_sub');
+  localStorage.removeItem(SINCE_SKIPPED); // 다른 커플이 이 폰으로 들어오면 그 카드는 다시 보여야 해서
   state.events = [];
   state.photos = [];
   state.me = null;

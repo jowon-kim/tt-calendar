@@ -435,6 +435,25 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.__realCall = realCall;
   run('api.call = globalThis.__realCall');
   delete navigator.clipboard;
+
+  /* 공유 시트가 있는 폰: 긴 주소 칸 없이 "상대 초대하기" 한 번으로 보냅니다 */
+  run(`$('s-invite-row').hidden = true; api.call = async (method, url) => (url === '/api/invite' ? { code: 'xyz' } : {})`);
+  const sent = [];
+  navigator.share = async (data) => { sent.push(data); };
+  run('renderInvite()');
+  ok('with a share sheet the settings button says send', $('s-invite').textContent === run(`t('home.inviteGo')`), $('s-invite').textContent);
+  await run('makeInvite()');
+  ok('it opens the share sheet and shows no long address box', sent.length === 1 && sent[0].url.endsWith('/?invite=xyz') && $('s-invite-row').hidden, sent);
+  navigator.share = async () => { throw Object.assign(new Error('closed'), { name: 'AbortError' }); };
+  await run('makeInvite()');
+  ok('closing the share sheet leaves nothing behind', $('s-invite-row').hidden);
+  navigator.share = async () => { throw Object.assign(new Error('nope'), { name: 'NotAllowedError' }); };
+  await run('makeInvite()');
+  ok('if the share sheet cannot open, the address box comes back', !$('s-invite-row').hidden);
+  delete navigator.share;
+  run('renderInvite()');
+  ok('without a share sheet the button makes a link', $('s-invite').textContent === run(`t('settings.inviteMake')`));
+  run('api.call = globalThis.__realCall');
   run(`state.paired = true; renderInvite()`);
   ok('once they are two the invite goes away', $('s-invite-field').hidden);
   run(`$('settings').close()`);
@@ -924,9 +943,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
 /* 혼자일 땐 첫 화면 맨 위에 초대 카드 하나 — 설정 깊이 들어가지 않고 상대를 부릅니다 */
 {
   run(`state.me = 'a'; state.paired = false; state.events = []; render()`);
-  const first = $('upcoming-list').children[0];
+  const first = $('home-nudge').children[0];
   ok('alone, the home screen leads with inviting them', first?.className === 'invite-card', first?.className);
-  ok('and only that — no "add one with +" next to it', $('upcoming-list').children.length === 1);
+  ok('above the upcoming list, not inside it, so it does not look like a plan',
+    !$('upcoming-list').children.some((c) => c.className === 'invite-card'));
+  ok('and only that — no "add one with +" next to it', $('upcoming-list').children.length === 0);
+  ok('nor an empty "upcoming" heading under it', $('upcoming-title').hidden);
+  ok('the invite card cannot be closed', !first.children.some((c) => c.id === 'home-invite-close'));
   const shared = [];
   navigator.share = async (data) => { shared.push(data); };
   fetches.length = 0;
@@ -936,18 +959,27 @@ ok('and is left alone', savedLocale().length === 0, fetches);
     fetches.some((f) => f.url === '/api/invite' && f.method === 'POST') && shared.length === 1 && /\/\?invite=/.test(shared[0].url), shared);
   delete navigator.share;
   run(`state.paired = true; state.settings.since = '2024-02-14'; render()`);
-  ok('once they are in, the card is gone', $('upcoming-list').children[0]?.className !== 'invite-card');
+  ok('once they are in, the card is gone', $('home-nudge').children.length === 0);
+  ok('and the heading is back', !$('upcoming-title').hidden);
 
   /* 둘이 됐는데 처음 만난 날이 없으면 같은 자리에 "처음 만난 날 넣기" — 한 번에 하나만 */
   run(`state.paired = false; state.settings.since = null; render()`);
-  ok('alone with no day, only the invite card shows', $('upcoming-list').children.filter((c) => c.className === 'invite-card').length === 1
-    && $('upcoming-list').children[0].children.some((c) => c.id === 'home-invite'));
+  ok('alone with no day, only the invite card shows', $('home-nudge').children.length === 1
+    && $('home-nudge').children[0].children.some((c) => c.id === 'home-invite'));
   run(`state.paired = true; render()`);
-  const since = $('upcoming-list').children[0];
+  const since = $('home-nudge').children[0];
   ok('together with no day, the same card asks for the day you met',
     since?.className === 'invite-card' && since.children.some((c) => c.id === 'home-since')
-    && $('upcoming-list').children.filter((c) => c.className === 'invite-card').length === 1);
-  since.children.find((c) => c.id === 'home-since').click();
+    && $('home-nudge').children.length === 1);
+
+  /* 처음 만난 날을 안 넣을 커플은 닫을 수 있습니다 — 기기마다 기억하고, 로그아웃하면 잊어요 */
+  since.children.find((c) => c.id === 'home-since-close').click();
+  ok('the day-you-met card can be closed', $('home-nudge').children.length === 0);
+  run('render()');
+  ok('and stays closed on this device', $('home-nudge').children.length === 0 && localStorage.getItem('diary_since_skipped') === '1');
+  run(`localStorage.removeItem('diary_since_skipped'); render()`);
+  const sinceAgain = $('home-nudge').children[0];
+  sinceAgain.children.find((c) => c.id === 'home-since').click();
   ok('one tap opens the years straight away', $('datepick').open && !$('dp-years').hidden);
   fetches.length = 0;
   $('dp-years').children.find((b) => String(b.textContent) === '2023').click();
@@ -957,7 +989,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('picking it saves the day', run('state.settings.since') === '2023-05-14'
     && fetches.some((f) => f.url === '/api/settings' && JSON.parse(f.body).since === '2023-05-14'), run('state.settings.since'));
   run('render()');
-  ok('and the card goes away', $('upcoming-list').children[0]?.className !== 'invite-card');
+  ok('and the card goes away', $('home-nudge').children.length === 0);
 }
 
 /* 지우기 — 묻지 않고 바로, 대신 몇 초 동안 되돌리기. 서버에는 그 뒤에 보냅니다 */
