@@ -840,6 +840,19 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .empty .empty-line { line-height: 1.6; }
 
+/* 혼자일 때 첫 화면 맨 위의 초대 카드 */
+.invite-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 16px 16px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.invite-card-text { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.invite-card-text strong { font-size: 15px; color: var(--ink); }
+.invite-card-text span { font-size: 13px; line-height: 1.45; color: var(--muted); }
+.invite-card .btn { flex: none; }
+
 /* ═══════════════ 추가 버튼 (FAB) ═══════════════ */
 .fab {
   position: fixed;

@@ -591,6 +591,9 @@ function renderUpcoming() {
   const map = expand(from, to);
   const list = $('upcoming-list');
   list.replaceChildren();
+  // 혼자면 다음 할 일은 상대를 부르는 것 — 설정 깊이 들어가지 않게 첫 화면 맨 위에 둡니다
+  const alone = !!state.me && !state.paired;
+  if (alone) list.append(inviteCard());
 
   /* 여러 날 일정은 처음 보이는 날에 한 줄만 — 날마다 한 줄씩이면 열하루짜리 하나가
      목록을 다 차지해서 다른 일정이 밀려납니다. 이미 시작했으면 오늘 줄에 섭니다.
@@ -610,7 +613,8 @@ function renderUpcoming() {
     .filter(([, items]) => items.length)
     .slice(0, 12);
   if (!rows.length) {
-    list.append(emptyState(t('upcoming.emptyTitle'), t('upcoming.emptyHint'), TODAY));
+    // 혼자일 땐 초대 카드 하나만 — "+ 로 심어볼까요"까지 같이 두면 할 일이 둘이 됩니다
+    if (!alone) list.append(emptyState(t('upcoming.emptyTitle'), t('upcoming.emptyHint'), TODAY));
     return;
   }
 
@@ -618,6 +622,27 @@ function renderUpcoming() {
   for (const [date, items] of rows) {
     for (const item of items) list.append(entryRow(date, item, true, deal(date, item)));
   }
+}
+
+/** 혼자 쓰는 동안 첫 화면에 서는 초대 카드. 누르면 링크를 만들어 바로 보냅니다 (sendInvite) */
+function inviteCard() {
+  const li = document.createElement('li');
+  li.className = 'invite-card';
+  const text = document.createElement('div');
+  text.className = 'invite-card-text';
+  const title = document.createElement('strong');
+  title.textContent = t('home.inviteTitle');
+  const hint = document.createElement('span');
+  hint.textContent = t('home.inviteHint');
+  text.append(title, hint);
+  const go = document.createElement('button');
+  go.type = 'button';
+  go.id = 'home-invite';
+  go.className = 'btn btn-solid';
+  go.textContent = t('home.inviteGo');
+  go.addEventListener('click', () => sendInvite(go));
+  li.append(text, go);
+  return li;
 }
 
 function emptyState(line1, line2, key) {
@@ -1465,8 +1490,9 @@ function renderInvite() {
   $('s-invite-field').hidden = state.paired;
 }
 
-async function makeInvite() {
-  await once($('s-invite'), async () => {
+/** 초대 링크를 새로 만들어 보냅니다. 설정의 버튼과 첫 화면의 초대 카드가 같이 씁니다. */
+async function sendInvite(button) {
+  await once(button, async () => {
     try {
       const { code } = await api.call('POST', '/api/invite');
       const url = `${location.origin}/?invite=${encodeURIComponent(code)}`;
@@ -1484,6 +1510,8 @@ async function makeInvite() {
     }
   });
 }
+
+const makeInvite = () => sendInvite($('s-invite'));
 
 /** 칸에 있는 초대 링크를 복사합니다. 클립보드를 못 쓰면 골라 두기만 해서 길게 눌러 복사하게 */
 async function copyInvite() {

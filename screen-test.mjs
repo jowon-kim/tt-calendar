@@ -936,6 +936,24 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.fetch = realFetch;
 }
 
+/* 혼자일 땐 첫 화면 맨 위에 초대 카드 하나 — 설정 깊이 들어가지 않고 상대를 부릅니다 */
+{
+  run(`state.me = 'a'; state.paired = false; state.events = []; render()`);
+  const first = $('upcoming-list').children[0];
+  ok('alone, the home screen leads with inviting them', first?.className === 'invite-card', first?.className);
+  ok('and only that — no "add one with +" next to it', $('upcoming-list').children.length === 1);
+  const shared = [];
+  navigator.share = async (data) => { shared.push(data); };
+  fetches.length = 0;
+  first.children.find((c) => c.id === 'home-invite').click();
+  await sleep(20);
+  ok('one tap makes a link and opens the share sheet',
+    fetches.some((f) => f.url === '/api/invite' && f.method === 'POST') && shared.length === 1 && /\/\?invite=/.test(shared[0].url), shared);
+  delete navigator.share;
+  run(`state.paired = true; render()`);
+  ok('once they are in, the card is gone', $('upcoming-list').children[0]?.className !== 'invite-card');
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');
