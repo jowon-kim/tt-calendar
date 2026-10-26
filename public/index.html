@@ -296,35 +296,6 @@
     <div id="s-pane-basic" role="tabpanel">
     <p class="note pane-lead" data-i18n-html="settings.autosave"></p>
 
-    <label class="field">
-      <span class="label" data-i18n="settings.language"></span>
-      <select id="s-locale"></select>
-    </label>
-
-    <label class="field">
-      <span class="label" data-i18n="settings.holidays"></span>
-      <select id="s-region"></select>
-      <p class="note" data-i18n="settings.holidaysNote"></p>
-    </label>
-
-    <label class="field">
-      <span class="label" data-i18n="settings.timezone"></span>
-      <select id="s-timezone"></select>
-      <p class="note" data-i18n="settings.timezoneNote"></p>
-    </label>
-
-    <label class="field">
-      <span class="label" data-i18n="settings.appName"></span>
-      <input id="s-title" type="text" maxlength="12" data-i18n-attr="placeholder:default.title">
-      <p class="note" data-i18n="settings.appNameNote"></p>
-    </label>
-
-    <label class="field">
-      <span class="label" data-i18n="settings.greeting"></span>
-      <input id="s-subtitle" type="text" maxlength="20" data-i18n-attr="placeholder:default.subtitle">
-      <p class="note" data-i18n="settings.greetingNote"></p>
-    </label>
-
     <div class="field">
       <span class="label" data-i18n="settings.people"></span>
       <div id="s-people" class="people">
@@ -382,6 +353,36 @@
       <button type="button" id="s-install" class="btn btn-ghost btn-wide" data-i18n="install.button"></button>
       <p class="note" data-i18n="install.note"></p>
     </div>
+
+    <!-- 한 번 정하면 잘 안 바꾸는 것들은 아래로 — 두 사람·초대·처음 만난 날·알림이 먼저 -->
+    <label class="field">
+      <span class="label" data-i18n="settings.language"></span>
+      <select id="s-locale"></select>
+    </label>
+
+    <label class="field">
+      <span class="label" data-i18n="settings.holidays"></span>
+      <select id="s-region"></select>
+      <p class="note" data-i18n="settings.holidaysNote"></p>
+    </label>
+
+    <label class="field">
+      <span class="label" data-i18n="settings.timezone"></span>
+      <select id="s-timezone"></select>
+      <p class="note" data-i18n="settings.timezoneNote"></p>
+    </label>
+
+    <label class="field">
+      <span class="label" data-i18n="settings.appName"></span>
+      <input id="s-title" type="text" maxlength="12" data-i18n-attr="placeholder:default.title">
+      <p class="note" data-i18n="settings.appNameNote"></p>
+    </label>
+
+    <label class="field">
+      <span class="label" data-i18n="settings.greeting"></span>
+      <input id="s-subtitle" type="text" maxlength="20" data-i18n-attr="placeholder:default.subtitle">
+      <p class="note" data-i18n="settings.greetingNote"></p>
+    </label>
 
     <div class="field">
       <span class="label" data-i18n="settings.account"></span>
