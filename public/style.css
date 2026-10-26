@@ -841,7 +841,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .empty .empty-line { line-height: 1.6; }
 
-/* 혼자일 때 첫 화면 맨 위의 초대 카드 */
+/* 첫 화면 맨 위의 할 일 카드 하나 — 혼자면 상대 초대, 둘이 되면 처음 만난 날 */
 .invite-card {
   display: flex; align-items: center; gap: 12px;
   padding: 16px 16px 16px 18px;
