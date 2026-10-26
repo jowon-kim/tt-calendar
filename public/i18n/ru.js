@@ -149,6 +149,7 @@ globalThis.I18N.ru = {
   'settings.people': 'Вы двое',
   'settings.nameA': 'Одно имя',
   'settings.nameB': 'Другое имя',
+  'settings.partnerLater': 'Выберет сам',
   'settings.thisIsMe': 'Это я',
   'settings.peopleNote': 'Имена видите вы оба. <b>Кто из вас «я», определяет аккаунт</b>, поэтому на любом устройстве, где ты войдёшь, будет одинаково.',
   'settings.since': 'День, когда вы познакомились',

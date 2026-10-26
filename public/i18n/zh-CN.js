@@ -135,6 +135,7 @@ globalThis.I18N['zh-CN'] = {
   'settings.people': '你们两个',
   'settings.nameA': '一个人的名字',
   'settings.nameB': '另一个人的名字',
+  'settings.partnerLater': '对方自己填',
   'settings.thisIsMe': '这是我',
   'settings.peopleNote': '两个人都<b>能看到</b>名字。<b>“我”跟着登录的账号走</b>，在哪台设备登录都一样。',
   'settings.since': '相识的日子',

@@ -152,6 +152,7 @@ globalThis.I18N.en = {
   'settings.people': 'The two of you',
   'settings.nameA': 'One name',
   'settings.nameB': 'The other name',
+  'settings.partnerLater': 'They pick it',
   'settings.thisIsMe': 'This is me',
   'settings.peopleNote': 'Both of you see the names. <b>Which one is “me” follows your account</b>, so it\'s the same on every device you sign in on.',
   'settings.since': 'The day you met',

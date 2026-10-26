@@ -142,6 +142,7 @@ globalThis.I18N.es = {
   'settings.people': 'Vosotros dos',
   'settings.nameA': 'Un nombre',
   'settings.nameB': 'El otro nombre',
+  'settings.partnerLater': 'Lo pondrá al entrar',
   'settings.thisIsMe': 'Soy yo',
   'settings.peopleNote': 'Ambos ven los nombres. <b>Quién eres “tú” lo decide tu cuenta</b>, así que es igual en cualquier dispositivo donde entres.',
   'settings.since': 'El día que os conocisteis',

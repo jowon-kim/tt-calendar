@@ -1090,6 +1090,28 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('toast text is white on every theme', /color:\s*#fff/.test(rule('.toast')) && !/color:\s*var\(--on-accent\)/.test(rule('.toast')) && /color:\s*#fff/.test(rule('.toast-action')));
 }
 
+/* 혼자일 땐 상대 이름 칸을 비워 둡니다(상대가 들어와 정함), 내 이름은 혼자여도 저장됩니다 */
+{
+  run(`state.me = 'a'; state.paired = false; state.settings.names = { a: '미나', b: '' }; fillSettings()`);
+  ok('alone, the partner name box waits for them', $('s-name-b').disabled && $('s-name-b').placeholder === run(`t('settings.partnerLater')`));
+  ok('and my own stays open', !$('s-name-a').disabled);
+  fetches.length = 0;
+  $('s-name-a').value = '미나야';
+  run('saveNames(0)');
+  await sleep(30);
+  const sent = fetches.filter((f) => f.url === '/api/settings' && f.method === 'PATCH').map((f) => JSON.parse(f.body).names);
+  ok('renaming myself while alone is saved (it used to wait for both names)', sent.length === 1 && JSON.stringify(sent[0]) === JSON.stringify({ a: '미나야' }), sent);
+  ok('without touching the other seat', run('state.settings.names.b') === '');
+  run(`state.paired = true; state.settings.names = { a: '미나야', b: '레오' }; fillSettings()`);
+  ok('once they are in, their name box opens', !$('s-name-b').disabled);
+  fetches.length = 0;
+  $('s-name-b').value = '레오야';
+  run('saveNames(0)');
+  await sleep(30);
+  const sent2 = fetches.filter((f) => f.url === '/api/settings' && f.method === 'PATCH').map((f) => JSON.parse(f.body).names);
+  ok('changing their name sends only theirs', sent2.length === 1 && JSON.stringify(sent2[0]) === JSON.stringify({ b: '레오야' }), sent2);
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');

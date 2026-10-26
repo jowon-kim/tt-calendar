@@ -135,6 +135,7 @@ globalThis.I18N.ko = {
   'settings.people': '두 사람',
   'settings.nameA': '한 사람 이름',
   'settings.nameB': '또 한 사람 이름',
+  'settings.partnerLater': '상대가 정해요',
   'settings.thisIsMe': '나예요',
   'settings.peopleNote': '이름은 <b>둘 다에게</b> 보입니다. <b>‘나’는 로그인한 계정</b>을 따라가서 어느 기기에서 들어와도 같아요.',
   'settings.since': '처음 만난 날',

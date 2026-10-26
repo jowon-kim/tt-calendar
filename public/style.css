@@ -1086,6 +1086,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .person .bud { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none; }
 .person .bud svg { width: 17px; height: 17px; }
 .person input { padding: 7px 9px; font-size: 14px; min-width: 0; }
+.person input:disabled { font-size: 12.5px; opacity: .8; } /* 상대가 아직 없을 때 — "상대가 정해요" */
 .people-note { margin: 9px 0 0; }
 .person-me {
   grid-column: 1 / -1;
