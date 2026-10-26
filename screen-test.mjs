@@ -990,6 +990,41 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('once they are in, the card is gone', $('upcoming-list').children[0]?.className !== 'invite-card');
 }
 
+/* 지우기 — 묻지 않고 바로, 대신 몇 초 동안 되돌리기. 서버에는 그 뒤에 보냅니다 */
+{
+  const plan = { id: 'undo-me', title: '영화', date: run('TODAY'), endDate: null, time: null, endTime: null, memo: '', owner: 'a', repeat: 'none', color: null };
+  globalThis.__plan = plan;
+  run(`state.picked = null; state.events = [__plan]; render(); openEditor(__plan)`);
+  fetches.length = 0;
+  $('f-delete').click();
+  await sleep(10);
+  ok('deleting asks nothing', !$('ask').open);
+  ok('the event is gone at once', run('state.events.length') === 0 && !$('editor').open);
+  const undo = $('toast').children.find((c) => c.className === 'toast-action');
+  ok('with an undo in the toast', !!undo && undo.textContent === run(`t('toast.undo')`), $('toast').textContent);
+  ok('nothing goes to the server yet', !fetches.some((f) => f.method === 'DELETE'));
+  undo.click();
+  ok('undo brings it back', run('state.events.length') === 1 && run('state.events[0].id') === 'undo-me');
+  await run('sendDelete()');
+  ok('and nothing is ever deleted on the server', !fetches.some((f) => f.method === 'DELETE'));
+
+  run(`openEditor(__plan)`);
+  $('f-delete').click();
+  await sleep(10);
+  await run('sendDelete()'); // 몇 초가 지난 것처럼
+  ok('left alone, the delete reaches the server', fetches.some((f) => f.method === 'DELETE' && f.url === '/api/events/undo-me'), fetches);
+
+  globalThis.__plan = { ...plan, id: 'every-month', repeat: 'monthly' };
+  run(`state.events = [__plan]; openEditor(__plan)`);
+  $('f-delete').click();
+  await sleep(10);
+  ok('a monthly event still asks first — it goes from every month', $('ask').open);
+  $('ask-no').click();
+  await sleep(10);
+  ok('and saying no keeps it', run('state.events.length') === 1);
+  run(`$('editor').close(); state.events = []; render()`);
+}
+
 /* 사용법이 지금 동작과 맞게 — 구글 로그인이라 비밀번호 이야기가 없고, 초대는 첫 화면에서 */
 {
   const packs = run('Object.keys(I18N)');

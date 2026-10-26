@@ -333,6 +333,8 @@ globalThis.I18N.ru = {
   'toast.saved': 'Добавлено',
   'toast.edited': 'Изменено',
   'toast.deleted': 'Удалено',
+  'toast.restored': 'Вернули',
+  'toast.undo': 'Отменить',
   'toast.photoAdded': 'Добавлено',
   'toast.photosAdded': 'Добавлено {n} фото',
   'toast.photosPartial': 'Помещается только {max}, поэтому добавлено {n}',

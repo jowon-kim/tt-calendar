@@ -100,9 +100,23 @@ function prettyTimeRange(t, endT) {
   return endT ? `${prettyTime(t)} ~ ${prettyTime(endT)}` : prettyTime(t);
 }
 
-function toast(message) {
+/** action을 주면 토스트 안에 단추 하나(예: 되돌리기)를 달고 조금 더 오래 둡니다 */
+function toast(message, action) {
   const el = $('toast');
   el.textContent = message;
+  if (action) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'toast-action';
+    b.textContent = action.label;
+    b.addEventListener('click', () => {
+      clearTimeout(toast.timer);
+      if (el.hidePopover) { try { el.hidePopover(); } catch { /* 이미 닫힘 */ } }
+      el.hidden = true;
+      action.run();
+    });
+    el.append(' ', b);
+  }
   // 여러 줄이면 알약 모양(999px)이 옆으로만 뚱뚱해져서 모서리를 줄입니다
   el.classList.toggle('multi', message.includes('\n'));
   clearTimeout(toast.timer);
@@ -115,8 +129,10 @@ function toast(message) {
   toast.timer = setTimeout(() => {
     if (el.hidePopover) { try { el.hidePopover(); } catch { /* 이미 닫힘 */ } }
     el.hidden = true;
-  }, 2200);
+  }, action ? UNDO_MS : 2200);
 }
+
+const UNDO_MS = 5000; // 지운 일정을 되돌릴 수 있는 시간
 
 /* 방금 펼쳐진 칸이 화면 밖이면 이것도 "눌러도 아무 일 없네"로 보입니다 */
 function bringIntoView(el) {
@@ -1406,29 +1422,58 @@ async function saveEvent(e) {
   if (state.picked) openSheet(state.picked); else render();
 }
 
+/* 지우기는 묻지 않고 바로, 대신 몇 초 동안 "되돌리기"를 줍니다 — 실수로 눌러도 한 번에 되돌아와요.
+   서버에는 그 시간이 지나야 보내서, 되돌리면 상대에게 지웠다는 알림도 가지 않습니다.
+   매달·매년 돌아오는 일정은 모든 달이 한꺼번에 지워지니 예전처럼 한 번 묻습니다. */
+let pendingDelete = null; // { event, timer }
+
 async function deleteEvent() {
   if (!state.editing) return;
   const target = state.editing;
-  const every = target.repeat === 'monthly' ? t('ask.deleteEveryMonthly')
-    : target.repeat === 'yearly' ? t('ask.deleteEveryYearly')
-    : '';
-  if (!await ask(t('ask.delete', { title: target.title, every }), t('ask.deleteYes'))) return;
-  // 만들기·고치기와 같은 이유로 먼저 지우고, 실패하면 도로 넣습니다
-  const before = state.events.map((x) => x);
+  if (target.repeat === 'monthly' || target.repeat === 'yearly') {
+    const every = t(target.repeat === 'monthly' ? 'ask.deleteEveryMonthly' : 'ask.deleteEveryYearly');
+    if (!await ask(t('ask.delete', { title: target.title, every }), t('ask.deleteYes'))) return;
+  }
+  await sendDelete(); // 앞서 지운 게 아직 기다리는 중이면 먼저 보냅니다
   state.events = state.events.filter((x) => x.id !== target.id);
   $('editor').close();
-  toast(t('toast.deleted'));
   if (state.picked) openSheet(state.picked); else render();
+  pendingDelete = { event: target, timer: setTimeout(() => sendDelete(), UNDO_MS) };
+  toast(t('toast.deleted'), { label: t('toast.undo'), run: undoDelete });
+}
 
+/** 기다리던 지우기를 서버로 보냅니다. 앱을 떠나는 중이면 응답을 기다리지 않고 보내 둡니다(keepalive). */
+async function sendDelete({ leaving = false } = {}) {
+  const p = pendingDelete;
+  if (!p) return;
+  pendingDelete = null;
+  clearTimeout(p.timer);
+  const url = `/api/events/${p.event.id}`;
+  if (leaving) {
+    fetch(url, { method: 'DELETE', credentials: 'same-origin', keepalive: true }).catch(() => {});
+    return;
+  }
   try {
-    await api.call('DELETE', `/api/events/${target.id}`);
+    await api.call('DELETE', url);
     rememberState();
   } catch (err) {
-    state.events = before;
+    state.events = [...state.events, p.event];
     toast(err.message || t('error.deleteFailed'));
     if (state.picked) openSheet(state.picked); else render();
   }
 }
+
+function undoDelete() {
+  const p = pendingDelete;
+  if (!p) return;
+  pendingDelete = null;
+  clearTimeout(p.timer);
+  state.events = [...state.events, p.event];
+  if (state.picked) openSheet(state.picked); else render();
+  toast(t('toast.restored'));
+}
+
+addEventListener('pagehide', () => sendDelete({ leaving: true }));
 
 /* ── 설정 ────────────────────────────────── */
 
@@ -2946,6 +2991,8 @@ async function sync(force = false) {
   syncing = true;
   try {
     const data = await api.call('GET', '/api/state');
+    // 되돌리기를 기다리는 일정은 서버엔 아직 있지만 화면에선 지운 것 — 다시 그리지 않습니다
+    if (pendingDelete) data.events = data.events.filter((x) => x.id !== pendingDelete.event.id);
     const changed =
       JSON.stringify(data.events) !== JSON.stringify(state.events) ||
       JSON.stringify(data.photos || []) !== JSON.stringify(state.photos) ||
@@ -2971,7 +3018,8 @@ async function sync(force = false) {
 
 setInterval(() => sync(), 120000);
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) return;
+  // 아이폰 홈 화면 앱은 떠날 때 pagehide가 안 올 수 있어서, 숨겨질 때 기다리던 지우기를 보내 둡니다
+  if (document.hidden) { sendDelete({ leaving: true }); return; }
   lastTouch = Date.now();
   sync(true);
 });

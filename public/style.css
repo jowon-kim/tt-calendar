@@ -1332,6 +1332,11 @@ img.install-step-icon { padding: 0; }
 }
 /* 여러 줄일 때 알약 모양이면 옆구리만 뚱뚱해집니다 */
 .toast.multi { border-radius: 20px; padding: 14px 20px; }
+.toast-action {
+  margin-left: 10px; padding: 0; border: 0; background: none;
+  color: var(--on-accent); font: inherit; font-weight: 700;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
 @keyframes toast-in { from { transform: translate(-50%, -50%) scale(.9); opacity: 0; } }
 
 /* ═══════════════ 반응형 ═══════════════ */

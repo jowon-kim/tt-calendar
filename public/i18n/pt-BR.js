@@ -325,6 +325,8 @@ globalThis.I18N['pt-BR'] = {
   'toast.saved': 'Adicionado',
   'toast.edited': 'Alterado',
   'toast.deleted': 'Excluído',
+  'toast.restored': 'Recuperado',
+  'toast.undo': 'Desfazer',
   'toast.photoAdded': 'Adicionada',
   'toast.photosAdded.one': '{n} foto adicionada',
   'toast.photosAdded': '{n} fotos adicionadas',

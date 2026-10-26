@@ -317,6 +317,8 @@ globalThis.I18N['zh-CN'] = {
   'toast.saved': '已添加',
   'toast.edited': '已修改',
   'toast.deleted': '已删除',
+  'toast.restored': '已恢复',
+  'toast.undo': '撤销',
   'toast.photoAdded': '已添加',
   'toast.photosAdded': '已添加 {n} 张照片',
   'toast.photosPartial': '只能放 {max} 张，所以只添加了 {n} 张',
