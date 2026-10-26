@@ -417,7 +417,50 @@ for (const lang of LANGS) {
   files[`public/${lang}/compare/index.html`] = compare(lang);
 }
 
+/* Search engines throw away hreflang that does not point both ways, and a sitemap or canonical that
+   names another address. The app's own head (public/index.html) is written by hand, so a domain move
+   can miss it — check it here too. */
+function addressProblems() {
+  const problems = [];
+  const listed = new Set([...files['public/sitemap.xml'].matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
+  const fileOf = (url) => {
+    const rel = url.slice(SITE.length);
+    return rel === '/' ? 'public/index.html' : `public${rel}index.html`;
+  };
+  const pages = { ...files, 'public/index.html': readFileSync('public/index.html', 'utf8') };
+  for (const url of listed) {
+    if (!url.startsWith(SITE + '/')) problems.push(`sitemap names another site: ${url}`);
+    else if (!pages[fileOf(url)]) problems.push(`sitemap names a page that is not there: ${url}`);
+  }
+  if (!files['public/robots.txt'].includes(`Sitemap: ${SITE}/sitemap.xml`)) problems.push('robots.txt points at another sitemap');
+  for (const url of listed) {
+    const html = pages[fileOf(url)];
+    if (!html) continue;
+    const canonical = /<link rel="canonical" href="([^"]+)">/.exec(html)?.[1];
+    if (canonical !== url) problems.push(`${url} has canonical ${canonical}`);
+    const og = /<meta property="og:url" content="([^"]+)">/.exec(html)?.[1];
+    if (og && og !== url) problems.push(`${url} has og:url ${og}`);
+    const image = /<meta property="og:image" content="([^"]+)">/.exec(html)?.[1];
+    if (image && !image.startsWith(SITE + '/')) problems.push(`${url} has og:image ${image}`);
+    const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)];
+    if (alternates.length && !alternates.some(([, , href]) => href === url)) problems.push(`${url} leaves itself out of its hreflang`);
+    for (const [, lang, href] of alternates) {
+      if (!listed.has(href)) { problems.push(`${url} hreflang ${lang} names ${href}, which is not in the sitemap`); continue; }
+      if (lang === 'x-default') continue;
+      const back = [...(pages[fileOf(href)] || '').matchAll(/hreflang="[^"]+" href="([^"]+)"/g)].map((m) => m[1]);
+      if (!back.includes(url)) problems.push(`${url} hreflang ${lang} → ${href} does not point back`);
+    }
+  }
+  return problems;
+}
+
 if (process.argv.includes('--check')) {
+  const wrong = addressProblems();
+  if (wrong.length) {
+    console.log(`FAIL  addresses search engines read do not agree:\n  ${wrong.join('\n  ')}`);
+    process.exit(1);
+  }
+  console.log(`PASS  sitemap, robots, canonical and hreflang agree on ${SITE}`);
   const stale = Object.entries(files).filter(([file, text]) => {
     try { return readFileSync(file, 'utf8') !== text; } catch { return true; }
   }).map(([file]) => file);
