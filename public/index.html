@@ -440,29 +440,29 @@
     </div>
 
     <!-- ── 처음 설정 : 한 번만 하는 것 ── -->
+    <!-- 처음 설정은 첫 진입(이름·설치) 뒤에 남은 할 일만. 이미 한 것은 app.js가 숨기고 번호를 다시 매깁니다 -->
     <div id="guide-setup" class="guide-pane" role="tabpanel">
-      <section class="guide-step">
-        <h3 class="guide-h"><span class="guide-n">1</span><span data-i18n="guide.setup1.h"></span></h3>
+      <section class="guide-step" data-step="invite">
+        <h3 class="guide-h"><span class="guide-n">1</span><span data-i18n="guide.setupInvite.h"></span></h3>
         <figure class="guide-fig">
-          <svg viewBox="0 0 340 158" role="img" data-i18n-attr="aria-label:guide.setup1.fig1">
-            <rect class="g-bg" x="0" y="0" width="340" height="158" rx="12"/>
-            <rect class="g-card" x="20" y="10" width="300" height="138" rx="12"/>
-
-            <text class="g-label" x="36" y="34" data-i18n="settings.appName"></text>
-            <rect class="g-input" x="36" y="42" width="268" height="30" rx="9"/>
-            <text class="g-val" x="46" y="62" data-i18n="default.title"></text>
-            <rect class="g-ring" x="30" y="36" width="280" height="42" rx="14"/>
-            <circle class="g-tap" cx="286" cy="57" r="12"/>
-            <circle class="g-tap-hold" cx="286" cy="57" r="12"/>
-            <circle class="g-tap-in" cx="286" cy="57" r="4.5"/>
-
-            <text class="g-label" x="36" y="106" data-i18n="settings.greeting"></text>
-            <rect class="g-input" x="36" y="114" width="268" height="30" rx="9"/>
-            <rect class="g-bar" x="46" y="126" width="104" height="7" rx="3.5"/>
+          <svg viewBox="0 0 340 112" role="img" data-i18n-attr="aria-label:guide.setupInvite.fig1">
+            <rect class="g-bg" x="0" y="0" width="340" height="112" rx="12"/>
+            <rect class="g-card" x="20" y="22" width="300" height="68" rx="12"/>
+            <text class="g-label" x="36" y="50" data-i18n="home.inviteTitle"></text>
+            <rect class="g-bar" x="36" y="62" width="110" height="7" rx="3.5"/>
+            <rect class="g-pick-on" x="172" y="36" width="134" height="40" rx="14"/>
+            <text class="g-tiny" x="227" y="61" data-i18n="home.inviteGo"></text>
+            <rect class="g-ring" x="166" y="30" width="146" height="52" rx="18"/>
+            <circle class="g-tap" cx="288" cy="56" r="11"/>
+            <circle class="g-tap-hold" cx="288" cy="56" r="11"/>
+            <circle class="g-tap-in" cx="288" cy="56" r="4"/>
           </svg>
         </figure>
-        <p class="guide-p" data-i18n-html="guide.setup1.p1"></p>
+        <p class="guide-p" data-i18n-html="guide.setupInvite.p1"></p>
+      </section>
 
+      <section class="guide-step" data-step="since">
+        <h3 class="guide-h"><span class="guide-n">2</span><span data-i18n="guide.setupSince.h"></span></h3>
         <figure class="guide-fig">
           <svg viewBox="0 0 340 134" role="img" data-i18n-attr="aria-label:guide.setup1.fig2">
             <rect class="g-bg" x="0" y="0" width="340" height="134" rx="12"/>
@@ -481,39 +481,7 @@
         <p class="guide-p" data-i18n-html="guide.setup1.p2"></p>
       </section>
 
-      <section class="guide-step">
-        <h3 class="guide-h"><span class="guide-n">2</span><span data-i18n="guide.setup2.h"></span></h3>
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 148" role="img" data-i18n-attr="aria-label:guide.setup2.fig1">
-            <rect class="g-bg" x="0" y="0" width="340" height="148" rx="12"/>
-            <rect class="g-card" x="20" y="10" width="300" height="128" rx="12"/>
-            <text class="g-label" x="36" y="30" data-i18n="settings.people"></text>
-
-            <rect class="g-pick-on" x="36" y="40" width="128" height="82" rx="11"/>
-            <circle class="g-dot-a" cx="54" cy="62" r="7"/>
-            <rect class="g-input" x="68" y="50" width="84" height="24" rx="8"/>
-            <rect class="g-bar" x="76" y="59" width="40" height="6" rx="3"/>
-            <circle class="g-dot-a" cx="49" cy="97" r="5.5"/>
-            <text class="g-label" x="60" y="101" data-i18n="settings.thisIsMe"></text>
-
-            <rect class="g-pick-off" x="176" y="40" width="128" height="82" rx="11"/>
-            <circle class="g-dot-b" cx="194" cy="62" r="7"/>
-            <rect class="g-input" x="208" y="50" width="84" height="24" rx="8"/>
-            <rect class="g-bar" x="216" y="59" width="40" height="6" rx="3"/>
-            <circle class="g-dot-f" cx="189" cy="97" r="5.5"/>
-            <text class="g-label" x="200" y="101" data-i18n="settings.thisIsMe"></text>
-
-            <rect class="g-ring" x="30" y="34" width="140" height="94" rx="16"/>
-            <circle class="g-tap" cx="130" cy="97" r="13"/>
-            <circle class="g-tap-hold" cx="130" cy="97" r="13"/>
-            <circle class="g-tap-in" cx="130" cy="97" r="5"/>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup2.p1"></p>
-        <p class="guide-p" data-i18n-html="guide.setup2.p2"></p>
-      </section>
-
-      <section class="guide-step">
+      <section class="guide-step" data-step="push">
         <h3 class="guide-h"><span class="guide-n">3</span><span data-i18n="guide.setup3.h"></span></h3>
         <figure class="guide-fig">
           <svg viewBox="0 0 340 122" role="img" data-i18n-attr="aria-label:guide.setup3.fig1">
@@ -530,126 +498,6 @@
         </figure>
         <p class="guide-p" data-i18n-html="guide.setup3.p1"></p>
 
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 130" role="img" data-i18n-attr="aria-label:guide.setup3.fig2">
-            <rect class="g-bg" x="0" y="0" width="340" height="130" rx="12"/>
-            <text class="g-step-n" x="18" y="26" data-i18n="guide.iphoneOnly"></text>
-
-            <rect class="g-card" x="16" y="36" width="88" height="76" rx="11"/>
-            <rect class="g-bar-f" x="28" y="48" width="64" height="28" rx="6"/>
-            <path class="g-glyph" d="M60 100 v-14 M54 92 l6 -6 6 6 M48 94 v10 h24 v-10"/>
-            <rect class="g-ring" x="42" y="80" width="36" height="28" rx="10"/>
-
-            <path class="g-arrow" d="M112 74 h16"/><path class="g-arrow-tip" d="M124 69 l6 5 -6 5"/>
-
-            <rect class="g-card" x="140" y="36" width="88" height="76" rx="11"/>
-            <rect class="g-bar-f" x="152" y="48" width="64" height="7" rx="3.5"/>
-            <rect class="g-bar-f" x="152" y="62" width="64" height="7" rx="3.5"/>
-            <rect class="g-pick-on" x="148" y="78" width="72" height="24" rx="8"/>
-            <text class="g-tiny" x="184" y="94" data-i18n="guide.addToHome"></text>
-
-            <path class="g-arrow" d="M236 74 h16"/><path class="g-arrow-tip" d="M248 69 l6 5 -6 5"/>
-
-            <rect class="g-icon" x="278" y="53" width="44" height="44" rx="12"/>
-            <path class="g-stem" d="M300 63 c-3 4 -5 8 -5.4 11"/>
-            <path class="g-stem" d="M300 63 c3 4 5 8 5.4 11"/>
-            <circle class="g-dot-a" cx="294.6" cy="79" r="6"/>
-            <circle class="g-dot-a" cx="305.4" cy="79" r="6"/>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup3.p2"></p>
-        <p class="guide-p" data-i18n-html="guide.setup3.p3"></p>
-      </section>
-
-      <section class="guide-step">
-        <h3 class="guide-h"><span class="guide-n">4</span><span data-i18n="guide.setup4.h"></span></h3>
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 136" role="img" data-i18n-attr="aria-label:guide.setup4.fig1">
-            <rect class="g-bg" x="0" y="0" width="340" height="136" rx="12"/>
-            <rect class="g-card" x="20" y="12" width="300" height="72" rx="12"/>
-            <text class="g-label" x="36" y="31" data-i18n="settings.photos"></text>
-            <rect class="g-btn" x="36" y="42" width="268" height="34" rx="12"/>
-            <text class="g-btn-t" x="170" y="65" data-i18n="settings.photosOpen"></text>
-            <rect class="g-ring" x="30" y="38" width="280" height="42" rx="15"/>
-            <circle class="g-tap" cx="243" cy="59" r="12"/>
-            <circle class="g-tap-hold" cx="243" cy="59" r="12"/>
-            <circle class="g-tap-in" cx="243" cy="59" r="4.5"/>
-            <path class="g-arrow" d="M170 88 v10"/><path class="g-arrow-tip" d="M165 94 l5 6 5 -6"/>
-            <g class="g-thumb">
-              <rect x="86" y="104" width="26" height="26" rx="7"/>
-              <rect x="118" y="104" width="26" height="26" rx="7"/>
-              <rect x="150" y="104" width="26" height="26" rx="7"/>
-              <rect x="182" y="104" width="26" height="26" rx="7"/>
-              <rect x="214" y="104" width="26" height="26" rx="7"/>
-            </g>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup4.p1"></p>
-
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 146" role="img" data-i18n-attr="aria-label:guide.setup4.fig2">
-            <rect class="g-bg" x="0" y="0" width="340" height="146" rx="12"/>
-            <rect class="g-card" x="20" y="12" width="300" height="122" rx="12"/>
-            <text class="g-label" x="36" y="34" data-i18n="settings.theme"></text>
-            <rect class="g-pick-on" x="36" y="42" width="40" height="28" rx="9"/>
-            <circle class="g-dot-a" cx="56" cy="56" r="6"/>
-            <rect class="g-pick-off" x="90" y="42" width="40" height="28" rx="9"/>
-            <circle class="g-dot-f" cx="110" cy="56" r="6"/>
-            <rect class="g-pick-off" x="144" y="42" width="40" height="28" rx="9"/>
-            <circle class="g-dot-f" cx="164" cy="56" r="6"/>
-            <rect class="g-pick-off" x="198" y="42" width="40" height="28" rx="9"/>
-            <circle class="g-dot-f" cx="218" cy="56" r="6"/>
-            <rect class="g-pick-off" x="252" y="42" width="40" height="28" rx="9"/>
-            <circle class="g-dot-b" cx="272" cy="56" r="6"/>
-
-            <rect class="g-pick-on" x="36" y="88" width="17" height="17" rx="5"/>
-            <path class="g-tick" d="M40 96.5 l3.4 3.4 5.6 -6"/>
-            <text class="g-label" x="61" y="101" data-i18n="settings.themeShare"></text>
-            <rect class="g-ring" x="30" y="82" width="212" height="29" rx="12"/>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup4.p2"></p>
-        <p class="guide-p" data-i18n-html="guide.setup4.p3"></p>
-      </section>
-
-      <section class="guide-step">
-        <h3 class="guide-h"><span class="guide-n">5</span><span data-i18n="guide.setup5.h"></span></h3>
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 150" role="img" data-i18n-attr="aria-label:guide.setup5.fig1">
-            <rect class="g-bg" x="0" y="0" width="340" height="150" rx="12"/>
-            <rect class="g-card" x="20" y="12" width="300" height="126" rx="12"/>
-            <text class="g-label" x="36" y="40" data-i18n="settings.language"></text>
-            <rect class="g-input" x="150" y="24" width="154" height="26" rx="9"/>
-            <rect class="g-bar" x="162" y="34" width="58" height="6" rx="3"/>
-            <text class="g-label" x="36" y="79" data-i18n="settings.holidays"></text>
-            <rect class="g-input" x="150" y="63" width="154" height="26" rx="9"/>
-            <rect class="g-bar" x="162" y="73" width="44" height="6" rx="3"/>
-            <text class="g-label" x="36" y="118" data-i18n="settings.timezone"></text>
-            <rect class="g-input" x="150" y="102" width="154" height="26" rx="9"/>
-            <rect class="g-bar" x="162" y="112" width="76" height="6" rx="3"/>
-            <rect class="g-ring" x="144" y="96" width="166" height="38" rx="13"/>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup5.p1"></p>
-        <p class="guide-p" data-i18n-html="guide.setup5.p2"></p>
-      </section>
-
-      <section class="guide-step">
-        <h3 class="guide-h"><span class="guide-n">6</span><span data-i18n="guide.setup6.h"></span></h3>
-        <figure class="guide-fig">
-          <svg viewBox="0 0 340 148" role="img" data-i18n-attr="aria-label:guide.setup6.fig1">
-            <rect class="g-bg" x="0" y="0" width="340" height="148" rx="12"/>
-            <rect class="g-card" x="20" y="12" width="300" height="124" rx="12"/>
-            <text class="g-label" x="36" y="34" data-i18n="settings.account"></text>
-            <rect class="g-btn" x="36" y="44" width="268" height="36" rx="12"/>
-            <text class="g-btn-t" x="170" y="67" data-i18n="settings.devices"></text>
-            <rect class="g-btn" x="36" y="88" width="268" height="36" rx="12"/>
-            <text class="g-btn-t" x="170" y="111" data-i18n="settings.deleteAccount"></text>
-            <rect class="g-ring" x="30" y="38" width="280" height="48" rx="15"/>
-          </svg>
-        </figure>
-        <p class="guide-p" data-i18n-html="guide.setup6.p1"></p>
-        <p class="guide-p" data-i18n-html="guide.setup6.p2"></p>
       </section>
     </div>
 
@@ -869,6 +717,97 @@
         </figure>
         <p class="guide-p" data-i18n-html="guide.use5.p1"></p>
         <p class="guide-p" data-i18n-html="guide.use5.p2"></p>
+      </section>
+      <!-- 예전 "처음 설정"에 있던 꾸미기·언어·계정은 필요할 때 찾아보는 것이라 여기로 -->
+      <section class="guide-step">
+        <h3 class="guide-h"><span class="guide-n">6</span><span data-i18n="guide.setup4.h"></span></h3>
+        <figure class="guide-fig">
+          <svg viewBox="0 0 340 136" role="img" data-i18n-attr="aria-label:guide.setup4.fig1">
+            <rect class="g-bg" x="0" y="0" width="340" height="136" rx="12"/>
+            <rect class="g-card" x="20" y="12" width="300" height="72" rx="12"/>
+            <text class="g-label" x="36" y="31" data-i18n="settings.photos"></text>
+            <rect class="g-btn" x="36" y="42" width="268" height="34" rx="12"/>
+            <text class="g-btn-t" x="170" y="65" data-i18n="settings.photosOpen"></text>
+            <rect class="g-ring" x="30" y="38" width="280" height="42" rx="15"/>
+            <circle class="g-tap" cx="243" cy="59" r="12"/>
+            <circle class="g-tap-hold" cx="243" cy="59" r="12"/>
+            <circle class="g-tap-in" cx="243" cy="59" r="4.5"/>
+            <path class="g-arrow" d="M170 88 v10"/><path class="g-arrow-tip" d="M165 94 l5 6 5 -6"/>
+            <g class="g-thumb">
+              <rect x="86" y="104" width="26" height="26" rx="7"/>
+              <rect x="118" y="104" width="26" height="26" rx="7"/>
+              <rect x="150" y="104" width="26" height="26" rx="7"/>
+              <rect x="182" y="104" width="26" height="26" rx="7"/>
+              <rect x="214" y="104" width="26" height="26" rx="7"/>
+            </g>
+          </svg>
+        </figure>
+        <p class="guide-p" data-i18n-html="guide.setup4.p1"></p>
+
+        <figure class="guide-fig">
+          <svg viewBox="0 0 340 146" role="img" data-i18n-attr="aria-label:guide.setup4.fig2">
+            <rect class="g-bg" x="0" y="0" width="340" height="146" rx="12"/>
+            <rect class="g-card" x="20" y="12" width="300" height="122" rx="12"/>
+            <text class="g-label" x="36" y="34" data-i18n="settings.theme"></text>
+            <rect class="g-pick-on" x="36" y="42" width="40" height="28" rx="9"/>
+            <circle class="g-dot-a" cx="56" cy="56" r="6"/>
+            <rect class="g-pick-off" x="90" y="42" width="40" height="28" rx="9"/>
+            <circle class="g-dot-f" cx="110" cy="56" r="6"/>
+            <rect class="g-pick-off" x="144" y="42" width="40" height="28" rx="9"/>
+            <circle class="g-dot-f" cx="164" cy="56" r="6"/>
+            <rect class="g-pick-off" x="198" y="42" width="40" height="28" rx="9"/>
+            <circle class="g-dot-f" cx="218" cy="56" r="6"/>
+            <rect class="g-pick-off" x="252" y="42" width="40" height="28" rx="9"/>
+            <circle class="g-dot-b" cx="272" cy="56" r="6"/>
+
+            <rect class="g-pick-on" x="36" y="88" width="17" height="17" rx="5"/>
+            <path class="g-tick" d="M40 96.5 l3.4 3.4 5.6 -6"/>
+            <text class="g-label" x="61" y="101" data-i18n="settings.themeShare"></text>
+            <rect class="g-ring" x="30" y="82" width="212" height="29" rx="12"/>
+          </svg>
+        </figure>
+        <p class="guide-p" data-i18n-html="guide.setup4.p2"></p>
+        <p class="guide-p" data-i18n-html="guide.setup4.p3"></p>
+      </section>
+
+      <section class="guide-step">
+        <h3 class="guide-h"><span class="guide-n">7</span><span data-i18n="guide.setup5.h"></span></h3>
+        <figure class="guide-fig">
+          <svg viewBox="0 0 340 150" role="img" data-i18n-attr="aria-label:guide.setup5.fig1">
+            <rect class="g-bg" x="0" y="0" width="340" height="150" rx="12"/>
+            <rect class="g-card" x="20" y="12" width="300" height="126" rx="12"/>
+            <text class="g-label" x="36" y="40" data-i18n="settings.language"></text>
+            <rect class="g-input" x="150" y="24" width="154" height="26" rx="9"/>
+            <rect class="g-bar" x="162" y="34" width="58" height="6" rx="3"/>
+            <text class="g-label" x="36" y="79" data-i18n="settings.holidays"></text>
+            <rect class="g-input" x="150" y="63" width="154" height="26" rx="9"/>
+            <rect class="g-bar" x="162" y="73" width="44" height="6" rx="3"/>
+            <text class="g-label" x="36" y="118" data-i18n="settings.timezone"></text>
+            <rect class="g-input" x="150" y="102" width="154" height="26" rx="9"/>
+            <rect class="g-bar" x="162" y="112" width="76" height="6" rx="3"/>
+            <rect class="g-ring" x="144" y="96" width="166" height="38" rx="13"/>
+          </svg>
+        </figure>
+        <p class="guide-p" data-i18n-html="guide.setup5.p1"></p>
+        <p class="guide-p" data-i18n-html="guide.setup5.p2"></p>
+      </section>
+
+      <section class="guide-step">
+        <h3 class="guide-h"><span class="guide-n">8</span><span data-i18n="guide.setup6.h"></span></h3>
+        <figure class="guide-fig">
+          <svg viewBox="0 0 340 148" role="img" data-i18n-attr="aria-label:guide.setup6.fig1">
+            <rect class="g-bg" x="0" y="0" width="340" height="148" rx="12"/>
+            <rect class="g-card" x="20" y="12" width="300" height="124" rx="12"/>
+            <text class="g-label" x="36" y="34" data-i18n="settings.account"></text>
+            <rect class="g-btn" x="36" y="44" width="268" height="36" rx="12"/>
+            <text class="g-btn-t" x="170" y="67" data-i18n="settings.devices"></text>
+            <rect class="g-btn" x="36" y="88" width="268" height="36" rx="12"/>
+            <text class="g-btn-t" x="170" y="111" data-i18n="settings.deleteAccount"></text>
+            <rect class="g-ring" x="30" y="38" width="280" height="48" rx="15"/>
+          </svg>
+        </figure>
+        <p class="guide-p" data-i18n-html="guide.setup6.p1"></p>
+        <p class="guide-p" data-i18n-html="guide.setup6.p2"></p>
       </section>
     </div>
 
