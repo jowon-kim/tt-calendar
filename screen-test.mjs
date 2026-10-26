@@ -472,19 +472,23 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('the sign-in screen has no install button and no install bar',
     !/id="gate-install"|id="install-banner"/.test(html) && !/gate-install|install-banner/.test(readFileSync('public/app.js', 'utf8')));
 
-  /* 아이폰 사파리 — 설정의 설치 버튼은 공유 시트를 엽니다 */
+  /* 아이폰 사파리 — 설정의 설치 버튼은 3단계 그림 안내를 엽니다(공유 시트에는 "홈 화면에 추가"가 없어서) */
   const plainAgent = navigator.userAgent;
   const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1';
   navigator.userAgent = iphone;
   run('showInstallButtons()');
   ok('iphone safari keeps an install button in settings', !$('s-install-field').hidden);
-  delete navigator.share;
+  const sharedFromSettings = [];
+  navigator.share = async (data) => { sharedFromSettings.push(data); };
   $('s-install').click();
   await sleep(10);
-  ok('with no share sheet it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden && $('install-guide-away').hidden);
+  ok('it never opens the share sheet', sharedFromSettings.length === 0);
+  ok('it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden && $('install-guide-away').hidden);
   ok('pointing down at the safari share button', $('install-guide').classList.contains('point-down'));
   $('install-guide-close').click();
+  ok('with no "later" — that is only for the first run', $('install-guide-later').hidden);
   ok('and closes', !$('install-guide').open);
+  delete navigator.share;
 
   /* 카톡 안 화면 — 로그인도 설치도 안 되니 바깥 브라우저로 내보냅니다 */
   const kakao = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 KAKAOTALK 10.8.0';
@@ -515,13 +519,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
   const credential = `${b64({ alg: 'RS256' })}.${b64({ sub: '1', given_name: '미나', name: '김미나' })}.sig`;
   const reset = () => {
-    ['diary_install_offered', 'diary_guide'].forEach((k) => store.delete(k));
+    run('installGuideFirstRun = false'); // 닫으면서 사용법이 따라 뜨지 않게
     ['name-ask', 'install-offer', 'install-guide', 'guide'].forEach((id) => $(id).close());
+    ['diary_install_offered', 'diary_guide'].forEach((k) => store.delete(k));
   };
   const guideShown = async () => { await sleep(500); return $('guide').open; };
   const shared = [];
-  let shareFails = false;
-  const fakeShare = async (data) => { shared.push(data); if (shareFails) throw new Error('AbortError'); };
+  const fakeShare = async (data) => { shared.push(data); };
 
   reset();
   navigator.userAgent = iphone;
@@ -539,43 +543,32 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const named = fetches.find((f) => f.url === '/api/settings' && f.method === 'PATCH');
   ok('"OK" saves only my own seat', named && JSON.stringify(JSON.parse(named.body).names) === JSON.stringify({ b: '미나' }), named?.body);
   ok('keeps the partner\'s name as it was', run('state.settings.names.a') === '레오' && run('state.settings.names.b') === '미나');
-  ok('then, in a browser tab, offers the home screen once', !$('name-ask').open && $('install-offer').open);
-  ok('saying why on iphone', $('install-offer-text').innerHTML === run(`t('install.offerIos')`));
+  ok('then, on iphone, goes straight to the three picture steps', !$('name-ask').open && $('install-guide').open && !$('install-guide-ios').hidden);
+  ok('with no "keep it on your home screen?" box before it', !$('install-offer').open);
+  ok('and no share sheet', shared.length === 0, shared);
+  ok('the steps say iOS 26: share (or ··· first), view more, open as web app',
+    run(`I18N.ko['install.step1']`).includes('···') && run(`I18N.ko['install.step2']`).includes('더 보기') && run(`I18N.ko['install.step3']`).includes('웹 앱으로 열기'));
+  ok('with "later" underneath', !$('install-guide-later').hidden);
   ok('and the guide waits', !(await guideShown()));
 
-  $('install-offer-go').click();
-  await sleep(20);
-  ok('on iphone the button opens the share sheet with the address', shared.length === 1 && shared[0].url === 'https://diary.test', shared);
-  ok('and nothing else pops up', !$('install-offer').open && !$('install-guide').open);
-  ok('the guide waits for the home screen app', !(await guideShown()));
-
-  run('firstSteps()');
-  await sleep(20);
-  ok('opening the tab again asks nothing more', !$('name-ask').open && !$('install-offer').open && !(await guideShown()));
-
-  /* 공유 시트가 안 열리면 그림 안내 */
-  reset();
-  shareFails = true;
-  run('firstSteps()');
-  await sleep(20);
-  ok('a name already there skips the name box', !$('name-ask').open && $('install-offer').open);
-  $('install-offer-go').click();
-  await sleep(20);
-  ok('when the share sheet fails, the picture steps show instead', $('install-guide').open && !$('install-guide-ios').hidden);
-  $('install-guide').close();
-  shareFails = false;
-
-  /* "나중에" — 사용법은 그 자리에서 */
-  reset();
-  run('firstSteps()');
-  await sleep(20);
-  $('install-offer-later').click();
-  ok('"later" closes the offer', !$('install-offer').open);
+  $('install-guide-later').click();
+  ok('"later" closes the steps', !$('install-guide').open);
   ok('and the guide shows right there in the browser', await guideShown());
   ok('on its setup tab', !$('guide-setup').hidden);
   $('guide').close();
   run('firstSteps()');
-  ok('a guide already seen never comes back', !(await guideShown()) && !$('install-offer').open);
+  await sleep(20);
+  ok('opening the tab again asks nothing more', !$('name-ask').open && !$('install-guide').open && !(await guideShown()));
+
+  /* × 로 닫아도 같은 길 */
+  reset();
+  run('firstSteps()');
+  await sleep(20);
+  ok('a name already there skips the name box', !$('name-ask').open && $('install-guide').open);
+  $('install-guide-close').click();
+  ok('closing with × also leads to the guide', await guideShown());
+  $('guide').close();
+  ok('the iphone never touched the share sheet', shared.length === 0, shared);
 
   /* 홈 화면 앱으로 처음 열면 사용법 */
   reset();
@@ -598,7 +591,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   offerAgain();
   run('firstSteps()');
   await sleep(20);
-  ok('android gets the same single offer', $('install-offer').open && $('install-offer-text').innerHTML === run(`t('install.offerAndroid')`));
+  ok('android gets the "keep it on your home screen?" box', $('install-offer').open && !$('install-guide').open);
   $('install-offer-go').click();
   await sleep(20);
   ok('its button opens the system install prompt', androidPrompted === 1 && !$('install-offer').open);
@@ -612,6 +605,23 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   $('install-offer-go').click();
   ok('saying no to the system prompt counts as later', await guideShown());
   $('guide').close();
+
+  /* 안드로이드 처음부터: 이름 → "둘까요?" 창 → 시스템 설치 창 */
+  reset();
+  outcome = 'accepted';
+  offerAgain();
+  run(`state.settings.names = { a: '레오', b: '' }`);
+  run('firstSteps()');
+  await sleep(20);
+  ok('android starts with the name too', $('name-ask').open && !$('install-offer').open);
+  $('name-ask-input').value = '미나';
+  $('name-ask-form').dispatchEvent({ type: 'submit', preventDefault() {} });
+  await sleep(30);
+  ok('then the one install box', !$('name-ask').open && $('install-offer').open && !$('install-guide').open);
+  const before = androidPrompted;
+  $('install-offer-go').click();
+  await sleep(20);
+  ok('and one tap brings up the system install prompt', androidPrompted === before + 1 && !$('install-offer').open);
 
   /* 안드로이드 크롬은 설치 신호를 조금 늦게 줍니다 — 잠깐 기다렸다 묻습니다 */
   reset();
