@@ -324,6 +324,8 @@ globalThis.I18N.de = {
   'toast.saved': 'Eingetragen',
   'toast.edited': 'Geändert',
   'toast.deleted': 'Weg',
+  'toast.restored': 'Wiederhergestellt',
+  'toast.undo': 'Rückgängig',
   'toast.photoAdded': 'Hinzugefügt',
   'toast.photosAdded.one': '{n} Foto hinzugefügt',
   'toast.photosAdded': '{n} Fotos hinzugefügt',

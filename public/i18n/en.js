@@ -335,6 +335,8 @@ globalThis.I18N.en = {
   'toast.saved': 'Planted',
   'toast.edited': 'Changed',
   'toast.deleted': 'Gone',
+  'toast.restored': 'Put it back',
+  'toast.undo': 'Undo',
   'toast.photoAdded': 'Added',
   'toast.photosAdded.one': 'Added {n} photo',
   'toast.photosAdded.other': 'Added {n} photos',

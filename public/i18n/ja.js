@@ -316,6 +316,8 @@ globalThis.I18N.ja = {
   'toast.saved': '追加しました',
   'toast.edited': '変更しました',
   'toast.deleted': '削除しました',
+  'toast.restored': '元に戻しました',
+  'toast.undo': '元に戻す',
   'toast.photoAdded': '追加しました',
   'toast.photosAdded': '{n}枚追加しました',
   'toast.photosPartial': '{max}枚でいっぱいなので、{n}枚だけ追加しました',

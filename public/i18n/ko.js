@@ -259,6 +259,8 @@ globalThis.I18N.ko = {
   'toast.saved': '심었어요',
   'toast.edited': '고쳤어요',
   'toast.deleted': '지웠어요',
+  'toast.restored': '되돌렸어요',
+  'toast.undo': '되돌리기',
   'toast.photoAdded': '넣었어요',
   'toast.photosAdded': '{n}장 넣었어요',
   'toast.photosPartial': '{max}장이 꽉 차서 {n}장만 넣었어요',
