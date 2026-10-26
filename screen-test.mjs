@@ -1112,6 +1112,24 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('changing their name sends only theirs', sent2.length === 1 && JSON.stringify(sent2[0]) === JSON.stringify({ b: '레오야' }), sent2);
 }
 
+/* "100일과 기념일" 체크는 처음 만난 날이 있어야 보입니다 / 사진이 없으면 빈 창 없이 바로 고르기 */
+{
+  run(`state.settings.since = null; fillSettings()`);
+  ok('no day you met, no milestones switch', $('s-milestones-row').hidden);
+  run(`state.settings.since = '2023-05-14'; fillSettings()`);
+  ok('with the day, the switch is there', !$('s-milestones-row').hidden);
+  let picked = 0;
+  $('s-photo-file').click = () => { picked++; };
+  run(`state.photos = []; $('photos').close()`);
+  $('s-photos-open').click();
+  ok('with no photos yet, "photos" goes straight to picking them', picked === 1 && !$('photos').open);
+  run(`state.photos = ['p1']`);
+  $('s-photos-open').click();
+  ok('with some, it opens the photo box as before', $('photos').open && picked === 1);
+  run(`$('photos').close(); state.photos = []`);
+  delete $('s-photo-file').click;
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');
