@@ -238,6 +238,8 @@ globalThis.I18N.ru = {
   'push.editedEvent': 'Событие изменено',
   'push.deletedEvent': 'Событие удалено',
   'push.soon': 'Скоро начало',
+  'push.joinedBody': 'Теперь у вас общий календарь.',
+  'push.joined': '{name} теперь с вами',
   'push.today.one': 'Сегодня {count} событие',
   'push.today.few': 'Сегодня {count} события',
   'push.today': 'Сегодня {count} событий',

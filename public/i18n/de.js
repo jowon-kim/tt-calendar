@@ -230,6 +230,8 @@ globalThis.I18N.de = {
   'push.editedEvent': 'Termin geändert',
   'push.deletedEvent': 'Termin gelöscht',
   'push.soon': 'Geht gleich los',
+  'push.joinedBody': 'Ihr teilt jetzt einen Kalender.',
+  'push.joined': '{name} ist dabei',
   'push.today.one': '{count} Termin heute',
   'push.today': '{count} Termine heute',
   'push.allDay': 'Ganztägig',
