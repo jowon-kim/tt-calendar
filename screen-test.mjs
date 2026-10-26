@@ -936,6 +936,24 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.fetch = realFetch;
 }
 
+/* 아이폰 사파리 탭 — 알림 버튼이 회색으로 죽어 있지 않고, 누르면 홈 화면 추가 그림 안내 */
+{
+  const plain = navigator.userAgent;
+  const keepPush = globalThis.PushManager;
+  navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1';
+  delete globalThis.PushManager; // 사파리 탭에는 알림 API가 없을 수 있습니다
+  run('renderPush()');
+  ok('iphone safari says to add it to the home screen, not "unsupported"', $('s-push-note').textContent === run(`t('push.safariTab')`), $('s-push-note').textContent);
+  ok('and the button is not greyed out', !$('s-push').disabled);
+  $('s-push').click();
+  await sleep(10);
+  ok('pressing it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden);
+  run(`$('install-guide').close()`);
+  navigator.userAgent = plain;
+  if (keepPush) globalThis.PushManager = keepPush;
+  run('renderPush()');
+}
+
 /* 처음 만난 날 — 비어 있으면 연도 → 월 → 날, 세 번이면 몇 년 전 날짜도 고릅니다 */
 {
   run(`$('s-since').value = ''`);

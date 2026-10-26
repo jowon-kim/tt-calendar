@@ -1929,8 +1929,9 @@ async function syncPush() {
 /** 알림을 켤 수 없는 이유 한 줄. 켤 수 있으면 null. */
 function pushBlocker() {
   if (inApp()) return appPermission === 'denied' ? t('push.denied') : null;
-  if (!pushable()) return t('push.unsupported');
+  // 아이폰 사파리 탭에는 알림 API가 아예 없을 수 있어서, "지원 안 함"보다 이 안내가 먼저입니다
   if (safariTab()) return t('push.safariTab');
+  if (!pushable()) return t('push.unsupported');
   if (Notification.permission === 'denied') return t('push.denied');
   return null;
 }
@@ -1941,7 +1942,8 @@ function renderPush() {
   const blocked = pushBlocker();
 
   button.textContent = t(pushSub ? 'push.turnOff' : 'push.allow');
-  button.disabled = !!blocked;
+  // 아이폰 사파리 탭은 막힌 게 아니라 홈 화면에 두면 되는 것 — 눌러서 그림 안내로 갑니다
+  button.disabled = !!blocked && !safariTab();
   note.textContent = blocked || (pushSub
     ? t('push.onNote')
     : t('push.offNote'));
@@ -1967,6 +1969,7 @@ async function subscribePush() {
 }
 
 async function togglePush() {
+  if (safariTab()) return openInstallGuide('ios');
   // once가 끝나면서 버튼을 다시 켜므로, 화면 맞추기는 그 뒤에 한 번만 합니다
   await once($('s-push'), async () => {
     try {
