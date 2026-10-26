@@ -936,6 +936,24 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.fetch = realFetch;
 }
 
+/* 처음 만난 날 — 비어 있으면 연도 → 월 → 날, 세 번이면 몇 년 전 날짜도 고릅니다 */
+{
+  run(`$('s-since').value = ''`);
+  run(`datePicker.open('s-since')`);
+  const years = $('dp-years');
+  ok('an empty "day you met" opens on the years', $('datepick').open && !years.hidden && $('dp-grid').hidden);
+  ok('ending at this year — no years still to come', Number(years.children.at(-1).textContent) === new Date().getFullYear());
+  const y2023 = years.children.find((b) => b.textContent === '2023' || b.textContent === 2023);
+  y2023.click();
+  ok('picking a year shows its twelve months', !years.hidden && years.children.length === 12 && $('dp-title').textContent === '2023');
+  years.children[4].click();
+  ok('picking a month shows its days', years.hidden && !$('dp-grid').hidden && run('datePicker.view.getFullYear()') === 2023 && run('datePicker.view.getMonth()') === 4);
+  run(`datePicker.close()`);
+  run(`$('f-date').value = TODAY; datePicker.open('f-date')`);
+  ok('an event date still opens on its days', !$('dp-grid').hidden && $('dp-years').hidden);
+  run(`datePicker.close()`);
+}
+
 /* 혼자일 땐 첫 화면 맨 위에 초대 카드 하나 — 설정 깊이 들어가지 않고 상대를 부릅니다 */
 {
   run(`state.me = 'a'; state.paired = false; state.events = []; render()`);

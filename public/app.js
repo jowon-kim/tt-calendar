@@ -1122,6 +1122,8 @@ const datePicker = {
     document.querySelector('.dp-weekdays').style.display = '';
     this.renderMonth();
     $('datepick').showModal();
+    // 처음 만난 날은 대개 몇 년 전이라, 비어 있으면 연도부터 → 월 → 날 (달마다 넘기면 수십 번)
+    if (targetId === 's-since' && !cur) this.showYears();
   },
   close() {
     $('datepick').close();
@@ -1173,17 +1175,16 @@ const datePicker = {
     box.replaceChildren();
     document.querySelector('.dp-weekdays').style.display = 'none';
     const cur = this.view.getFullYear();
-    for (let y = cur - 60; y <= cur + 10; y++) {
+    // 처음 만난 날에 앞으로 올 해는 필요 없습니다 — 올해에서 끝나야 고를 해가 화면 아래쪽에 모여요
+    const last = this.targetId === 's-since' ? new Date().getFullYear() : cur + 10;
+    for (let y = cur - 60; y <= last; y++) {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'dp-year' + (y === cur ? ' sel' : '');
       b.textContent = y;
       b.addEventListener('click', () => {
         this.view = new Date(y, this.view.getMonth(), 1);
-        box.hidden = true;
-        document.querySelector('.dp-weekdays').style.display = '';
-        $('dp-grid').hidden = false;
-        this.renderMonth();
+        this.showMonths();
       });
       box.append(b);
     }
@@ -1194,6 +1195,30 @@ const datePicker = {
       const sel = box.querySelector('.sel');
       if (sel) sel.scrollIntoView({ block: 'center' });
     });
+  },
+  /** 연도를 고르면 바로 달 — 고른 해의 같은 달로 떨어져 다시 열한 번 넘기지 않게 */
+  showMonths() {
+    const box = $('dp-years');
+    box.replaceChildren();
+    const y = this.view.getFullYear();
+    $('dp-title').textContent = String(y);
+    const name = i18n.dateFmt({ month: 'short' });
+    for (let m = 0; m < 12; m++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dp-year dp-month' + (m === this.view.getMonth() ? ' sel' : '');
+      b.textContent = name.format(new Date(y, m, 1));
+      b.addEventListener('click', () => {
+        this.view = new Date(y, m, 1);
+        box.hidden = true;
+        document.querySelector('.dp-weekdays').style.display = '';
+        $('dp-grid').hidden = false;
+        this.renderMonth();
+      });
+      box.append(b);
+    }
+    $('dp-grid').hidden = true;
+    box.hidden = false;
   },
 };
 
