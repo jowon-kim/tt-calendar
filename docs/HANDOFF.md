@@ -22,7 +22,7 @@
 
 ## 내일 먼저 볼 것
 
-1. **훑어보기**: `docs/handoff-shots/`에 진짜 크롬(폰 크기, 한국어)으로 찍은 화면 12장
+1. **훑어보기**: `docs/handoff-shots/`에 진짜 크롬(폰 크기, 한국어)으로 찍은 화면 15장 (13~15: 아이폰 설치 안내·night 테마·카톡 탈출 창)
 2. **커밋해도 되는지** 말해주세요. 제안 — 두 커밋으로 나누기:
    - `accounts + per-couple data + photos + push + exit door` (서버·화면·테스트·문서)
    - `store apps: capacitor shells + CI` (`android/`, `ios/`, `.github/`, `fastlane/`, `capacitor.config.json`)
@@ -96,4 +96,4 @@ README(영/한), AGENTS.md, docs/GUIDE.md, docs/RUNNING.md를 계정 방식에 �
 - Android SDK에 Platform 36, Build-Tools 35가 설치됨 (Gradle이 자동으로. 라이선스는 이미 동의돼 있었음)
 - `android/local.properties` (git 무시됨), `android/app/build/` 빌드 결과물 (무시됨)
 - 스크래치 폴더(임시)에 로컬 개발 서버·브라우저 테스트 스크립트 — 저장소 밖
-- `docs/handoff-shots/` 스크린샷 12장 — 확인 후 지워도 됨 (README 스크린샷 후보는 `07-calendar-shared.png`)
+- `docs/handoff-shots/` 스크린샷 15장 — 확인 후 지워도 됨 (README 스크린샷 후보는 `07-calendar-shared.png`)

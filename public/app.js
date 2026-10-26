@@ -2690,7 +2690,9 @@ function hideInstall() {
 /** 아이폰 사파리는 단계 그림, 앱 안 화면은 "브라우저로 열기" 안내 */
 function openInstallGuide(mode) {
   const away = mode === 'away';
-  $('install-guide-title').textContent = t(away ? 'install.awayTitle' : 'install.guideTitle');
+  // 첫 화면에서는 언어를 고르기 전에 열려서, 고른 뒤 applyI18n이 다시 옮기도록 키로 답니다
+  $('install-guide-title').dataset.i18n = away ? 'install.awayTitle' : 'install.guideTitle';
+  $('install-guide-title').textContent = t($('install-guide-title').dataset.i18n);
   $('install-guide-ios').hidden = away;
   $('install-guide-away').hidden = !away;
   $('install-guide-open').hidden = !away || !outsideUrl();

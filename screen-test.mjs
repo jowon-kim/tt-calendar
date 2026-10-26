@@ -504,6 +504,8 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   await sleep(10);
   ok('its install button explains how to get out instead', $('install-guide').open && !$('install-guide-away').hidden && $('install-guide-ios').hidden);
   ok('with a button that opens the browser', !$('install-guide-open').hidden);
+  // 첫 화면에서는 언어를 고르기 전에 열리므로, 제목도 키로 달려 있어야 고른 언어로 바뀝니다
+  ok('its title follows the language picked after it opened', $('install-guide-title').dataset.i18n === 'install.awayTitle');
   $('install-guide').close();
   navigator.userAgent = plainAgent;
   run('showInstallButtons()');
