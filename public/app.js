@@ -1277,7 +1277,10 @@ function bindDatePicker() {
     btn.addEventListener('click', () => {
       const target = btn.dataset.dateFor;
       datePicker.open(target, (key) => {
-        if (target === 's-since') saveSetting({ since: key }, 0);
+        if (target === 's-since') {
+          saveSetting({ since: key }, 0);
+          $('s-milestones-row').hidden = false;
+        }
         // 시작일 바꾸면 끝나는 날 최소값 보정
         if (target === 'f-date' && $('f-multi').checked && $('f-end').value && $('f-end').value < key) {
           $('f-end').value = key;
@@ -1626,6 +1629,7 @@ function fillSettings() {
   $('s-since').value = state.settings.since || '';
   setDateLabel('s-since');
   $('s-milestones').checked = !!state.settings.showMilestones;
+  $('s-milestones-row').hidden = !state.settings.since;
   renderLanguagePickers();
   renderPeople();
 }
@@ -1740,6 +1744,8 @@ function renderPeople() {
 const MAX_PHOTOS = globalThis.DIARY_LIMITS.photos;
 
 function openPhotos() {
+  // 한 장도 없으면 빈 창을 한 번 더 거치지 않고 바로 사진 고르기로
+  if (!state.photos.length) { $('s-photo-file').click(); return; }
   renderPhotos();
   $('photos').showModal();
 }
