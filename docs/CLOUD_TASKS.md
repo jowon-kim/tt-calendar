@@ -16,8 +16,9 @@
 ### ✅ (2026-10-26, ba10c1c) T1. README 포트폴리오 정리 (README.md · README.ko.md)
 처음 보는 면접관이 30초 안에 알 수 있게: 무엇인지 → 대표 스크린샷(`docs/handoff-shots/07-calendar-shared.png`) → 구조(Vercel·Neon 미리보기 브랜치·Blob·cron·암호화 백업·PWA·Android 빌드)를 그림이나 표로 → 기술적 결정과 이유.
 
-### ⬜ T2. 전체 검증 한 바퀴
+### ✅ (2026-10-26, d6edf95) T2. 전체 검증 한 바퀴
 `AGENTS.md` 의 검증 명령(빌드·타입체크·린트·테스트)을 전부 돌리고, 깨진 게 있으면 원인부터 찾아 고친다. 테스트가 얇은 곳(로그인·초대·알림)은 최소 커버리지를 추가한다.
+> 결과: 빌드·타입체크·린트 명령은 이 레포에 없음(빌드 없는 순수 JS). 대신 `npm test`·`npm run i18n`(9개 언어 100%)·모든 JS `node --check`·임시 ESLint(오류 규칙만) — 깨진 것 없음, ESLint가 잡은 11개는 테스트용 가짜 전역이라 오탐. `npm run verify`는 클라우드에 `.env`가 없어 DB·주소 ✗(정상). 테스트 17개 추가(구글 키 갱신, 초대 경합·만료, 초대 받아 옮긴 기기의 알림).
 
 ### ⬜ T3. 알리기 글 초안 (게시는 사장님이 직접)
 `LAUNCH.md` 0절 "알리기"용: Reddit(r/LongDistance 등)·Product Hunt·OKKY·디스콰이엇 각각의 규칙을 확인하고 맞춘 초안을 `docs/promo/` 에. 광고 냄새 없이, 사실만.
