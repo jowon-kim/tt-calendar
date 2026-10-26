@@ -13,7 +13,8 @@
     "i18n": "node i18n-check.mjs",
     "vendor": "node -e \"require('fs').copyFileSync('node_modules/@capacitor/core/dist/capacitor.js','public/vendor/capacitor.js')\"",
     "app:sync": "npm run vendor && cap sync",
-    "landing": "node landing.mjs"
+    "landing": "node landing.mjs",
+    "local": "node tools/dev-local.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
