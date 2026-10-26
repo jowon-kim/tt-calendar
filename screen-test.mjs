@@ -1034,6 +1034,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('its picture shows signed-in devices, not a password button', !readFileSync('public/index.html', 'utf8').includes('data-i18n="settings.changePassword"></text>'));
 }
 
+/* 밤 테마는 체크 상자 같은 기본 부품도 어둡게 */
+{
+  const css = readFileSync('public/style.css', 'utf8');
+  const night = css.slice(css.indexOf('[data-theme="night"] {'), css.indexOf('}', css.indexOf('[data-theme="night"] {')));
+  ok('the night theme asks the browser for dark built-in controls', /color-scheme:\s*dark/.test(night));
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');
