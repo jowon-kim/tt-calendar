@@ -13,7 +13,7 @@
 
 ## 작업
 
-### ⬜ T1. README 포트폴리오 정리 (README.md · README.ko.md)
+### ✅ (2026-10-26, ba10c1c) T1. README 포트폴리오 정리 (README.md · README.ko.md)
 처음 보는 면접관이 30초 안에 알 수 있게: 무엇인지 → 대표 스크린샷(`docs/handoff-shots/07-calendar-shared.png`) → 구조(Vercel·Neon 미리보기 브랜치·Blob·cron·암호화 백업·PWA·Android 빌드)를 그림이나 표로 → 기술적 결정과 이유.
 
 ### ⬜ T2. 전체 검증 한 바퀴
