@@ -5,3 +5,6 @@ node_modules/
 *.jks
 *.keystore
 *.p8
+
+# 운영 대시보드 — 사용자 이메일이 보여서 공개 레포에 올리지 않습니다 (내 PC에서만)
+admin/
