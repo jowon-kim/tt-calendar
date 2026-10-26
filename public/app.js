@@ -2231,7 +2231,7 @@ async function load() {
   keepShell();
   show('app');
   render();
-  maybeGuide();
+  firstSteps();
 }
 
 /**
@@ -2380,6 +2380,7 @@ async function signInWithGoogle(credential) {
   $('gate-error').textContent = '';
   try {
     const info = await post('/api/google', 'POST', { credential, invite: pendingInvite || undefined });
+    googleName = givenName(credential);
     // 처음이면 가입하면서 이미 그 달력에 앉았고, 원래 있던 사람이면 들어온 김에 초대를 받습니다
     if (pendingInvite && !info.created) {
       localStorage.setItem(SIGNED_IN, '1');
@@ -2621,20 +2622,16 @@ $('pw-form').addEventListener('submit', (e) => {
 });
 $('s-push').addEventListener('click', togglePush);
 
-/* ── 홈 화면에 설치 권하기 ──
+/* ── 홈 화면에 설치 ──
    크롬·엣지는 설치할 수 있을 때 beforeinstallprompt를 한 번 줍니다 — 이미 설치했으면 안 줘요.
    받아 뒀다가 누르면 바로 설치 창을 띄웁니다. 아이폰은 웹페이지가 대신 설치해 줄 길이 애플에 없어서
-   "공유 → 홈 화면에 추가"를 그림으로 안내해요. 홈 화면에서 연 앱과 스토어 앱에는 띄우지 않습니다.
-   아이폰은 설치해 두고 사파리로 다시 들어온 건 구별할 수 없어서, "나중에"를 누르면 한동안 쉽니다. */
-const INSTALL_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
-const INSTALL_SNOOZED = 'diary_install_snoozed';
+   공유 시트를 열어 주거나 "공유 → 홈 화면에 추가"를 그림으로 안내해요. 홈 화면에서 연 앱과 스토어 앱은 건너뜁니다.
+   권하는 건 처음 들어올 때 한 번(아래 "처음 들어올 때")과 설정의 설치 버튼뿐입니다. */
 let installPrompt = null;
+let promptWaiters = []; // 설치 신호를 잠깐 기다리는 쪽 (offerInstall)
 
 const installed = () =>
   navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-
-const snoozed = () =>
-  Date.now() - Number(localStorage.getItem(INSTALL_SNOOZED) || 0) < INSTALL_SNOOZE_MS;
 
 /* 카톡·인스타 같은 앱 안의 화면. 홈 화면에 추가 메뉴가 없고, 구글 로그인도 막힙니다(disallowed_useragent).
    초대 링크는 대개 카톡으로 오니까 여기서 바깥 브라우저로 내보내는 게 첫 관문이에요. */
@@ -2667,23 +2664,13 @@ function leaveAppBrowser() {
 const canInstall = () =>
   !inApp() && !installed() && (!!installPrompt || safariTab() || appBrowser());
 
-/** 로그인 화면과 설정의 설치 버튼 */
+/** 설정의 설치 버튼 — 로그인 화면에는 두지 않습니다(구글 버튼 하나만) */
 function showInstallButtons() {
-  const can = canInstall();
-  $('gate-install').hidden = !can;
-  $('s-install-field').hidden = !can;
-}
-
-function showInstallBanner(ios) {
-  if (inApp() || installed() || snoozed()) return;
-  $('install-banner-ios').hidden = !ios;
-  $('install-banner-android').hidden = ios;
-  $('install-banner').hidden = false;
+  $('s-install-field').hidden = !canInstall();
 }
 
 function hideInstall() {
   installPrompt = null; // 한 번 쓴 건 다시 못 띄웁니다
-  $('install-banner').hidden = true;
   showInstallButtons();
 }
 
@@ -2702,6 +2689,17 @@ function openInstallGuide(mode) {
   if (!$('install-guide').open) $('install-guide').showModal();
 }
 
+/** 아이폰: 공유 시트를 바로 엽니다 — "홈 화면에 추가"가 그 안에 있어요. 못 열면 그림 안내로. */
+async function shareToHome() {
+  try {
+    if (!navigator.share) throw new Error('no share');
+    await navigator.share({ url: location.origin });
+  } catch {
+    openInstallGuide('ios');
+  }
+}
+
+/** 설정의 설치 버튼 */
 async function install() {
   if (appBrowser()) return openInstallGuide('away');
   if (installPrompt) {
@@ -2709,7 +2707,7 @@ async function install() {
     await installPrompt.userChoice;
     return hideInstall();
   }
-  if (safariTab()) openInstallGuide('ios');
+  if (safariTab()) return shareToHome();
 }
 
 async function copyArrivedAt() {
@@ -2720,16 +2718,11 @@ addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   installPrompt = e;
   showInstallButtons();
-  showInstallBanner(false);
+  promptWaiters.forEach((fn) => fn());
+  promptWaiters = [];
 });
 addEventListener('appinstalled', hideInstall);
 $('s-install').addEventListener('click', install);
-$('gate-install').addEventListener('click', install);
-$('install-banner-go').addEventListener('click', install);
-$('install-banner-close').addEventListener('click', () => {
-  localStorage.setItem(INSTALL_SNOOZED, String(Date.now()));
-  $('install-banner').hidden = true;
-});
 $('install-guide-close').addEventListener('click', () => $('install-guide').close());
 $('install-guide-open').addEventListener('click', leaveAppBrowser);
 $('install-guide-copy').addEventListener('click', copyArrivedAt);
@@ -2737,10 +2730,108 @@ if (appBrowser()) {
   // 먼저 알아서 내보내 보고, 안 되는 앱이면 남은 화면에서 길을 알려줍니다
   leaveAppBrowser();
   openInstallGuide('away');
-} else if (safariTab()) {
-  showInstallBanner(true);
 }
 showInstallButtons();
+
+/* ── 처음 들어올 때: 한 번에 한 화면, 한 가지 할 일 ──
+   (앱 안 화면이면 바깥 브라우저로) → 구글 로그인 → 내 이름 → 홈 화면 추가 한 번 → 사용법.
+   load()가 달력을 그린 뒤 firstSteps()를 부르고, 각 화면이 끝나면 다음 것을 부릅니다.
+   이미 지난 단계는 건너뛰니, 앱을 열 때마다 불러도 할 일이 없으면 아무것도 안 뜹니다.
+
+   사용법은 홈 화면 앱(또는 스토어 앱)으로 처음 열 때 띄웁니다. 브라우저에서 설치를 건너뛰었거나
+   설치할 길이 없으면 그 자리에서 띄워요. 설치하겠다고 했으면 브라우저에서는 띄우지 않습니다 —
+   곧 홈 화면 앱으로 다시 열 테니까요. 기기마다 기억합니다(diary_install_offered · diary_guide). */
+const INSTALL_OFFERED = 'diary_install_offered'; // 'taken' | 'skipped'
+const PROMPT_WAIT_MS = 2000; // 안드로이드 크롬은 설치 신호를 페이지가 뜬 뒤 조금 있다 줍니다
+let googleName = ''; // 방금 구글이 알려준 이름. 이름 칸을 미리 채우는 데만 씁니다
+
+/** 구글 ID 토큰 안의 이름(given_name). 서명 확인은 서버 몫이고, 여기선 칸을 미리 채울 뿐이라 읽기만 합니다. */
+function givenName(credential) {
+  try {
+    const part = String(credential).split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const bytes = Uint8Array.from(atob(part), (c) => c.charCodeAt(0));
+    const claims = JSON.parse(new TextDecoder().decode(bytes));
+    return String(claims.given_name || claims.name || '').trim().slice(0, 12);
+  } catch {
+    return '';
+  }
+}
+
+function firstSteps() {
+  if (!state.me) return;
+  if (!state.settings.names?.[state.me]) return askName();
+  offerInstall();
+}
+
+/** ① 뭐라고 불러 드릴까요? — 비어 있을 때만. 가입한 사람도, 초대로 들어온 상대도 */
+function askName() {
+  $('name-ask-input').value = googleName;
+  if (!$('name-ask').open) $('name-ask').showModal();
+}
+
+async function saveMyName(e) {
+  e?.preventDefault();
+  const name = $('name-ask-input').value.trim().slice(0, 12);
+  if (!name) { $('name-ask-input').focus(); return; }
+  await once($('name-ask-go'), async () => {
+    try {
+      // 내 자리 이름만 보냅니다 — 그새 상대가 고친 이름을 덮지 않게 (lib/http.js normalizeSettings)
+      const saved = await api.call('PATCH', '/api/settings', { names: { [state.me]: name } });
+      state.settings.names = { ...state.settings.names, ...saved.names };
+      googleName = '';
+      rememberState();
+      render();
+      $('name-ask').close();
+      offerInstall();
+    } catch (err) {
+      toast(err.message || t('error.saveFailed'));
+    }
+  });
+}
+
+const promptArrives = (ms) => new Promise((resolve) => {
+  if (installPrompt) return resolve();
+  const timer = setTimeout(resolve, ms);
+  promptWaiters.push(() => { clearTimeout(timer); resolve(); });
+});
+
+/** ② 홈 화면에 둘까요? — 브라우저 탭에서, 이 기기에 한 번만 */
+async function offerInstall() {
+  if (inApp() || installed()) return maybeGuide();
+  const offered = localStorage.getItem(INSTALL_OFFERED);
+  if (offered === 'taken') return;
+  if (offered) return maybeGuide();
+  if (!installPrompt && /Android/i.test(navigator.userAgent)) await promptArrives(PROMPT_WAIT_MS);
+  const ios = !installPrompt && safariTab();
+  if (!installPrompt && !ios) return maybeGuide(); // 설치할 길이 없는 브라우저 — 바로 사용법
+  localStorage.setItem(INSTALL_OFFERED, 'skipped'); // 창을 그냥 닫고 떠나도 다시 묻지 않게
+  $('install-offer-text').innerHTML = t(ios ? 'install.offerIos' : 'install.offerAndroid');
+  if (!$('install-offer').open) $('install-offer').showModal();
+}
+
+async function takeInstall() {
+  localStorage.setItem(INSTALL_OFFERED, 'taken');
+  $('install-offer').close();
+  if (!installPrompt) return shareToHome(); // 아이폰 — 누른 그 자리에서 열어야 사파리가 허락합니다
+  const prompt = installPrompt;
+  prompt.prompt();
+  const { outcome } = await prompt.userChoice;
+  hideInstall();
+  if (outcome !== 'accepted') skipInstall();
+}
+
+/** 나중에 — 설치는 설정에 남아 있고, 사용법은 지금 여기서 */
+function skipInstall() {
+  localStorage.setItem(INSTALL_OFFERED, 'skipped');
+  $('install-offer').close();
+  maybeGuide();
+}
+
+$('name-ask-form').addEventListener('submit', saveMyName);
+$('name-ask').addEventListener('cancel', (e) => e.preventDefault()); // 이름은 건너뛰지 않습니다 — 상대 화면에 뜰 이름이라
+$('install-offer-go').addEventListener('click', takeInstall);
+$('install-offer-later').addEventListener('click', skipInstall);
+$('install-offer').addEventListener('cancel', (e) => { e.preventDefault(); skipInstall(); });
 $('s-invite').addEventListener('click', makeInvite);
 $('s-invite-copy').addEventListener('click', copyInvite);
 $('s-invite-link').addEventListener('focus', (e) => e.target.select()); // 누르면 통째로 골라져서 복사하기 쉽게
