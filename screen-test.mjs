@@ -990,6 +990,15 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('once they are in, the card is gone', $('upcoming-list').children[0]?.className !== 'invite-card');
 }
 
+/* 사용법이 지금 동작과 맞게 — 구글 로그인이라 비밀번호 이야기가 없고, 초대는 첫 화면에서 */
+{
+  const packs = run('Object.keys(I18N)');
+  ok('the guide no longer talks about a password to write down',
+    packs.every((l) => !/password|비밀번호|パスワードは|密码|contraseña|mot de passe|Passwort|senha|пароль/i.test(run(`I18N['${l}']['guide.setup6.p1']`).replace(/no password|비밀번호가 없|忘れるパスワードはありません|没有会忘记的密码|no hay contraseña|pas de mot de passe|kein Passwort|não há senha|нет пароля/i, ''))));
+  ok('and points to the invite on the home screen', run(`I18N.ko['guide.setup2.p2']`).includes(run(`I18N.ko['home.inviteGo']`)));
+  ok('its picture shows signed-in devices, not a password button', !readFileSync('public/index.html', 'utf8').includes('data-i18n="settings.changePassword"></text>'));
+}
+
 /* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
 {
   const html = readFileSync('public/index.html', 'utf8');
