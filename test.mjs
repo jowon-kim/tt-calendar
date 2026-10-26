@@ -1640,6 +1640,28 @@ ok('zones west of UTC read the earlier day',
   await call(settings, { method: 'PATCH', token: guest, body: { names: { b: '레오야' } } });
   await call(settings, { method: 'PATCH', token: host, body: { names: { a: '미나', b: '레오야' } } });
   ok('renaming later is not another "joined"', pushed.length === 0, pushed);
+
+  /* 탈퇴하면 자리를 비우게 되기 전의 달력: 빈 자리에 나간 사람 이름이 남아 있습니다 */
+  for (const how of ['signup', 'existing']) {
+    const host2 = await join(`stale-host-${how}`);
+    await call(settings, { method: 'PATCH', token: host2, body: { locale: 'ko', names: { a: '미나' } } });
+    await pg.query(`update settings set name_b = '옛사람' where couple_id = $1`, [await coupleOf(`stale-host-${how}`)]);
+    await subscribe(host2, `https://web.push.apple.com/stale-host-${how}`);
+    const code = (await call(invite, { method: 'POST', token: host2 })).body.code;
+    let guest2;
+    if (how === 'signup') guest2 = await join(`stale-guest-${how}`, code);
+    else {
+      guest2 = await join(`stale-guest-${how}`);
+      r = await call(invite, { method: 'PUT', token: guest2, body: { code } });
+    }
+    r = await call(state, { token: guest2 });
+    ok(`a newcomer (${how}) does not inherit the name left in the empty seat`,
+      r.body.settings.names.b === '' && r.body.settings.names.a === '미나', JSON.stringify(r.body.settings.names));
+    pushed.length = 0;
+    await call(settings, { method: 'PATCH', token: guest2, body: { names: { b: '레오' } } });
+    ok(`so naming themselves still tells the one who invited them (${how})`,
+      pushed.length === 1 && pushed[0].title === '레오님이 들어왔어요', JSON.stringify(pushed));
+  }
 }
 
 /* ── 배포 모양: Vercel Hobby는 배포 하나에 함수 12개까지 — 넘으면 배포가 통째로 실패합니다 ── */
