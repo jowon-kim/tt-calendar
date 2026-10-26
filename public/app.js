@@ -2626,7 +2626,9 @@ $('s-push').addEventListener('click', togglePush);
    크롬·엣지는 설치할 수 있을 때 beforeinstallprompt를 한 번 줍니다 — 이미 설치했으면 안 줘요.
    받아 뒀다가 누르면 바로 설치 창을 띄웁니다. 아이폰은 웹페이지가 대신 설치해 줄 길이 애플에 없어서
    공유 시트를 열어 주거나 "공유 → 홈 화면에 추가"를 그림으로 안내해요. 홈 화면에서 연 앱과 스토어 앱은 건너뜁니다.
-   권하는 건 처음 들어올 때 한 번(아래 "처음 들어올 때")과 설정의 설치 버튼뿐입니다. */
+   권하는 건 처음 들어올 때 한 번(아래 "처음 들어올 때")과 설정의 설치 버튼뿐입니다.
+   (공유 시트를 대신 여는 navigator.share는 쓰지 않습니다 — 웹이 연 공유 시트에는 "홈 화면에 추가"가 없어요.
+   실기기 확인, docs/IOS_INSTALL_RESEARCH.md) */
 let installPrompt = null;
 let promptWaiters = []; // 설치 신호를 잠깐 기다리는 쪽 (offerInstall)
 
@@ -2674,9 +2676,14 @@ function hideInstall() {
   showInstallButtons();
 }
 
-/** 아이폰 사파리는 단계 그림, 앱 안 화면은 "브라우저로 열기" 안내 */
-function openInstallGuide(mode) {
+/** 아이폰 사파리는 단계 그림, 앱 안 화면은 "브라우저로 열기" 안내.
+    firstRun이면 아래에 "나중에"를 두고, 닫히면 사용법으로 이어집니다 (closeInstallGuide). */
+let installGuideFirstRun = false;
+
+function openInstallGuide(mode, { firstRun = false } = {}) {
   const away = mode === 'away';
+  installGuideFirstRun = firstRun;
+  $('install-guide-later').hidden = !firstRun;
   // 첫 화면에서는 언어를 고르기 전에 열려서, 고른 뒤 applyI18n이 다시 옮기도록 키로 답니다
   $('install-guide-title').dataset.i18n = away ? 'install.awayTitle' : 'install.guideTitle';
   $('install-guide-title').textContent = t($('install-guide-title').dataset.i18n);
@@ -2689,16 +2696,6 @@ function openInstallGuide(mode) {
   if (!$('install-guide').open) $('install-guide').showModal();
 }
 
-/** 아이폰: 공유 시트를 바로 엽니다 — "홈 화면에 추가"가 그 안에 있어요. 못 열면 그림 안내로. */
-async function shareToHome() {
-  try {
-    if (!navigator.share) throw new Error('no share');
-    await navigator.share({ url: location.origin });
-  } catch {
-    openInstallGuide('ios');
-  }
-}
-
 /** 설정의 설치 버튼 */
 async function install() {
   if (appBrowser()) return openInstallGuide('away');
@@ -2707,7 +2704,7 @@ async function install() {
     await installPrompt.userChoice;
     return hideInstall();
   }
-  if (safariTab()) return shareToHome();
+  if (safariTab()) return openInstallGuide('ios');
 }
 
 async function copyArrivedAt() {
@@ -2724,6 +2721,14 @@ addEventListener('beforeinstallprompt', (e) => {
 addEventListener('appinstalled', hideInstall);
 $('s-install').addEventListener('click', install);
 $('install-guide-close').addEventListener('click', () => $('install-guide').close());
+$('install-guide-later').addEventListener('click', () => $('install-guide').close());
+// 처음 들어와 뜬 그림 안내는 어떻게 닫든(나중에·×·Esc) 사용법으로 이어집니다
+$('install-guide').addEventListener('close', () => {
+  if (!installGuideFirstRun) return;
+  installGuideFirstRun = false;
+  $('install-guide-later').hidden = true;
+  maybeGuide();
+});
 $('install-guide-open').addEventListener('click', leaveAppBrowser);
 $('install-guide-copy').addEventListener('click', copyArrivedAt);
 if (appBrowser()) {
@@ -2795,7 +2800,8 @@ const promptArrives = (ms) => new Promise((resolve) => {
   promptWaiters.push(() => { clearTimeout(timer); resolve(); });
 });
 
-/** ② 홈 화면에 둘까요? — 브라우저 탭에서, 이 기기에 한 번만 */
+/** ② 홈 화면에 — 브라우저 탭에서, 이 기기에 한 번만.
+    안드로이드는 "둘까요?" 창 → 시스템 설치 창. 아이폰은 묻지 않고 바로 3단계 그림 안내 (창 하나, 할 일 하나) */
 async function offerInstall() {
   if (inApp() || installed()) return maybeGuide();
   const offered = localStorage.getItem(INSTALL_OFFERED);
@@ -2805,15 +2811,16 @@ async function offerInstall() {
   const ios = !installPrompt && safariTab();
   if (!installPrompt && !ios) return maybeGuide(); // 설치할 길이 없는 브라우저 — 바로 사용법
   localStorage.setItem(INSTALL_OFFERED, 'skipped'); // 창을 그냥 닫고 떠나도 다시 묻지 않게
-  $('install-offer-text').innerHTML = t(ios ? 'install.offerIos' : 'install.offerAndroid');
+  if (ios) return openInstallGuide('ios', { firstRun: true });
   if (!$('install-offer').open) $('install-offer').showModal();
 }
 
+/** 안드로이드: 버튼 한 번 → 시스템 설치 창 */
 async function takeInstall() {
-  localStorage.setItem(INSTALL_OFFERED, 'taken');
   $('install-offer').close();
-  if (!installPrompt) return shareToHome(); // 아이폰 — 누른 그 자리에서 열어야 사파리가 허락합니다
   const prompt = installPrompt;
+  if (!prompt) return skipInstall();
+  localStorage.setItem(INSTALL_OFFERED, 'taken');
   prompt.prompt();
   const { outcome } = await prompt.userChoice;
   hideInstall();

@@ -1270,6 +1270,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 img.install-step-icon { padding: 0; }
 .install-away { display: grid; gap: 12px; }
+.install-later { display: block; margin: 16px auto 0; }
 .install-guide.point-down[open] {
   margin-bottom: calc(64px + env(safe-area-inset-bottom));
   overflow: visible;

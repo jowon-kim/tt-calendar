@@ -961,12 +961,13 @@
   </form>
 </dialog>
 
-<!-- ② 홈 화면 추가 — 브라우저 탭에서 한 번만. 안드로이드는 시스템 설치 창, 아이폰은 공유 시트 -->
+<!-- ② 홈 화면 추가 — 브라우저 탭에서 한 번만. 안드로이드는 이 창 → 시스템 설치 창.
+     아이폰은 웹이 대신 설치할 길이 없어서 이 창 없이 바로 그림 안내(#install-guide)를 띄웁니다 -->
 <dialog id="install-offer" class="ask-dialog step-dialog" aria-labelledby="install-offer-title">
   <div class="ask step">
     <img class="step-icon" src="/apple-touch-icon.png" alt="" width="64" height="64">
     <h2 id="install-offer-title" class="step-title" data-i18n="install.offerTitle"></h2>
-    <p id="install-offer-text" class="step-text"></p>
+    <p class="step-text" data-i18n="install.offerAndroid"></p>
     <button type="button" id="install-offer-go" class="btn btn-solid btn-wide" data-i18n="install.button"></button>
     <button type="button" id="install-offer-later" class="gate-link step-later" data-i18n="install.later"></button>
   </div>
@@ -996,6 +997,8 @@
         <p data-i18n-html="install.step3"></p>
       </li>
     </ol>
+    <!-- 처음 들어올 때 뜬 경우만 — 닫으면 사용법으로 이어집니다 -->
+    <button type="button" id="install-guide-later" class="gate-link install-later" data-i18n="install.later" hidden></button>
     <div id="install-guide-away" class="install-away" hidden>
       <p data-i18n="install.awayText"></p>
       <p data-i18n-html="install.awayHow"></p>
