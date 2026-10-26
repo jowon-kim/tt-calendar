@@ -1293,6 +1293,7 @@ img.install-step-icon { padding: 0; }
   margin-bottom: calc(64px + env(safe-area-inset-bottom));
   overflow: visible;
 }
+.install-guide.point-down .dialog-head { border-radius: var(--r-xl) var(--r-xl) 0 0; } /* overflow를 풀어서 모서리를 직접 */
 .install-guide.point-down::after {
   content: '↓';
   position: absolute; left: 50%; bottom: -56px;
@@ -1302,7 +1303,8 @@ img.install-step-icon { padding: 0; }
   animation: install-nudge 1.1s ease-in-out infinite;
 }
 @keyframes install-nudge { 50% { translate: 0 10px; } }
-@media (prefers-reduced-motion: reduce) { .install-guide.point-down::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .install-guide.point-down .dialog-head { border-radius: var(--r-xl) var(--r-xl) 0 0; } /* overflow를 풀어서 모서리를 직접 */
+.install-guide.point-down::after { animation: none; } }
 
 /* ═══════════════ 토스트 ═══════════════ */
 .toast {
