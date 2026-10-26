@@ -70,6 +70,8 @@
       <div id="gate-google-button" class="google-button"></div>
     </div>
     <p id="gate-error" class="gate-error" role="alert"></p>
+    <!-- 링크로 처음 온 사람이 제일 먼저 누를 곳. 안드로이드는 바로 설치, 아이폰은 그림 안내 -->
+    <button type="button" id="gate-install" class="btn btn-ghost btn-wide gate-install" data-i18n="install.button" hidden></button>
     <div class="gate-links">
       <a href="/en/" id="gate-about" class="gate-link" data-i18n="gate.about"></a>
       <a href="/privacy.html" class="gate-link" target="_blank" rel="noopener" data-i18n="settings.privacy"></a>
@@ -963,6 +965,39 @@
   <button type="button" id="install-banner-go" class="btn btn-solid" data-i18n="install.bannerGo"></button>
   <button type="button" id="install-banner-close" class="install-banner-close" data-i18n-attr="aria-label:install.later">×</button>
 </div>
+
+<!-- 아이폰은 웹이 대신 홈 화면에 추가해 줄 수 없어서 순서를 그림으로 보여줍니다.
+     카톡 같은 앱 안 화면이면 바깥 브라우저로 나가는 길을 대신 보여줘요. -->
+<dialog id="install-guide" class="dialog install-guide" aria-labelledby="install-guide-title">
+  <div class="dialog-body">
+    <header class="dialog-head">
+      <h2 class="dialog-title" id="install-guide-title"></h2>
+      <button type="button" id="install-guide-close" class="icon-btn" data-i18n-attr="aria-label:common.close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <ol id="install-guide-ios" class="install-steps">
+      <li>
+        <svg class="install-step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1"/></svg>
+        <p data-i18n-html="install.step1"></p>
+      </li>
+      <li>
+        <svg class="install-step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>
+        <p data-i18n-html="install.step2"></p>
+      </li>
+      <li>
+        <img class="install-step-icon" src="/apple-touch-icon.png" alt="" width="36" height="36">
+        <p data-i18n-html="install.step3"></p>
+      </li>
+    </ol>
+    <div id="install-guide-away" class="install-away" hidden>
+      <p data-i18n="install.awayText"></p>
+      <p data-i18n-html="install.awayHow"></p>
+      <button type="button" id="install-guide-open" class="btn btn-solid btn-wide" data-i18n="install.awayOpen"></button>
+      <button type="button" id="install-guide-copy" class="btn btn-ghost btn-wide" data-i18n="install.copyLink"></button>
+    </div>
+  </div>
+</dialog>
 
 <div id="toast"class="toast" role="status" aria-live="polite" popover="manual" hidden></div>
 

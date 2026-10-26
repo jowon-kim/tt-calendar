@@ -472,8 +472,42 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   /* 아이폰 사파리는 신호가 없어서 글로 안내합니다 */
   run('showInstallBanner(true)');
   ok('iphone safari gets the share → add to home screen note', !$('install-banner').hidden && !$('install-banner-ios').hidden && $('install-banner-android').hidden);
-  ok('with no install button to press', $('install-banner-go').hidden);
+  ok('with an install button too', !$('install-banner-go').hidden);
   $('install-banner').hidden = true;
+
+  /* 아이폰은 웹이 대신 설치해 줄 수 없어서, 누르면 순서를 그림으로 보여줍니다 */
+  const plainAgent = navigator.userAgent;
+  navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1';
+  run('showInstallButtons()');
+  ok('iphone safari gets an install button on the sign-in screen', !$('gate-install').hidden);
+  $('gate-install').click();
+  await sleep(10);
+  ok('pressing it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden && $('install-guide-away').hidden);
+  ok('pointing down at the safari share button', $('install-guide').classList.contains('point-down'));
+  $('install-guide-close').click();
+  ok('and closes', !$('install-guide').open);
+
+  /* 카톡 안 화면 — 로그인도 설치도 안 되니 바깥 브라우저로 내보냅니다 */
+  const kakao = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 KAKAOTALK 10.8.0';
+  const invite = 'https://diary.test/?invite=abc123';
+  ok('kakaotalk opens the link, invite and all, in the outside browser',
+    run(`outsideUrl(${JSON.stringify(kakao)}, ${JSON.stringify(invite)})`) === `kakaotalk://web/openExternal?url=${encodeURIComponent(invite)}`);
+  ok('line gets its own flag', run(`outsideUrl('Mozilla/5.0 Line/14.0.0', ${JSON.stringify(invite)})`) === 'https://diary.test/?invite=abc123&openExternalBrowser=1');
+  ok('other android apps hand it to the default browser',
+    run(`outsideUrl('Mozilla/5.0 (Linux; Android 14) Instagram 300', ${JSON.stringify(invite)})`) === 'intent://diary.test/?invite=abc123#Intent;scheme=https;end');
+  ok('instagram on iphone has no way out, so it only explains',
+    run(`outsideUrl('Mozilla/5.0 (iPhone) Instagram 300', ${JSON.stringify(invite)})`) === null);
+  navigator.userAgent = kakao;
+  ok('a kakaotalk page counts as an app browser', run('appBrowser()') === true);
+  run('showInstallButtons()');
+  $('gate-install').click();
+  await sleep(10);
+  ok('its install button explains how to get out instead', $('install-guide').open && !$('install-guide-away').hidden && $('install-guide-ios').hidden);
+  ok('with a button that opens the browser', !$('install-guide-open').hidden);
+  $('install-guide').close();
+  navigator.userAgent = plainAgent;
+  run('showInstallButtons()');
+  ok('a desktop browser with nothing to install shows no install button', $('gate-install').hidden);
 
   /* 홈 화면에서 연 앱에는 띄우지 않습니다 */
   const browserMedia = globalThis.matchMedia;

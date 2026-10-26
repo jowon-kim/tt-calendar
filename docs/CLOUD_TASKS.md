@@ -24,3 +24,10 @@
 
 ### ⬜ T4. 서치 콘솔 준비
 구글 서치 콘솔 확인용 태그를 넣을 자리와 절차를 정리해 둔다(태그는 사장님이 받아 옴). `sitemap.xml`·`robots.txt`·hreflang 이 실제 주소와 맞는지 다시 검사.
+
+### ⬜ T5. 설치 안내 화면 눈으로 확인 (2026-10-26 추가)
+10/26 커밋 "Install: one tap on Android, picture steps on iPhone, escape KakaoTalk"은 `screen-test.mjs`(가짜 DOM)로만 검증했다. 진짜 브라우저로 확인할 것:
+- 헤드리스 크롬(Playwright 등)으로 `public/`을 띄우고, 아이폰 사파리 UA + 390×844 화면에서 로그인 화면의 "홈 화면에 설치하기" → `#install-guide` 창이 화면 아래쪽에 붙고 ↓ 화살표가 창 아래에 보이는지, 다크 모드도 깨지지 않는지 스크린샷으로 확인.
+- 카톡 UA(`... KAKAOTALK 10.8.0`)로 열면 "브라우저에서 열어 주세요" 창이 바로 뜨는지, 초대 링크(`/?invite=…`)의 코드가 `kakaotalk://web/openExternal?url=` 안에 그대로 들어가는지.
+- 어긋난 게 있으면 고치고, 스크린샷은 `docs/handoff-shots/`에 남긴다.
+- 실기기 확인(아이폰 카톡 → 사파리로 넘어가는지, 안드로이드 설치 버튼)은 클라우드에서 못 하니 "사장님 폰에서 할 일"로 보고에 남긴다.

@@ -2623,8 +2623,8 @@ $('s-push').addEventListener('click', togglePush);
 
 /* ── 홈 화면에 설치 권하기 ──
    크롬·엣지는 설치할 수 있을 때 beforeinstallprompt를 한 번 줍니다 — 이미 설치했으면 안 줘요.
-   받아 뒀다가 위쪽 띠와 설정의 버튼으로 띄웁니다. 아이폰 사파리는 이런 신호가 없어서
-   "공유 → 홈 화면에 추가"를 글로 안내해요. 홈 화면에서 연 앱과 스토어 앱에는 띄우지 않습니다.
+   받아 뒀다가 누르면 바로 설치 창을 띄웁니다. 아이폰은 웹페이지가 대신 설치해 줄 길이 애플에 없어서
+   "공유 → 홈 화면에 추가"를 그림으로 안내해요. 홈 화면에서 연 앱과 스토어 앱에는 띄우지 않습니다.
    아이폰은 설치해 두고 사파리로 다시 들어온 건 구별할 수 없어서, "나중에"를 누르면 한동안 쉽니다. */
 const INSTALL_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 const INSTALL_SNOOZED = 'diary_install_snoozed';
@@ -2636,41 +2636,109 @@ const installed = () =>
 const snoozed = () =>
   Date.now() - Number(localStorage.getItem(INSTALL_SNOOZED) || 0) < INSTALL_SNOOZE_MS;
 
+/* 카톡·인스타 같은 앱 안의 화면. 홈 화면에 추가 메뉴가 없고, 구글 로그인도 막힙니다(disallowed_useragent).
+   초대 링크는 대개 카톡으로 오니까 여기서 바깥 브라우저로 내보내는 게 첫 관문이에요. */
+const APP_BROWSER = /KAKAOTALK|Instagram|FBAN|FBAV|FB_IAB|NAVER\(inapp|DaumApps|Line\/|BAND\/|everytimeApp|Twitter|TikTok|musical_ly|Snapchat/i;
+const appBrowser = () => !inApp() && APP_BROWSER.test(navigator.userAgent);
+
+/* 초대 코드는 곧 주소창에서 걷어내니(readLinkCodes), 들어온 그대로의 주소를 먼저 적어 둡니다 */
+const arrivedAt = location.href;
+
+/** 바깥 브라우저로 여는 주소. 카톡은 공식 주소가 있고(아이폰·안드로이드 둘 다), 라인은 꼬리표로,
+    안드로이드의 나머지는 intent로 기본 브라우저를 엽니다. 아이폰의 다른 앱들은 길이 없어서 null. */
+function outsideUrl(ua = navigator.userAgent, url = arrivedAt) {
+  if (/KAKAOTALK/i.test(ua)) return `kakaotalk://web/openExternal?url=${encodeURIComponent(url)}`;
+  if (/Line\//.test(ua)) {
+    const u = new URL(url);
+    u.searchParams.set('openExternalBrowser', '1');
+    return u.href;
+  }
+  if (/Android/i.test(ua)) return `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`;
+  return null;
+}
+
+function leaveAppBrowser() {
+  const url = outsideUrl();
+  if (url) location.href = url;
+  return !!url;
+}
+
+/** 지금 이 화면에서 설치로 갈 길이 있는지 */
+const canInstall = () =>
+  !inApp() && !installed() && (!!installPrompt || safariTab() || appBrowser());
+
+/** 로그인 화면과 설정의 설치 버튼 */
+function showInstallButtons() {
+  const can = canInstall();
+  $('gate-install').hidden = !can;
+  $('s-install-field').hidden = !can;
+}
+
 function showInstallBanner(ios) {
   if (inApp() || installed() || snoozed()) return;
   $('install-banner-ios').hidden = !ios;
   $('install-banner-android').hidden = ios;
-  $('install-banner-go').hidden = ios;
   $('install-banner').hidden = false;
 }
 
 function hideInstall() {
   installPrompt = null; // 한 번 쓴 건 다시 못 띄웁니다
   $('install-banner').hidden = true;
-  $('s-install-field').hidden = true;
+  showInstallButtons();
+}
+
+/** 아이폰 사파리는 단계 그림, 앱 안 화면은 "브라우저로 열기" 안내 */
+function openInstallGuide(mode) {
+  const away = mode === 'away';
+  $('install-guide-title').textContent = t(away ? 'install.awayTitle' : 'install.guideTitle');
+  $('install-guide-ios').hidden = away;
+  $('install-guide-away').hidden = !away;
+  $('install-guide-open').hidden = !away || !outsideUrl();
+  // 사파리의 공유 버튼은 화면 아래쪽에 있어서 그쪽을 가리킵니다. 다른 브라우저는 위치가 제각각이라 생략
+  $('install-guide').classList.toggle('point-down',
+    !away && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent));
+  if (!$('install-guide').open) $('install-guide').showModal();
 }
 
 async function install() {
-  if (!installPrompt) return;
-  installPrompt.prompt();
-  await installPrompt.userChoice;
-  hideInstall();
+  if (appBrowser()) return openInstallGuide('away');
+  if (installPrompt) {
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    return hideInstall();
+  }
+  if (safariTab()) openInstallGuide('ios');
+}
+
+async function copyArrivedAt() {
+  await navigator.clipboard?.writeText(arrivedAt).then(() => toast(t('install.copied')), () => {});
 }
 
 addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   installPrompt = e;
-  $('s-install-field').hidden = false;
+  showInstallButtons();
   showInstallBanner(false);
 });
 addEventListener('appinstalled', hideInstall);
 $('s-install').addEventListener('click', install);
+$('gate-install').addEventListener('click', install);
 $('install-banner-go').addEventListener('click', install);
 $('install-banner-close').addEventListener('click', () => {
   localStorage.setItem(INSTALL_SNOOZED, String(Date.now()));
   $('install-banner').hidden = true;
 });
-if (safariTab()) showInstallBanner(true);
+$('install-guide-close').addEventListener('click', () => $('install-guide').close());
+$('install-guide-open').addEventListener('click', leaveAppBrowser);
+$('install-guide-copy').addEventListener('click', copyArrivedAt);
+if (appBrowser()) {
+  // 먼저 알아서 내보내 보고, 안 되는 앱이면 남은 화면에서 길을 알려줍니다
+  leaveAppBrowser();
+  openInstallGuide('away');
+} else if (safariTab()) {
+  showInstallBanner(true);
+}
+showInstallButtons();
 $('s-invite').addEventListener('click', makeInvite);
 $('s-invite-copy').addEventListener('click', copyInvite);
 $('s-invite-link').addEventListener('focus', (e) => e.target.select()); // 누르면 통째로 골라져서 복사하기 쉽게
