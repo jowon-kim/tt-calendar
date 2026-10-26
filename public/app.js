@@ -607,9 +607,10 @@ function renderUpcoming() {
   const map = expand(from, to);
   const list = $('upcoming-list');
   list.replaceChildren();
-  // 혼자면 다음 할 일은 상대를 부르는 것 — 설정 깊이 들어가지 않게 첫 화면 맨 위에 둡니다
-  const alone = !!state.me && !state.paired;
-  if (alone) list.append(inviteCard());
+  // 다음 할 일 하나를 첫 화면 맨 위에 — 혼자면 상대 부르기, 둘이 됐는데 처음 만난 날이 없으면 그 날 넣기.
+  // 같은 자리, 같은 모양이고 한 번에 하나만 섭니다
+  const nudge = nextNudge();
+  if (nudge) list.append(nudge);
 
   /* 여러 날 일정은 처음 보이는 날에 한 줄만 — 날마다 한 줄씩이면 열하루짜리 하나가
      목록을 다 차지해서 다른 일정이 밀려납니다. 이미 시작했으면 오늘 줄에 섭니다.
@@ -629,8 +630,8 @@ function renderUpcoming() {
     .filter(([, items]) => items.length)
     .slice(0, 12);
   if (!rows.length) {
-    // 혼자일 땐 초대 카드 하나만 — "+ 로 심어볼까요"까지 같이 두면 할 일이 둘이 됩니다
-    if (!alone) list.append(emptyState(t('upcoming.emptyTitle'), t('upcoming.emptyHint'), TODAY));
+    // 카드가 서 있으면 그것 하나만 — "+ 로 심어볼까요"까지 같이 두면 할 일이 둘이 됩니다
+    if (!nudge) list.append(emptyState(t('upcoming.emptyTitle'), t('upcoming.emptyHint'), TODAY));
     return;
   }
 
@@ -640,23 +641,37 @@ function renderUpcoming() {
   }
 }
 
-/** 혼자 쓰는 동안 첫 화면에 서는 초대 카드. 누르면 링크를 만들어 바로 보냅니다 (sendInvite) */
-function inviteCard() {
+/** 첫 화면 맨 위에 설 카드 하나, 없으면 null */
+function nextNudge() {
+  if (!state.me) return null;
+  if (!state.paired) {
+    return nudgeCard('home-invite', t('home.inviteTitle'), t('home.inviteHint'), t('home.inviteGo'), sendInvite);
+  }
+  if (!state.settings.since) {
+    // 누르면 바로 연도 고르기 — 비어 있으면 datePicker가 연도부터 엽니다
+    return nudgeCard('home-since', t('home.sinceTitle'), t('home.sinceHint'), t('home.sinceGo'), () =>
+      datePicker.open('s-since', (key) => saveSetting({ since: key }, 0)));
+  }
+  return null;
+}
+
+/** 할 일 카드 — 제목, 한 줄 설명, 단추 하나 */
+function nudgeCard(id, titleText, hintText, label, onTap) {
   const li = document.createElement('li');
   li.className = 'invite-card';
   const text = document.createElement('div');
   text.className = 'invite-card-text';
   const title = document.createElement('strong');
-  title.textContent = t('home.inviteTitle');
+  title.textContent = titleText;
   const hint = document.createElement('span');
-  hint.textContent = t('home.inviteHint');
+  hint.textContent = hintText;
   text.append(title, hint);
   const go = document.createElement('button');
   go.type = 'button';
-  go.id = 'home-invite';
+  go.id = id;
   go.className = 'btn btn-solid';
-  go.textContent = t('home.inviteGo');
-  go.addEventListener('click', () => sendInvite(go));
+  go.textContent = label;
+  go.addEventListener('click', () => onTap(go));
   li.append(text, go);
   return li;
 }

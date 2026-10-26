@@ -986,8 +986,29 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('one tap makes a link and opens the share sheet',
     fetches.some((f) => f.url === '/api/invite' && f.method === 'POST') && shared.length === 1 && /\/\?invite=/.test(shared[0].url), shared);
   delete navigator.share;
-  run(`state.paired = true; render()`);
+  run(`state.paired = true; state.settings.since = '2024-02-14'; render()`);
   ok('once they are in, the card is gone', $('upcoming-list').children[0]?.className !== 'invite-card');
+
+  /* 둘이 됐는데 처음 만난 날이 없으면 같은 자리에 "처음 만난 날 넣기" — 한 번에 하나만 */
+  run(`state.paired = false; state.settings.since = null; render()`);
+  ok('alone with no day, only the invite card shows', $('upcoming-list').children.filter((c) => c.className === 'invite-card').length === 1
+    && $('upcoming-list').children[0].children.some((c) => c.id === 'home-invite'));
+  run(`state.paired = true; render()`);
+  const since = $('upcoming-list').children[0];
+  ok('together with no day, the same card asks for the day you met',
+    since?.className === 'invite-card' && since.children.some((c) => c.id === 'home-since')
+    && $('upcoming-list').children.filter((c) => c.className === 'invite-card').length === 1);
+  since.children.find((c) => c.id === 'home-since').click();
+  ok('one tap opens the years straight away', $('datepick').open && !$('dp-years').hidden);
+  fetches.length = 0;
+  $('dp-years').children.find((b) => String(b.textContent) === '2023').click();
+  $('dp-years').children[4].click();
+  $('dp-grid').children.find((c) => !c.classList.contains('out') && String(c.textContent) === '14').click();
+  await sleep(30);
+  ok('picking it saves the day', run('state.settings.since') === '2023-05-14'
+    && fetches.some((f) => f.url === '/api/settings' && JSON.parse(f.body).since === '2023-05-14'), run('state.settings.since'));
+  run('render()');
+  ok('and the card goes away', $('upcoming-list').children[0]?.className !== 'invite-card');
 }
 
 /* 지우기 — 묻지 않고 바로, 대신 몇 초 동안 되돌리기. 서버에는 그 뒤에 보냅니다 */
