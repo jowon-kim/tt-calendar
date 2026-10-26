@@ -936,6 +936,16 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   globalThis.fetch = realFetch;
 }
 
+/* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
+{
+  const html = readFileSync('public/index.html', 'utf8');
+  const basic = html.slice(html.indexOf('id="s-pane-basic"'), html.indexOf('id="s-pane-design"'));
+  const at = (key) => basic.indexOf(`data-i18n="settings.${key}"`);
+  const order = ['people', 'invite', 'since', 'push', 'install', 'language', 'holidays', 'timezone', 'appName', 'greeting', 'account'];
+  ok('settings put the everyday things first', order.every((key, i) => at(key) >= 0 && (i === 0 || at(order[i - 1]) < at(key))),
+    order.map((key) => [key, at(key)]));
+}
+
 /* 앱 안에서만 부르는 플러그인 다리(public/vendor/capacitor.js)는 설치된 @capacitor/core와 같아야 합니다.
    core를 올리고 이 파일을 안 바꾸면 네이티브 쪽과 말이 어긋납니다 — npm run vendor */
 {
