@@ -66,12 +66,14 @@ create table if not exists sessions (
 
 create index if not exists sessions_user_idx on sessions (user_id);
 
--- 설정의 "로그인된 기기" 목록. 토큰 해시를 화면에 내보낼 수는 없어서 줄마다 번호(id)를 따로 둡니다.
--- device는 "Chrome · Windows" 같은 이름만 — 브라우저가 보낸 User-Agent 원문은 두지 않습니다.
+-- 줄마다 번호(id)를 따로 둡니다 — 알림 기기(push_subs.session_id)가 이걸로 로그인에 매달립니다.
+-- device는 설정의 "로그인된 기기" 목록에 쓰던 칸입니다. 목록을 2026-10-26에 빼서 더는 적지 않고,
+-- 적혀 있던 이름도 아래에서 지웁니다. 칸 자체는 옛 서버와 함께 돌아도 깨지지 않게 남겨 둡니다.
 -- seen_at은 하루에 한 번쯤만 고칩니다 (lib/accounts.js findSession의 stale).
 alter table sessions add column if not exists id uuid not null default gen_random_uuid();
 alter table sessions add column if not exists device text not null default '';
 alter table sessions add column if not exists seen_at timestamptz not null default now();
+update sessions set device = '' where device <> '';
 create unique index if not exists sessions_id_idx on sessions (id);
 
 -- 틀린 비밀번호 기록. 아이디 하나에 15분 동안 열 번이 넘으면 잠깐 막습니다.

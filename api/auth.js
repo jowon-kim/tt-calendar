@@ -4,7 +4,6 @@ import logout from './_auth/logout.js';
 import invite from './_auth/invite.js';
 import account from './_auth/account.js';
 import google from './_auth/google.js';
-import devices from './_auth/devices.js';
 
 /**
  * 계정 창구를 함수 하나로 묶습니다. Vercel Hobby는 배포 하나에 함수 12개까지라
@@ -12,7 +11,7 @@ import devices from './_auth/devices.js';
  *
  * 주소는 그대로입니다 — vercel.json이 /api/login 을 /api/auth?op=login 으로 넘겨줍니다.
  */
-const routes = { signup, login, logout, invite, account, google, devices };
+const routes = { signup, login, logout, invite, account, google };
 
 export default (req, res) => {
   const handler = Object.hasOwn(routes, req.query?.op) ? routes[req.query.op] : null;

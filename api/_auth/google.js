@@ -1,4 +1,4 @@
-import { ready, body, guard, methodNotAllowed, setSessionCookie, deviceName, ValidationError, clientIp } from '../../lib/http.js';
+import { ready, body, guard, methodNotAllowed, setSessionCookie, ValidationError, clientIp } from '../../lib/http.js';
 import { canGoogle, clientIds, verifyIdToken } from '../../lib/google.js';
 import {
   findUserByGoogle, signUpAlone, signUpInvited, createSession, mayCreateAccount, recordSignup,
@@ -24,7 +24,7 @@ export default guard(async (req, res) => {
   if (!person) throw new ValidationError('error.googleFailed');
 
   const signIn = async (userId, created) => {
-    setSessionCookie(res, await createSession(userId, deviceName(req)));
+    setSessionCookie(res, await createSession(userId));
     res.status(created ? 201 : 200).json({ ok: true, created });
   };
 

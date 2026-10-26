@@ -1515,59 +1515,7 @@ function openSettings() {
   renderPhotoNote();
   $('s-account').textContent = state.login ? t('settings.signedInAs', { name: state.login }) : '';
   $('s-password').hidden = !state.hasPassword; // 구글로만 들어온 사람은 바꿀 비밀번호가 없습니다
-  $('s-devices-box').hidden = true;
   $('settings').showModal();
-  loadDevices();
-}
-
-/* ── 로그인된 기기 ──
-   어디에 로그인해 있는지 보여주고, 다른 기기는 여기서 로그아웃시킵니다.
-   설정을 열 때마다 새로 받아옵니다 — 인터넷이 없으면 조용히 숨긴 채로 둬요. */
-async function loadDevices() {
-  let devices;
-  try {
-    ({ devices } = await api.call('GET', '/api/devices'));
-  } catch {
-    return;
-  }
-  if (!Array.isArray(devices)) return; // 배포 중이라 옛 서버가 답한 경우
-  const rows = devices.map((d) => {
-    const li = document.createElement('li');
-    const text = document.createElement('span');
-    text.className = 'device-text';
-    const name = document.createElement('span');
-    name.className = 'device-name';
-    name.textContent = d.device || t('devices.unknown');
-    const when = document.createElement('span');
-    when.className = 'device-when';
-    when.textContent = d.current
-      ? t('devices.this')
-      : t('devices.lastUsed', { date: i18n.dateFmt({ month: 'long', day: 'numeric' }).format(new Date(d.seenAt)) });
-    text.append(name, when);
-    li.append(text);
-    if (!d.current) {
-      const out = document.createElement('button');
-      out.type = 'button';
-      out.className = 'btn btn-ghost';
-      out.textContent = t('settings.logout');
-      out.addEventListener('click', () => signOutDevice(d, name.textContent));
-      li.append(out);
-    }
-    return li;
-  });
-  $('s-devices').replaceChildren(...rows);
-  $('s-devices-box').hidden = false;
-}
-
-async function signOutDevice(device, name) {
-  if (!await ask(t('ask.signOutDevice', { name }), t('ask.logoutYes'))) return;
-  try {
-    await api.call('DELETE', '/api/devices', { id: device.id });
-    toast(t('toast.deviceSignedOut'));
-  } catch (err) {
-    toast(err.message || t('error.saveFailed'));
-  }
-  loadDevices(); // 이미 끊긴 기기였어도 목록은 지금 모습으로 맞춥니다
 }
 
 /* ── 상대 부르기 ─────────────────────────── */

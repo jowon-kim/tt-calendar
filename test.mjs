@@ -1242,64 +1242,28 @@ const BUSY_IP = '203.0.113.9';
   ok('changing the password needs a sign-in', r.status === 401);
 }
 
-/* ── 로그인된 기기 ── */
+/* ── 로그인 연장 ── */
 {
-  const devices = viaAuth('devices');
-  const { deviceName } = await import('./lib/http.js');
-  const named = (ua) => deviceName({ headers: { 'user-agent': ua } });
-  const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
-  const EDGE = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0';
-  const GALAXY = 'Mozilla/5.0 (Linux; Android 14; SM-S921N) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/25.0 Chrome/121.0.0.0 Mobile Safari/537.36';
-  ok('a device is named by browser and system, not by the whole user-agent',
-    named(IPHONE) === 'Safari · iPhone' && named(EDGE) === 'Edge · Windows' && named(GALAXY) === 'Samsung Internet · Android',
-    [named(IPHONE), named(EDGE), named(GALAXY)].join(' / '));
-  ok('an unknown one gets no name', named('curl/8.4.0') === '' && named(undefined) === '');
+  const { hashToken } = await import('./lib/auth.js');
+  const signIn = (username) => call(login, { method: 'POST', body: { username, password: PW } });
+  await join('roamer');
+  const phone = cookieOf(await signIn('roamer'));
+  const laptop = cookieOf(await signIn('roamer'));
+  const galaxy = cookieOf(await signIn('roamer'));
 
-  const signIn = (username, ua) => call(login, { method: 'POST', headers: { 'user-agent': ua }, body: { username, password: PW } });
-  const here = await join('roamer');
-  const phone = cookieOf(await signIn('roamer', IPHONE));
-  const laptop = cookieOf(await signIn('roamer', EDGE));
-  const stranger = await join('roamer-neighbor');
+  /* 로그인된 기기 목록은 2026-10-26에 뺐습니다 — 주소도, 기기 이름 적기도 없습니다 */
+  ok('the old device list address is gone', (await call(viaAuth('devices'), { token: phone })).status === 404);
+  ok('no device name is written for a sign-in',
+    (await pg.query(`select count(*)::int as n from sessions where device <> ''`)).rows[0].n === 0);
 
-  r = await call(devices, { token: phone });
-  const list = r.body.devices;
-  ok('the list shows every sign-in of this account', r.status === 200 && list.length === 3, JSON.stringify(list));
-  ok('this device comes first and is marked', list[0].current && list[0].device === 'Safari · iPhone' && list.filter((d) => d.current).length === 1);
-  ok('the others carry their names', list.some((d) => d.device === 'Edge · Windows'));
-  ok('nothing in it can be used to sign in',
-    list.every((d) => Object.keys(d).sort().join() === 'current,device,id,seenAt') && !JSON.stringify(list).includes(phone));
-  ok('only the name is stored, never the user-agent',
-    (await pg.query(`select count(*)::int as n from sessions where device like '%Mozilla%'`)).rows[0].n === 0);
-  ok('the list needs a sign-in', (await call(devices)).status === 401);
-
-  const edge = list.find((d) => d.device === 'Edge · Windows');
-  await call(pushApi, { method: 'POST', token: laptop, body: { subscription: { endpoint: 'https://push.example/laptop', keys: { p256dh: 'P', auth: 'A' } } } });
-  await call(pushApi, { method: 'POST', token: phone, body: { subscription: { endpoint: 'https://push.example/phone', keys: { p256dh: 'P', auth: 'A' } } } });
-  const subs = async () => (await pg.query(`select endpoint from push_subs where endpoint like 'https://push.example/%' order by 1`)).rows.map((s) => s.endpoint).join();
-
-  r = await call(devices, { method: 'DELETE', token: stranger, body: { id: edge.id } });
-  ok('someone else cannot sign my device out', r.status === 404 && (await call(state, { token: laptop })).status === 200);
-  r = await call(devices, { method: 'DELETE', token: phone, body: { id: list[0].id } });
-  ok('this device is not signed out from the list', r.status === 404 && (await call(state, { token: phone })).status === 200);
-  r = await call(devices, { method: 'DELETE', token: phone, body: { id: 'not-a-number' } });
-  ok('a made-up number is refused', r.status === 400 && r.body.error === 'error.noDevice');
-
-  r = await call(devices, { method: 'DELETE', token: phone, body: { id: edge.id } });
-  ok('signing another device out works', r.status === 204);
-  ok('that device is out', (await call(state, { token: laptop })).status === 401);
-  ok('the rest stay in', (await call(state, { token: phone })).status === 200 && (await call(state, { token: here })).status === 200);
-  ok('and its notifications stop, only its own', (await subs()) === 'https://push.example/phone', await subs());
-  ok('the list no longer shows it', (await call(devices, { token: phone })).body.devices.length === 2);
-  r = await call(devices, { method: 'DELETE', token: phone, body: { id: edge.id } });
-  ok('doing it twice says it is gone', r.status === 404);
-
+  const phoneId = (await pg.query('select id from sessions where token_hash = $1', [hashToken(phone)])).rows[0].id;
   /* 하루에 한 번만 적습니다 — 요청마다 쓰면 DB가 쉴 틈이 없습니다 */
-  const seen = async () => (await pg.query('select seen_at, expires_at from sessions where id = $1', [list[0].id])).rows[0];
+  const seen = async () => (await pg.query('select seen_at, expires_at from sessions where id = $1', [phoneId])).rows[0];
   const before = await seen();
   r = await call(state, { token: phone });
   ok('a fresh sign-in is not written again on every request',
     !r.headers['Set-Cookie'] && String((await seen()).seen_at) === String(before.seen_at));
-  await pg.query(`update sessions set seen_at = now() - interval '2 days' where id = $1`, [list[0].id]);
+  await pg.query(`update sessions set seen_at = now() - interval '2 days' where id = $1`, [phoneId]);
   r = await call(state, { token: phone });
   const after = await seen();
   ok('after a day the last-used time moves up and the sign-in is extended',
@@ -1308,11 +1272,14 @@ const BUSY_IP = '203.0.113.9';
 
   /* 비밀번호를 바꾸면 다른 기기의 알림도 같이 꺼집니다 */
   const account = viaAuth('account');
-  const other = cookieOf(await signIn('roamer', GALAXY));
-  await call(pushApi, { method: 'POST', token: other, body: { subscription: { endpoint: 'https://push.example/galaxy', keys: { p256dh: 'P', auth: 'A' } } } });
+  for (const [token, name] of [[phone, 'phone'], [laptop, 'laptop'], [galaxy, 'galaxy']]) {
+    await call(pushApi, { method: 'POST', token, body: { subscription: { endpoint: `https://push.example/${name}`, keys: { p256dh: 'P', auth: 'A' } } } });
+  }
+  const subs = async () => (await pg.query(`select endpoint from push_subs where endpoint like 'https://push.example/%' order by 1`)).rows.map((s) => s.endpoint).join();
   r = await call(account, { method: 'PATCH', token: phone, body: { current: PW, password: PW + '!' } });
   ok('changing the password also stops the notifications of the devices it signs out',
     r.status === 204 && (await subs()) === 'https://push.example/phone', await subs());
+  ok('and signs them out', (await call(state, { token: laptop })).status === 401 && (await call(state, { token: phone })).status === 200);
 }
 
 /* ── 나가는 문: 탈퇴 ── */
@@ -1687,7 +1654,7 @@ ok('zones west of UTC read the earlier day',
     const m = /^\/api\/:op\(([^)]+)\)$/.exec(source);
     return m && destination === '/api/auth?op=:op' && m[1].split('|').includes(path.slice('/api/'.length));
   });
-  const paths = ['/api/signup', '/api/login', '/api/logout', '/api/invite', '/api/account', '/api/devices'];
+  const paths = ['/api/signup', '/api/login', '/api/logout', '/api/invite', '/api/account'];
   ok('every account address still reaches its handler', paths.every(routed), paths.filter((p) => !routed(p)).join());
 
   r = await call(auth, { method: 'POST', query: { op: 'toString' } });

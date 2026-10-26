@@ -1,4 +1,4 @@
-import { ready, body, guard, methodNotAllowed, setSessionCookie, deviceName, ValidationError, clientIp } from '../../lib/http.js';
+import { ready, body, guard, methodNotAllowed, setSessionCookie, ValidationError, clientIp } from '../../lib/http.js';
 import { hashPassword, cleanLogin, goodUsername, goodPassword, passwordSignIn } from '../../lib/auth.js';
 import {
   signUpAlone, signUpInvited, createSession, mayCreateAccount, recordSignup,
@@ -35,6 +35,6 @@ export default guard(async (req, res) => {
   if (!made || made === 'taken') return res.status(409).json({ error: 'error.usernameTaken' });
 
   await recordSignup(ip);
-  setSessionCookie(res, await createSession(made.userId, deviceName(req)));
+  setSessionCookie(res, await createSession(made.userId));
   res.status(201).json({ ok: true });
 });
