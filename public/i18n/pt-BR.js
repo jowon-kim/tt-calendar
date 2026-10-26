@@ -312,7 +312,7 @@ globalThis.I18N['pt-BR'] = {
   'ask.logout': 'Você vai precisar da senha para entrar de novo.\nSair?',
   'ask.logoutYes': 'Sair',
   'ask.signOutDevice': 'Sair em {name}?\nAs notificações desse aparelho também param.',
-  'ask.deleteAccountPaired': 'Sua conta será excluída e este celular deixa de receber notificações.\nO calendário fica com a outra pessoa.',
+  'ask.deleteAccountPaired': 'Sua conta, seu nome e seus planos serão excluídos, e este celular deixa de receber notificações.\nOs planos em comum, as fotos e o calendário ficam com a outra pessoa.',
   'ask.deleteAccountAlone': 'Sua conta e todo o calendário, com todos os eventos e fotos, serão excluídos para sempre.\nNão dá para desfazer.',
   'ask.deleteAccountYes': 'Excluir',
   'ask.confirmPassword': 'Digite sua senha para confirmar.',

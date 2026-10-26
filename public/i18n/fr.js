@@ -312,7 +312,7 @@ globalThis.I18N.fr = {
   'ask.logout': 'Il te faudra le mot de passe pour revenir.\nSe déconnecter ?',
   'ask.logoutYes': 'Se déconnecter',
   'ask.signOutDevice': 'Déconnecter {name} ?\nSes notifications s’arrêtent aussi.',
-  'ask.deleteAccountPaired': 'Ton compte sera supprimé et ce téléphone ne recevra plus de notifications.\nLe calendrier reste à l\'autre personne.',
+  'ask.deleteAccountPaired': 'Ton compte, ton prénom et tes projets seront supprimés, et ce téléphone ne recevra plus de notifications.\nLes projets communs, les photos et le calendrier restent à l\'autre personne.',
   'ask.deleteAccountAlone': 'Ton compte et tout le calendrier, événements et photos compris, seront supprimés définitivement.\nImpossible de revenir en arrière.',
   'ask.deleteAccountYes': 'Supprimer',
   'ask.confirmPassword': 'Tape ton mot de passe pour confirmer.',

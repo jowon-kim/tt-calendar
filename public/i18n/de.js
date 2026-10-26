@@ -311,7 +311,7 @@ globalThis.I18N.de = {
   'ask.logout': 'Du brauchst das Passwort, um wieder reinzukommen.\nAbmelden?',
   'ask.logoutYes': 'Abmelden',
   'ask.signOutDevice': '{name} abmelden?\nDie Benachrichtigungen dort hören ebenfalls auf.',
-  'ask.deleteAccountPaired': 'Dein Konto wird gelöscht und dieses Handy bekommt keine Benachrichtigungen mehr.\nDer Kalender bleibt bei der anderen Person.',
+  'ask.deleteAccountPaired': 'Dein Konto, dein Name und deine Termine werden gelöscht, und dieses Handy bekommt keine Benachrichtigungen mehr.\nGemeinsame Termine, Fotos und der Kalender bleiben bei der anderen Person.',
   'ask.deleteAccountAlone': 'Dein Konto und der ganze Kalender mit allen Terminen und Fotos werden endgültig gelöscht.\nDas lässt sich nicht rückgängig machen.',
   'ask.deleteAccountYes': 'Löschen',
   'ask.confirmPassword': 'Gib zur Bestätigung dein Passwort ein.',

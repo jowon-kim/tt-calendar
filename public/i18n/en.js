@@ -322,7 +322,7 @@ globalThis.I18N.en = {
   'ask.logout': 'You\'ll need the password again to get back in.\nSign out?',
   'ask.logoutYes': 'Sign out',
   'ask.signOutDevice': 'Sign out on {name}?\nIts notifications stop too.',
-  'ask.deleteAccountPaired': 'Your account will be deleted and this phone stops getting notifications.\nThe calendar stays with the other one.',
+  'ask.deleteAccountPaired': 'Your account, your name and the events under your name will be deleted, and this phone stops getting notifications.\nShared events, photos and the calendar stay with the other one.',
   'ask.deleteAccountAlone': 'Your account and the whole calendar — every event and photo — will be deleted for good.\nThis cannot be undone.',
   'ask.deleteAccountYes': 'Delete',
   'ask.confirmPassword': 'Type your password to confirm.',

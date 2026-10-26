@@ -304,7 +304,7 @@ globalThis.I18N['zh-CN'] = {
   'ask.logout': '退出后需要重新输入密码才能进来。\n要退出登录吗？',
   'ask.logoutYes': '退出登录',
   'ask.signOutDevice': '要在 {name} 上退出登录吗？\n该设备的通知也会停止。',
-  'ask.deleteAccountPaired': '账号会被删除，这台手机也不再收到通知。\n日历会留给对方继续使用。',
+  'ask.deleteAccountPaired': '账号、你的名字和你名下的日程会被删除，这台手机也不再收到通知。\n共同日程、照片和日历会留给对方。',
   'ask.deleteAccountAlone': '账号和整个日历（所有日程和照片）都会被永久删除。\n无法恢复。',
   'ask.deleteAccountYes': '删除',
   'ask.confirmPassword': '请输入密码确认。',

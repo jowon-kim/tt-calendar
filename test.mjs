@@ -1381,6 +1381,60 @@ const BUSY_IP = '203.0.113.9';
     (await pg.query('select count(*)::int as n from couples where id = $1', [racing])).rows[0].n === 0
     && (await rows('events', racing)) === 0);
 
+  /* 한 사람이 나가면 그 자리를 깨끗이 비웁니다 — 다음에 초대로 들어온 사람이 처음 쓰는 것처럼 */
+  {
+    const goer = await join('seat-a');
+    const stayer = await join('seat-b', (await call(invite, { method: 'POST', token: goer })).body.code);
+    const cal = await coupleOf('seat-a');
+    await call(settings, { method: 'PATCH', token: goer, body: { names: { a: '떠나는 사람', b: '남는 사람' } } });
+    const make = async (who, owner, title) =>
+      (await call(eventsCreate, { method: 'POST', token: who, body: { title, date: '2026-12-10', time: '10:00', owner } })).body.id;
+    const hisOwn = await make(goer, 'a', 'mine — goes');
+    await make(stayer, 'b', 'theirs — stays');
+    await make(goer, 'both', 'ours — stays');
+    await make(stayer, 'a', 'put under the leaver — goes too');
+    await pg.query(`insert into reminders_sent (key, couple_id) values ($1, $2), ($3, $2)`,
+      [`${cal}:2026-12-10:${hisOwn}:soon`, cal, `${cal}:2026-12-10:today`]);
+
+    r = await call(account, { method: 'DELETE', token: goer, body: { password: PW } });
+    ok('one of two leaves', r.status === 204);
+    r = await call(state, { token: stayer });
+    ok('the name of the seat they left is emptied', r.body.settings.names.a === '', JSON.stringify(r.body.settings.names));
+    ok('the other name stays', r.body.settings.names.b === '남는 사람');
+    const titles = r.body.events.map((e) => e.title).sort();
+    ok('events of the seat they left are gone; the other one\'s and the shared ones stay',
+      JSON.stringify(titles) === JSON.stringify(['ours — stays', 'theirs — stays']), JSON.stringify(titles));
+    const keys = (await pg.query('select key from reminders_sent where couple_id = $1', [cal])).rows.map((x) => x.key);
+    ok('a "starting soon" record of a removed event goes with it, the day\'s digest stays',
+      keys.length === 1 && keys[0].endsWith(':today'), JSON.stringify(keys));
+    ok('the calendar itself stays', (await pg.query('select count(*)::int as n from couples where id = $1', [cal])).rows[0].n === 1);
+
+    const newcomer = await join('seat-new', (await call(invite, { method: 'POST', token: stayer })).body.code);
+    r = await call(state, { token: newcomer });
+    ok('someone invited next takes the empty seat as if new', r.body.me.slot === 'a' && r.body.paired === true);
+    ok('with no name, so the screen asks "what should we call you?"', r.body.settings.names[r.body.me.slot] === '');
+    ok('and none of the old events under their seat', !r.body.events.some((e) => e.owner === 'a'), JSON.stringify(r.body.events));
+
+    /* 비우기는 사람을 지운 뒤에, 자리가 정말 비었을 때만 — 그새 새 사람이 앉았으면 건드리지 않습니다 */
+    {
+      const { deleteAccount } = await import('./lib/accounts.js');
+      await call(settings, { method: 'PATCH', token: newcomer, body: { names: { a: '새 사람' } } });
+      await call(eventsCreate, { method: 'POST', token: newcomer, body: { title: 'newcomer\'s own', date: '2026-12-12', owner: 'a' } });
+      const late = await deleteAccount({ userId: '00000000-0000-0000-0000-000000000000', coupleId: cal, slot: 'a' });
+      r = await call(state, { token: newcomer });
+      ok('a late clean-up never touches someone already seated there',
+        late === null && r.body.settings.names.a === '새 사람' && r.body.events.some((e) => e.title === 'newcomer\'s own'));
+    }
+
+    /* 혼자 남아 있던 사람이 나가면 지금처럼 달력째 */
+    await call(account, { method: 'DELETE', token: newcomer, body: { password: PW } });
+    await call(eventsCreate, { method: 'POST', token: stayer, body: { title: 'alone', date: '2026-12-11', owner: 'b' } });
+    r = await call(account, { method: 'DELETE', token: stayer, body: { password: PW } });
+    ok('alone, leaving still takes the whole calendar', r.status === 204
+      && (await pg.query('select count(*)::int as n from couples where id = $1', [cal])).rows[0].n === 0
+      && (await rows('events', cal)) === 0 && (await rows('settings', cal)) === 0);
+  }
+
   r = await call(account, { method: 'DELETE' });
   ok('leaving needs a sign-in', r.status === 401);
   useBlob(null);
