@@ -459,30 +459,29 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   };
   // index.html이 숨긴 채로 시작합니다 — 가짜 DOM은 html을 안 읽어요
   $('s-install-field').hidden = true;
-  $('install-banner').hidden = true;
   (winListeners.beforeinstallprompt || []).forEach((fn) => fn(event));
-  ok('an installable page shows the install button', !$('s-install-field').hidden);
-  ok('and the banner on top, with its own install button', !$('install-banner').hidden && !$('install-banner-go').hidden);
+  ok('an installable page shows the install button in settings', !$('s-install-field').hidden);
   ok('instead of the browser\'s own banner', prevented);
-  $('install-banner-go').click();
+  $('s-install').click();
   await sleep(10);
   ok('pressing it asks the browser to install', prompted);
-  ok('and both go away after', $('s-install-field').hidden && $('install-banner').hidden);
+  ok('and the button goes away after', $('s-install-field').hidden);
 
-  /* 아이폰 사파리는 신호가 없어서 글로 안내합니다 */
-  run('showInstallBanner(true)');
-  ok('iphone safari gets the share → add to home screen note', !$('install-banner').hidden && !$('install-banner-ios').hidden && $('install-banner-android').hidden);
-  ok('with an install button too', !$('install-banner-go').hidden);
-  $('install-banner').hidden = true;
+  /* 로그인 화면엔 구글 버튼 하나 — 설치 버튼도, 아래 띠도 없습니다 */
+  const html = readFileSync('public/index.html', 'utf8');
+  ok('the sign-in screen has no install button and no install bar',
+    !/id="gate-install"|id="install-banner"/.test(html) && !/gate-install|install-banner/.test(readFileSync('public/app.js', 'utf8')));
 
-  /* 아이폰은 웹이 대신 설치해 줄 수 없어서, 누르면 순서를 그림으로 보여줍니다 */
+  /* 아이폰 사파리 — 설정의 설치 버튼은 공유 시트를 엽니다 */
   const plainAgent = navigator.userAgent;
-  navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1';
+  const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1';
+  navigator.userAgent = iphone;
   run('showInstallButtons()');
-  ok('iphone safari gets an install button on the sign-in screen', !$('gate-install').hidden);
-  $('gate-install').click();
+  ok('iphone safari keeps an install button in settings', !$('s-install-field').hidden);
+  delete navigator.share;
+  $('s-install').click();
   await sleep(10);
-  ok('pressing it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden && $('install-guide-away').hidden);
+  ok('with no share sheet it shows the add-to-home-screen steps', $('install-guide').open && !$('install-guide-ios').hidden && $('install-guide-away').hidden);
   ok('pointing down at the safari share button', $('install-guide').classList.contains('point-down'));
   $('install-guide-close').click();
   ok('and closes', !$('install-guide').open);
@@ -500,7 +499,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   navigator.userAgent = kakao;
   ok('a kakaotalk page counts as an app browser', run('appBrowser()') === true);
   run('showInstallButtons()');
-  $('gate-install').click();
+  $('s-install').click();
   await sleep(10);
   ok('its install button explains how to get out instead', $('install-guide').open && !$('install-guide-away').hidden && $('install-guide-ios').hidden);
   ok('with a button that opens the browser', !$('install-guide-open').hidden);
@@ -509,22 +508,131 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   $('install-guide').close();
   navigator.userAgent = plainAgent;
   run('showInstallButtons()');
-  ok('a desktop browser with nothing to install shows no install button', $('gate-install').hidden);
+  ok('a desktop browser with nothing to install shows no install button', $('s-install-field').hidden);
 
-  /* 홈 화면에서 연 앱에는 띄우지 않습니다 */
+  /* ── 처음 들어올 때: 이름 → 홈 화면 추가 한 번 → 사용법 ──
+     구글이 준 토큰처럼 생긴 것을 만듭니다. 서명은 서버가 보니, 화면은 이름만 읽어요 */
+  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+  const credential = `${b64({ alg: 'RS256' })}.${b64({ sub: '1', given_name: '미나', name: '김미나' })}.sig`;
+  const reset = () => {
+    ['diary_install_offered', 'diary_guide'].forEach((k) => store.delete(k));
+    ['name-ask', 'install-offer', 'install-guide', 'guide'].forEach((id) => $(id).close());
+  };
+  const guideShown = async () => { await sleep(500); return $('guide').open; };
+  const shared = [];
+  let shareFails = false;
+  const fakeShare = async (data) => { shared.push(data); if (shareFails) throw new Error('AbortError'); };
+
+  reset();
+  navigator.userAgent = iphone;
+  navigator.share = fakeShare;
+  globalThis.__settings = { ...run('state.settings'), names: { a: '레오', b: '' } }; // 초대로 들어온 b — 이름이 비었습니다
+  fetches.length = 0;
+  await run(`signInWithGoogle(${JSON.stringify(credential)})`);
+  await sleep(20);
+  ok('a new sign-up is asked one thing: what to call them', $('name-ask').open && !$('install-offer').open && !$('guide').open);
+  ok('with the google first name already in', $('name-ask-input').value === '미나', $('name-ask-input').value);
+  ok('the name box asks "what should we call you?"', run(`I18N.ko['name.title']`) === '뭐라고 불러 드릴까요?' && run(`t('name.title')`) === run(`I18N[i18n.getLocale()]['name.title']`));
+
+  $('name-ask-form').dispatchEvent({ type: 'submit', preventDefault() {} });
+  await sleep(30);
+  const named = fetches.find((f) => f.url === '/api/settings' && f.method === 'PATCH');
+  ok('"OK" saves only my own seat', named && JSON.stringify(JSON.parse(named.body).names) === JSON.stringify({ b: '미나' }), named?.body);
+  ok('keeps the partner\'s name as it was', run('state.settings.names.a') === '레오' && run('state.settings.names.b') === '미나');
+  ok('then, in a browser tab, offers the home screen once', !$('name-ask').open && $('install-offer').open);
+  ok('saying why on iphone', $('install-offer-text').innerHTML === run(`t('install.offerIos')`));
+  ok('and the guide waits', !(await guideShown()));
+
+  $('install-offer-go').click();
+  await sleep(20);
+  ok('on iphone the button opens the share sheet with the address', shared.length === 1 && shared[0].url === 'https://diary.test', shared);
+  ok('and nothing else pops up', !$('install-offer').open && !$('install-guide').open);
+  ok('the guide waits for the home screen app', !(await guideShown()));
+
+  run('firstSteps()');
+  await sleep(20);
+  ok('opening the tab again asks nothing more', !$('name-ask').open && !$('install-offer').open && !(await guideShown()));
+
+  /* 공유 시트가 안 열리면 그림 안내 */
+  reset();
+  shareFails = true;
+  run('firstSteps()');
+  await sleep(20);
+  ok('a name already there skips the name box', !$('name-ask').open && $('install-offer').open);
+  $('install-offer-go').click();
+  await sleep(20);
+  ok('when the share sheet fails, the picture steps show instead', $('install-guide').open && !$('install-guide-ios').hidden);
+  $('install-guide').close();
+  shareFails = false;
+
+  /* "나중에" — 사용법은 그 자리에서 */
+  reset();
+  run('firstSteps()');
+  await sleep(20);
+  $('install-offer-later').click();
+  ok('"later" closes the offer', !$('install-offer').open);
+  ok('and the guide shows right there in the browser', await guideShown());
+  ok('on its setup tab', !$('guide-setup').hidden);
+  $('guide').close();
+  run('firstSteps()');
+  ok('a guide already seen never comes back', !(await guideShown()) && !$('install-offer').open);
+
+  /* 홈 화면 앱으로 처음 열면 사용법 */
+  reset();
+  store.set('diary_install_offered', 'taken');
   const browserMedia = globalThis.matchMedia;
   globalThis.matchMedia = (q) => ({ matches: q === '(display-mode: standalone)' });
-  run('showInstallBanner(true)');
-  ok('opened from the home screen, no banner', $('install-banner').hidden);
+  run('firstSteps()');
+  ok('opened from the home screen, the guide shows first time', !$('install-offer').open && (await guideShown()));
+  $('guide').close();
   globalThis.matchMedia = browserMedia;
 
-  /* "나중에"를 누르면 한동안 다시 안 뜹니다 */
-  run('showInstallBanner(true)');
-  $('install-banner-close').click();
-  ok('"later" closes the banner', $('install-banner').hidden);
-  run('showInstallBanner(true)');
-  ok('and it stays away next time', $('install-banner').hidden);
-  store.delete('diary_install_snoozed');
+  /* 안드로이드 — 버튼 하나로 시스템 설치 창 */
+  reset();
+  navigator.userAgent = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/129.0 Mobile Safari/537.36';
+  let androidPrompted = 0;
+  let outcome = 'accepted';
+  const offerAgain = () => (winListeners.beforeinstallprompt || []).forEach((fn) => fn({
+    preventDefault() {}, prompt: () => { androidPrompted++; }, get userChoice() { return Promise.resolve({ outcome }); },
+  }));
+  offerAgain();
+  run('firstSteps()');
+  await sleep(20);
+  ok('android gets the same single offer', $('install-offer').open && $('install-offer-text').innerHTML === run(`t('install.offerAndroid')`));
+  $('install-offer-go').click();
+  await sleep(20);
+  ok('its button opens the system install prompt', androidPrompted === 1 && !$('install-offer').open);
+  ok('installed — the guide waits for the app', !(await guideShown()));
+
+  reset();
+  outcome = 'dismissed';
+  offerAgain();
+  run('firstSteps()');
+  await sleep(20);
+  $('install-offer-go').click();
+  ok('saying no to the system prompt counts as later', await guideShown());
+  $('guide').close();
+
+  /* 안드로이드 크롬은 설치 신호를 조금 늦게 줍니다 — 잠깐 기다렸다 묻습니다 */
+  reset();
+  run('installPrompt = null');
+  run('firstSteps()');
+  await sleep(20);
+  ok('no install signal yet, nothing asked yet', !$('install-offer').open);
+  offerAgain();
+  await sleep(20);
+  ok('once it comes, the offer shows', $('install-offer').open);
+  $('install-offer').close();
+
+  reset();
+  navigator.userAgent = plainAgent;
+  delete navigator.share;
+  run('installPrompt = null');
+  run('firstSteps()');
+  ok('a browser with no way to install goes straight to the guide', !$('install-offer').open && (await guideShown()));
+  $('guide').close();
+  store.set('diary_install_offered', 'skipped');
+  store.set('diary_guide', run('GUIDE_VERSION'));
 }
 
 /* 스토어 앱 안 — 웹푸시 대신 OS 알림. 네이티브가 넣어주는 window.Capacitor를 흉내 냅니다 */
@@ -593,9 +701,11 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run('googleReady = null'); // 아래 브라우저 검사는 다시 물어보게
 
   /* 아이폰 앱의 웹뷰도 사파리처럼 보이지만, 이미 앱이라 홈 화면에 추가하라고 하면 안 됩니다 */
-  $('install-banner').hidden = true;
-  run('showInstallBanner(true)');
-  ok('the store app never asks to be added to the home screen', $('install-banner').hidden);
+  store.delete('diary_install_offered');
+  run('firstSteps()');
+  await sleep(20);
+  ok('the store app never asks to be added to the home screen', !$('install-offer').open);
+  store.set('diary_install_offered', 'skipped');
 
   fetches.length = 0;
   await run('syncPush()');

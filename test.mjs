@@ -389,6 +389,11 @@ r = await call(settings, {
 ok('settings saved', r.status === 200 && r.body.names.b === '너');
 ok('since is a plain string', r.body.since === '2023-05-14', String(r.body.since));
 
+/* 처음 들어온 사람은 자기 자리 이름만 보냅니다 — 상대 이름은 그대로 */
+r = await call(settings, { method: 'PATCH', token: tokenB, body: { names: { b: '두리' } } });
+ok('one name alone changes only that seat', r.status === 200 && r.body.names.a === '나' && r.body.names.b === '두리', JSON.stringify(r.body.names));
+r = await call(settings, { method: 'PATCH', token, body: { names: { a: '하나의 아주 아주 긴 이름입니다' } } });
+ok('and is cut at 12 characters too', r.body.names.a === '하나의 아주 아주 긴' && r.body.names.b === '두리', JSON.stringify(r.body.names));
 r = await call(settings, { method: 'PATCH', token, body: { names: { a: '', b: '너' } } });
 ok('an empty name stays empty for the language pack to fill', r.body.names.a === '', r.body.names.a);
 ok('partial patch keeps since', r.body.since === '2023-05-14');

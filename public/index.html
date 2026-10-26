@@ -64,8 +64,6 @@
       <div id="gate-google-button" class="google-button"></div>
     </div>
     <p id="gate-error" class="gate-error" role="alert"></p>
-    <!-- 링크로 처음 온 사람이 제일 먼저 누를 곳. 안드로이드는 바로 설치, 아이폰은 그림 안내 -->
-    <button type="button" id="gate-install" class="btn btn-ghost btn-wide gate-install" data-i18n="install.button" hidden></button>
     <div class="gate-links">
       <a href="/en/" id="gate-about" class="gate-link" data-i18n="gate.about"></a>
       <a href="/privacy.html" class="gate-link" target="_blank" rel="noopener" data-i18n="settings.privacy"></a>
@@ -952,13 +950,27 @@
   </form>
 </dialog>
 
-<!-- popover라야 모달 창(top layer) 위로 올라옵니다 -->
-<div id="install-banner" class="install-banner" hidden>
-  <p id="install-banner-android" data-i18n="install.bannerAndroid"></p>
-  <p id="install-banner-ios" data-i18n-html="install.bannerIos"></p>
-  <button type="button" id="install-banner-go" class="btn btn-solid" data-i18n="install.bannerGo"></button>
-  <button type="button" id="install-banner-close" class="install-banner-close" data-i18n-attr="aria-label:install.later">×</button>
-</div>
+<!-- 처음 들어올 때는 한 번에 한 화면, 한 가지 할 일 (app.js "처음 들어올 때").
+     ① 내 이름 — 비어 있으면. 구글 이름을 미리 채워 두고 확인 한 번 -->
+<dialog id="name-ask" class="ask-dialog step-dialog" aria-labelledby="name-ask-title">
+  <form id="name-ask-form" class="ask step">
+    <h2 id="name-ask-title" class="step-title" data-i18n="name.title"></h2>
+    <p class="step-text" data-i18n="name.text"></p>
+    <input id="name-ask-input" class="ask-password step-input" type="text" maxlength="12" autocomplete="given-name" enterkeyhint="done" required aria-labelledby="name-ask-title">
+    <button type="submit" id="name-ask-go" class="btn btn-solid btn-wide" data-i18n="name.ok"></button>
+  </form>
+</dialog>
+
+<!-- ② 홈 화면 추가 — 브라우저 탭에서 한 번만. 안드로이드는 시스템 설치 창, 아이폰은 공유 시트 -->
+<dialog id="install-offer" class="ask-dialog step-dialog" aria-labelledby="install-offer-title">
+  <div class="ask step">
+    <img class="step-icon" src="/apple-touch-icon.png" alt="" width="64" height="64">
+    <h2 id="install-offer-title" class="step-title" data-i18n="install.offerTitle"></h2>
+    <p id="install-offer-text" class="step-text"></p>
+    <button type="button" id="install-offer-go" class="btn btn-solid btn-wide" data-i18n="install.button"></button>
+    <button type="button" id="install-offer-later" class="gate-link step-later" data-i18n="install.later"></button>
+  </div>
+</dialog>
 
 <!-- 아이폰은 웹이 대신 홈 화면에 추가해 줄 수 없어서 순서를 그림으로 보여줍니다.
      카톡 같은 앱 안 화면이면 바깥 브라우저로 나가는 길을 대신 보여줘요. -->

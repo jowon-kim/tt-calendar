@@ -1250,33 +1250,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-weight: 700;
 }
 
-/* ═══════════════ 홈 화면에 설치 띠 ═══════════════ */
-/* 아래쪽, + 단추 왼쪽에 나란히 둡니다 — 위쪽은 제목과 설정 단추를 가려서 */
-.install-banner {
-  position: fixed; z-index: 35;
-  bottom: calc(24px + env(safe-area-inset-bottom));
-  left: max(12px, calc(50% - 330px + 12px));
-  right: calc(max(20px, calc(50% - 330px + 20px)) + 60px + 12px);
-  min-height: 60px;
-  box-sizing: border-box;
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 6px 10px 16px;
-  background: var(--surface);
-  border: 1px solid var(--line-2);
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-pop);
-  color: var(--ink); font-size: 14px; line-height: 1.45;
-}
-.install-banner p { flex: 1; margin: 0; }
-.install-banner .btn { flex: none; }
-.install-banner-close {
-  flex: none; width: 36px; height: 36px;
-  border: 0; border-radius: 50%; background: transparent;
-  color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer;
-}
-.install-banner-close:hover { background: var(--surface-sink); }
-
-.gate-install { margin-top: 10px; }
+/* ═══════════════ 처음 들어올 때 — 한 화면, 한 가지 할 일 ═══════════════ */
+.step { display: grid; justify-items: center; gap: 12px; padding: 28px 22px 18px; text-align: center; }
+.step-icon { width: 64px; height: 64px; border-radius: 16px; box-shadow: var(--shadow-pop); }
+.step-title { font-family: var(--serif); font-size: 21px; font-weight: 700; line-height: 1.35; margin: 0; color: var(--ink); }
+.step-text { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+.step-input { margin: 4px 0 2px; font-size: 17px; text-align: center; }
+.step .btn-wide { justify-content: center; }
+.step-later { margin-top: -2px; }
 
 /* 아이폰 홈 화면에 추가 — 사파리 공유 버튼이 아래에 있어서 창을 아래로 붙이고 그쪽을 가리킵니다 */
 .install-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
@@ -1303,8 +1284,7 @@ img.install-step-icon { padding: 0; }
   animation: install-nudge 1.1s ease-in-out infinite;
 }
 @keyframes install-nudge { 50% { translate: 0 10px; } }
-@media (prefers-reduced-motion: reduce) { .install-guide.point-down .dialog-head { border-radius: var(--r-xl) var(--r-xl) 0 0; } /* overflow를 풀어서 모서리를 직접 */
-.install-guide.point-down::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .install-guide.point-down::after { animation: none; } }
 
 /* ═══════════════ 토스트 ═══════════════ */
 .toast {
