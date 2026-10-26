@@ -1473,6 +1473,35 @@ const BUSY_IP = '203.0.113.9';
   ok('a made-up invite makes no google account either', r.status === 400 && r.body.error === 'error.badInvite'
     && (await pg.query(`select count(*)::int as n from users where google_sub = '1004'`)).rows[0].n === 0);
 
+  /* 이미 있는 구글 계정이 초대 링크로 오면 로그인만 합니다 — 옮겨가기는 화면이 이어서 PUT /api/invite로 */
+  const hostG = cookieOf(await call(google, { method: 'POST', headers: { 'x-forwarded-for': '198.51.100.1' }, body: { credential: idToken({ sub: '2001' }) } }));
+  const hostCode = (await call(invite, { method: 'POST', token: hostG })).body.code;
+  r = await call(google, { method: 'POST', body: { credential: idToken({ sub: '1002' }), invite: hostCode } });
+  ok('a known google account arriving by invite only signs in', r.status === 200 && r.body.created === false);
+  r = await call(state, { token: cookieOf(r) });
+  ok('still in its own calendar until the screen accepts', r.body.paired === false && r.body.me?.slot === 'a');
+
+  /* 두 사람이 같은 링크로 거의 동시에 들어오면 한 사람만 앉습니다 */
+  const racers = await Promise.all(['2002', '2003'].map((sub, i) => call(google, {
+    method: 'POST', headers: { 'x-forwarded-for': `198.51.100.${10 + i}` },
+    body: { credential: idToken({ sub }), invite: hostCode },
+  })));
+  ok('one invite seats exactly one of two racing sign-ups',
+    racers.filter((x) => x.status === 201).length === 1 && racers.filter((x) => x.status === 400).length === 1,
+    racers.map((x) => x.status).join());
+  r = await call(state, { token: hostG });
+  ok('and the host sees two, not three', r.body.paired === true
+    && (await pg.query(`select count(*)::int as n from couple_members m join users u on u.id = m.user_id
+      where u.google_sub in ('2001', '2002', '2003') group by m.couple_id order by n desc limit 1`)).rows[0].n === 2);
+
+  /* 일주일 지난 링크는 구글로 와도 안 받습니다 */
+  const lateHost = cookieOf(await call(google, { method: 'POST', headers: { 'x-forwarded-for': '198.51.100.20' }, body: { credential: idToken({ sub: '2004' }) } }));
+  const lateCode = (await call(invite, { method: 'POST', token: lateHost })).body.code;
+  await pg.query(`update invites set expires_at = now() - interval '1 second'`);
+  r = await call(google, { method: 'POST', headers: { 'x-forwarded-for': '198.51.100.21' }, body: { credential: idToken({ sub: '2005' }), invite: lateCode } });
+  ok('an old invite makes no google account', r.status === 400 && r.body.error === 'error.badInvite'
+    && (await pg.query(`select count(*)::int as n from users where google_sub = '2005'`)).rows[0].n === 0);
+
   r = await call(account, { method: 'PATCH', token: unverified, body: { current: '', password: 'a brand new one' } });
   ok('a google-only account has no password to change', r.status === 403
     && (await pg.query(`select password_hash from users where google_sub = '1002'`)).rows[0].password_hash === null);
@@ -1491,8 +1520,57 @@ const BUSY_IP = '203.0.113.9';
   r = await call(account, { method: 'DELETE', token, body: { credential: idToken({ sub: '1001' }) } });
   ok('a password account cannot be deleted with somebody\'s google', r.status === 403 && r.body.error === 'error.wrongPassword');
 
+  /* 진짜 구글 공개키 받아오기 — 들고 있다가, 처음 보는 키(kid)가 오면 한 번만 다시 받습니다 */
+  useGoogleKeys(null);
+  const nextKey = pair();
+  let served = [googleKey.jwk];
+  let fetched = 0;
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    fetched++;
+    ok('keys come from google', String(url) === 'https://www.googleapis.com/oauth2/v3/certs');
+    return { ok: true, headers: { get: () => 'public, max-age=3600' }, json: async () => ({ keys: served }) };
+  };
+  try {
+    r = await call(google, { method: 'POST', body: { credential: idToken() } });
+    ok('google keys are fetched for the first sign-in', r.status === 200 && fetched === 1);
+    await call(google, { method: 'POST', body: { credential: idToken() } });
+    ok('and kept for the next one', fetched === 1);
+    served = [googleKey.jwk, nextKey.jwk];
+    r = await call(google, { method: 'POST', body: { credential: idToken({}, { key: nextKey }) } });
+    ok('a key google just rotated in is fetched once more', r.status === 200 && fetched === 2);
+    r = await call(google, { method: 'POST', body: { credential: idToken({}, { key: strangerKey }) } });
+    ok('a key google never had is still refused', r.status === 400 && r.body.error === 'error.googleFailed');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+
   useGoogleKeys(null);
   delete process.env.GOOGLE_CLIENT_IDS;
+}
+
+/* ── 알림을 켜 둔 사람이 초대를 받아 옮겨가면 ──
+   혼자 쓰던 달력은 지워지면서 그 기기 줄도 따라 지워집니다. 앱을 열 때 syncPush가 같은 기기를 다시 걸면
+   새 달력의 새 자리로 붙어야 하고, 예전 자리(a) 그대로 남아 상대 알림을 가로채면 안 됩니다. */
+{
+  const ENDPOINT = 'https://web.push.apple.com/moving-in';
+  const mover = await join('mover');
+  await subscribe(mover, ENDPOINT);
+  const hostToken = await join('mover-host');
+  const code = (await call(invite, { method: 'POST', token: hostToken })).body.code;
+  r = await call(invite, { method: 'PUT', token: mover, body: { code } });
+  ok('someone with notifications on can still accept an invite', r.status === 200, JSON.stringify(r.body));
+  ok('the device row left with the old calendar',
+    (await pg.query('select count(*)::int as n from push_subs where endpoint = $1', [ENDPOINT])).rows[0].n === 0);
+  await subscribe(mover, ENDPOINT);
+  const row = (await pg.query('select owner, couple_id from push_subs where endpoint = $1', [ENDPOINT])).rows[0];
+  ok('opening the app again puts the device in the new seat', row?.owner === 'b' && row?.couple_id === (await coupleOf('mover-host')));
+  pushed.length = 0;
+  await call(eventsCreate, { method: 'POST', token: hostToken, body: { title: 'welcome', date: '2026-12-24' } });
+  ok('and the partner\'s new event reaches it', pushed.some((p) => p.endpoint === ENDPOINT));
+  pushed.length = 0;
+  await call(eventsCreate, { method: 'POST', token: mover, body: { title: 'thanks', date: '2026-12-25' } });
+  ok('while its own does not', !pushed.some((p) => p.endpoint === ENDPOINT));
 }
 
 /* 규칙 자체 — 시각 계산은 순수 함수라 따로 봅니다 */
