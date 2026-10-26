@@ -303,7 +303,7 @@ globalThis.I18N.ja = {
   'ask.logout': 'ログアウトすると、もう一度パスワードが必要です。\nログアウトしますか？',
   'ask.logoutYes': 'ログアウト',
   'ask.signOutDevice': '{name} からログアウトしますか？\nその端末の通知も止まります。',
-  'ask.deleteAccountPaired': 'アカウントが削除され、この端末には通知が届かなくなります。\nカレンダーは相手の方に残ります。',
+  'ask.deleteAccountPaired': 'アカウントとあなたの名前、あなたの予定が削除され、この端末には通知が届かなくなります。\n「ふたり」の予定と写真、カレンダーは相手の方に残ります。',
   'ask.deleteAccountAlone': 'アカウントとカレンダー全体（予定も写真もすべて）が完全に削除されます。\n元に戻せません。',
   'ask.deleteAccountYes': '削除する',
   'ask.confirmPassword': '確認のためパスワードを入力してください。',

@@ -312,7 +312,7 @@ globalThis.I18N.es = {
   'ask.logout': 'Necesitarás la contraseña para volver a entrar.\n¿Cerrar sesión?',
   'ask.logoutYes': 'Cerrar sesión',
   'ask.signOutDevice': '¿Cerrar sesión en {name}?\nTambién dejará de recibir notificaciones.',
-  'ask.deleteAccountPaired': 'Tu cuenta se eliminará y este teléfono dejará de recibir avisos.\nEl calendario se queda con la otra persona.',
+  'ask.deleteAccountPaired': 'Se eliminarán tu cuenta, tu nombre y tus planes, y este teléfono dejará de recibir avisos.\nLos planes compartidos, las fotos y el calendario se quedan con la otra persona.',
   'ask.deleteAccountAlone': 'Tu cuenta y todo el calendario, con todos los eventos y fotos, se eliminarán para siempre.\nNo se puede deshacer.',
   'ask.deleteAccountYes': 'Eliminar',
   'ask.confirmPassword': 'Escribe tu contraseña para confirmar.',

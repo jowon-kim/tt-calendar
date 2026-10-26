@@ -246,7 +246,7 @@ globalThis.I18N.ko = {
   'ask.logout': '나가면 비밀번호를 다시 넣어야 해요.\n로그아웃할까요?',
   'ask.logoutYes': '나갈래요',
   'ask.signOutDevice': '{name}에서 로그아웃할까요?\n그 기기의 알림도 꺼져요.',
-  'ask.deleteAccountPaired': '계정이 삭제되고 이 폰으로 알림이 더 오지 않아요.\n달력은 상대에게 그대로 남아요.',
+  'ask.deleteAccountPaired': '계정과 내 이름, 내 일정이 지워지고 이 폰으로 알림이 더 오지 않아요.\n\'우리\' 일정과 사진, 달력은 상대에게 남아요.',
   'ask.deleteAccountAlone': '계정과 달력 전체(일정·사진 모두)가 완전히 삭제돼요.\n되돌릴 수 없어요.',
   'ask.deleteAccountYes': '삭제',
   'ask.confirmPassword': '확인하려면 비밀번호를 넣어주세요.',
