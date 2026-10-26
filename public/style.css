@@ -1410,6 +1410,8 @@ img.install-step-icon { padding: 0; }
   transition: background .2s;
 }
 .dp-title:hover { background: var(--surface-sink); color: var(--cherry-ink); }
+/* 눌러서 연도·달로 건너뛸 수 있다는 표시 */
+.dp-title::after { content: ' ▾'; font-size: .7em; opacity: .55; }
 .dp-weekdays {
   display: grid; grid-template-columns: repeat(7, 1fr);
   padding: 6px 0 4px;
