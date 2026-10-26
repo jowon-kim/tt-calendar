@@ -7,7 +7,7 @@
   },
   "rewrites": [
     {
-      "source": "/api/:op(signup|login|logout|invite|account|google|devices)",
+      "source": "/api/:op(signup|login|logout|invite|account|google)",
       "destination": "/api/auth?op=:op"
     }
   ],

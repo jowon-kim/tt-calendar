@@ -946,12 +946,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .spacer { flex: 1; }
 .account-actions { display: grid; grid-template-columns: 1fr; gap: 9px; }
 .account-actions .btn { text-align: center; text-decoration: none; }
-.devices { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.devices li { display: flex; align-items: center; gap: 10px; min-height: 44px; }
-.device-text { flex: 1; min-width: 0; }
-.device-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.device-when { display: block; font-size: 0.85em; color: var(--ink-soft); }
-#s-devices-box { margin-top: 14px; }
 .ask-password {
   width: 100%; margin: 0 0 14px; padding: 12px 14px;
   border: 1.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--paper-2);

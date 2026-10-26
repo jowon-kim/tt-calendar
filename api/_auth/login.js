@@ -1,4 +1,4 @@
-import { ready, body, guard, methodNotAllowed, setSessionCookie, deviceName } from '../../lib/http.js';
+import { ready, body, guard, methodNotAllowed, setSessionCookie } from '../../lib/http.js';
 import { checkPassword, cleanLogin, wasteTime, passwordSignIn } from '../../lib/auth.js';
 import {
   findUserByLogin, createSession, recentFailures, recordFailure, clearFailures,
@@ -38,6 +38,6 @@ export default guard(async (req, res) => {
   }
 
   await clearFailures(login);
-  setSessionCookie(res, await createSession(user.id, deviceName(req)));
+  setSessionCookie(res, await createSession(user.id));
   res.status(200).json({ ok: true });
 });

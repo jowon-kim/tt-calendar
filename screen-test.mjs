@@ -771,64 +771,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   fetches.length = 0; // 아래 탈퇴 검사는 /api/account 요청이 없는 데서 시작합니다
 }
 
-/* 로그인된 기기 — 설정을 열면 목록을 받아와 보여주고, 다른 기기는 여기서 로그아웃시킵니다 */
+/* 로그인된 기기 목록은 뺐습니다 (2026-10-26) — 설정을 열어도 /api/devices를 부르지 않습니다 */
 {
-  const realFetch = globalThis.fetch;
-  let list = [
-    { id: 'id-here', device: 'Chrome · Windows', seenAt: '2026-10-02T03:00:00Z', current: true },
-    { id: 'id-phone', device: 'Safari · iPhone', seenAt: '2026-09-20T03:00:00Z', current: false },
-    { id: 'id-what', device: '', seenAt: '2026-09-01T03:00:00Z', current: false },
-  ];
-  globalThis.fetch = async (url, init = {}) => {
-    if (url !== '/api/devices') return realFetch(url, init);
-    fetches.push({ url, method: init.method, body: init.body });
-    if (init.method === 'DELETE') {
-      list = list.filter((d) => d.id !== JSON.parse(init.body).id);
-      return { ok: true, status: 204, json: async () => null };
-    }
-    return { ok: true, status: 200, json: async () => ({ devices: list }) };
-  };
+  fetches.length = 0;
   run(`i18n.setLocale('en', { remember: false }); localStorage.setItem('diary_signed_in', '1'); rememberState(); show('app')`);
   run('openSettings()');
   await sleep(20);
-  const rows = () => $('s-devices').children;
-  const button = (li) => li.children.find((c) => c.tagName === 'button' || c.tagName === 'BUTTON');
-  ok('settings list every signed-in device', !$('s-devices-box').hidden && rows().length === 3, rows().length);
-  ok('this device is marked and has no sign-out button',
-    rows()[0].textContent === 'Chrome · Windows' + run(`t('devices.this')`) && !button(rows()[0]), rows()[0].textContent);
-  ok('another device shows when it was last used and can be signed out',
-    rows()[1].textContent.startsWith('Safari · iPhone') && rows()[1].textContent.includes('September 20') && !!button(rows()[1]),
-    rows()[1].textContent);
-  ok('a device with no name still gets a line', rows()[2].textContent.startsWith(run(`t('devices.unknown')`)));
-
-  fetches.length = 0;
-  button(rows()[1]).click();
-  await sleep(10);
-  ok('signing a device out asks first, by its name',
-    $('ask').open && $('ask-text').textContent === run(`t('ask.signOutDevice', { name: 'Safari · iPhone' })`), $('ask-text').textContent);
-  $('ask-no').click();
-  await sleep(10);
-  ok('backing out sends nothing', !fetches.some((f) => f.method === 'DELETE'));
-
-  button(rows()[1]).click();
-  await sleep(10);
-  $('ask-yes').click();
-  await sleep(30);
-  const gone = fetches.find((f) => f.method === 'DELETE');
-  ok('confirming sends that device and nothing else', gone?.url === '/api/devices' && gone.body === JSON.stringify({ id: 'id-phone' }), fetches);
-  ok('and the list is drawn again without it', rows().length === 2 && !$('s-devices').textContent.includes('iPhone'), $('s-devices').textContent);
-
-  /* 인터넷이 없거나 옛 서버면 목록 없이 설정이 그대로 열립니다 */
-  run(`$('settings').close()`);
-  globalThis.fetch = async (url, init) => { if (url === '/api/devices') throw new TypeError('Failed to fetch'); return realFetch(url, init); };
-  run('openSettings()');
-  await sleep(20);
-  ok('with no signal the settings still open, without the list', $('settings').open && $('s-devices-box').hidden);
-  globalThis.fetch = realFetch;
-  run(`$('settings').close()`);
-  run('openSettings()');
-  await sleep(20);
-  ok('an answer without a list leaves it hidden too', $('settings').open && $('s-devices-box').hidden);
+  ok('settings open without asking for a device list', $('settings').open && !fetches.some((f) => f.url === '/api/devices'), fetches);
   run(`$('settings').close()`);
   fetches.length = 0;
 }
