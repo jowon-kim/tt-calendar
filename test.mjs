@@ -1653,6 +1653,28 @@ ok('midnight is 0 minutes, not 1440',
 ok('zones west of UTC read the earlier day',
   localNow('America/New_York', new Date('2026-09-14T02:00:00Z')).date === '2026-09-13');
 
+/* ── 상대가 초대로 들어와 처음 이름을 정하면, 먼저 와 있던 사람에게 "OO님이 들어왔어요" ── */
+{
+  const host = await join('joined-host');
+  await call(settings, { method: 'PATCH', token: host, body: { locale: 'ko' } });
+  pushed.length = 0;
+  await call(settings, { method: 'PATCH', token: host, body: { names: { a: '미나' } } });
+  ok('naming yourself while alone tells nobody', pushed.length === 0, pushed);
+  await subscribe(host, 'https://web.push.apple.com/joined-host');
+  const guest = await join('joined-guest', (await call(invite, { method: 'POST', token: host })).body.code);
+  await subscribe(guest, 'https://web.push.apple.com/joined-guest');
+  pushed.length = 0;
+  r = await call(settings, { method: 'PATCH', token: guest, body: { names: { b: '레오' } } });
+  ok('the newcomer naming themselves still saves', r.status === 200 && r.body.names.b === '레오' && r.body.names.a === '미나');
+  ok('and the one who invited them hears "레오님이 들어왔어요"', pushed.length === 1
+    && pushed[0].endpoint === 'https://web.push.apple.com/joined-host'
+    && pushed[0].title === '레오님이 들어왔어요' && pushed[0].body === '이제 같은 달력을 함께 써요.' && pushed[0].tag === 'joined', JSON.stringify(pushed));
+  pushed.length = 0;
+  await call(settings, { method: 'PATCH', token: guest, body: { names: { b: '레오야' } } });
+  await call(settings, { method: 'PATCH', token: host, body: { names: { a: '미나', b: '레오야' } } });
+  ok('renaming later is not another "joined"', pushed.length === 0, pushed);
+}
+
 /* ── 배포 모양: Vercel Hobby는 배포 하나에 함수 12개까지 — 넘으면 배포가 통째로 실패합니다 ── */
 {
   const functions = fs.readdirSync('api', { recursive: true })

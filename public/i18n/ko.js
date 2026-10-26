@@ -224,6 +224,8 @@ globalThis.I18N.ko = {
   'push.editedEvent': '일정 고침',
   'push.deletedEvent': '일정 지움',
   'push.soon': '곧 시작',
+  'push.joinedBody': '이제 같은 달력을 함께 써요.',
+  'push.joined': '{name}님이 들어왔어요',
   'push.today.other': '오늘 일정 {count}개',
   'push.allDay': '종일',
   'push.turnedOn': '알림을 켰어요',

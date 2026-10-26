@@ -224,6 +224,8 @@ globalThis.I18N['zh-CN'] = {
   'push.editedEvent': '日程已修改',
   'push.deletedEvent': '日程已删除',
   'push.soon': '即将开始',
+  'push.joinedBody': '现在你们共用同一个日历了。',
+  'push.joined': '{name}加入了',
   'push.today': '今天有 {count} 个日程',
   'push.allDay': '全天',
   'push.turnedOn': '通知已开启',

@@ -1,5 +1,6 @@
 import { requireSession, body, guard, methodNotAllowed, normalizeSettings } from '../lib/http.js';
-import { patchSettings } from '../lib/store.js';
+import { patchSettings, getSettings } from '../lib/store.js';
+import { notifyJoined } from '../lib/push.js';
 
 /**
  * PATCH 보낸 칸만 바꾸기
@@ -13,5 +14,11 @@ export default guard(async (req, res) => {
   const session = await requireSession(req, res);
   if (!session) return;
 
-  res.status(200).json(await patchSettings(session.coupleId, normalizeSettings(body(req))));
+  const patch = normalizeSettings(body(req));
+  // 내 이름이 비어 있다가 처음 생기는 때 = 초대로 막 들어와 "뭐라고 불러 드릴까요?"에 답한 때
+  const naming = !!patch.names?.[session.slot];
+  const before = naming ? await getSettings(session.coupleId) : null;
+  const saved = await patchSettings(session.coupleId, patch);
+  if (naming && !before.names?.[session.slot]) await notifyJoined(session.coupleId, session.slot, saved);
+  res.status(200).json(saved);
 });

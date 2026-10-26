@@ -231,6 +231,8 @@ globalThis.I18N.fr = {
   'push.editedEvent': 'Événement modifié',
   'push.deletedEvent': 'Événement supprimé',
   'push.soon': 'Ça commence bientôt',
+  'push.joinedBody': 'Vous partagez maintenant un seul calendrier.',
+  'push.joined': '{name} vous a rejoint',
   'push.today.one': '{count} événement aujourd\'hui',
   'push.today': '{count} événements aujourd\'hui',
   'push.allDay': 'Toute la journée',

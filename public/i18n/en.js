@@ -241,6 +241,8 @@ globalThis.I18N.en = {
   'push.editedEvent': 'Event changed',
   'push.deletedEvent': 'Event deleted',
   'push.soon': 'Starting soon',
+  'push.joinedBody': 'You now share one calendar.',
+  'push.joined': '{name} joined',
   'push.today.one': '{count} event today',
   'push.today.other': '{count} events today',
   'push.allDay': 'All day',

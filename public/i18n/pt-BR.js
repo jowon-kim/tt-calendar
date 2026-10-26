@@ -231,6 +231,8 @@ globalThis.I18N['pt-BR'] = {
   'push.editedEvent': 'Evento alterado',
   'push.deletedEvent': 'Evento excluído',
   'push.soon': 'Começa daqui a pouco',
+  'push.joinedBody': 'Agora vocês dividem um só calendário.',
+  'push.joined': '{name} entrou',
   'push.today.one': '{count} evento hoje',
   'push.today': '{count} eventos hoje',
   'push.allDay': 'Dia inteiro',

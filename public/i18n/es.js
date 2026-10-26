@@ -231,6 +231,8 @@ globalThis.I18N.es = {
   'push.editedEvent': 'Plan cambiado',
   'push.deletedEvent': 'Plan eliminado',
   'push.soon': 'Empieza pronto',
+  'push.joinedBody': 'Ahora compartís un mismo calendario.',
+  'push.joined': '{name} se ha unido',
   'push.today.one': '{count} plan hoy',
   'push.today': '{count} planes hoy',
   'push.allDay': 'Todo el día',

@@ -223,6 +223,8 @@ globalThis.I18N.ja = {
   'push.editedEvent': '予定が変わりました',
   'push.deletedEvent': '予定が削除されました',
   'push.soon': 'まもなく開始',
+  'push.joinedBody': 'これからは同じカレンダーをふたりで使えます。',
+  'push.joined': '{name}さんが入りました',
   'push.today': '今日の予定{count}件',
   'push.allDay': '終日',
   'push.turnedOn': '通知をオンにしました',
