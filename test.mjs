@@ -92,7 +92,7 @@ ok('the sign-in cookie cannot be read by scripts or sent from other sites',
 
 /* ── 처음 켜질 때 — 설치하는 사람이 표도 열쇠도 만들지 않습니다 ── */
 ok('the first sign-up creates the tables',
-  (await tables()) === 'app_meta,couple_members,couples,events,invites,login_failures,photos,push_subs,reminders_sent,sessions,settings,signups,users',
+  (await tables()) === 'active_days,app_meta,couple_members,couples,events,invites,login_failures,photos,push_subs,reminders_sent,sessions,settings,signups,users',
   await tables());
 const first = await meta();
 ok('it makes a clock key', /^[0-9a-f]{48}$/.test(first.cron_secret) && !('diary_secret' in first), JSON.stringify(Object.keys(first)));
@@ -1269,6 +1269,21 @@ const BUSY_IP = '203.0.113.9';
   ok('after a day the last-used time moves up and the sign-in is extended',
     !!r.headers['Set-Cookie'] && Date.now() - new Date(after.seen_at).getTime() < 60_000 && after.expires_at >= before.expires_at,
     JSON.stringify(after));
+
+  /* 접속한 날 — 운영 대시보드의 이용자 수. 하루에 한 사람 한 줄, 날짜만 */
+  const days = async () => (await pg.query(
+    `select to_char(day, 'YYYY-MM-DD') as day from active_days where user_id = (select user_id from sessions where id = $1)`, [phoneId])).rows;
+  ok('signing in counts today once, however many devices', (await days()).length === 1, JSON.stringify(await days()));
+  await pg.query(`delete from active_days where user_id = (select user_id from sessions where id = $1)`, [phoneId]);
+  await pg.query(`update sessions set seen_at = now() - interval '2 days' where id = $1`, [phoneId]);
+  await call(state, { token: phone });
+  ok('coming back on a new day counts that day', (await days()).length === 1);
+  await call(state, { token: phone });
+  ok('using it again the same day adds nothing', (await days()).length === 1);
+  await pg.query(`insert into active_days (day, user_id) select current_date - 120, user_id from sessions where id = $1`, [phoneId]);
+  await pg.query(`update sessions set seen_at = now() - interval '2 days' where id = $1`, [phoneId]);
+  await call(state, { token: phone });
+  ok('days older than 90 are cleared', (await days()).length === 1, JSON.stringify(await days()));
 
   /* 비밀번호를 바꾸면 다른 기기의 알림도 같이 꺼집니다 */
   const account = viaAuth('account');

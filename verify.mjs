@@ -62,7 +62,7 @@ export async function checkEnv() {
 
 const WANT = [
   'users', 'couples', 'couple_members', 'invites', 'sessions', 'login_failures', 'signups',
-  'events', 'settings', 'photos', 'push_subs', 'reminders_sent', 'app_meta',
+  'events', 'settings', 'photos', 'push_subs', 'reminders_sent', 'app_meta', 'active_days',
 ];
 const MAKE_TABLES = 'the app creates them on its first request. To do it now, npm run schema';
 
