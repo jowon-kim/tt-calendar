@@ -21,7 +21,7 @@ TT를 정식 서비스로 열고 스토어에 올리기까지 남은 일과, 심
 앱과 같은 방식으로 셈) · ✅ FAQ·WebApplication 구조화 데이터 · ✅ hreflang · ✅ 공유 미리보기(영어 이미지) · ✅ `sitemap.xml`·`robots.txt`·`llms.txt` ·
 ✅ 로그인 화면의 "TT는 어떤 앱인가요?" 링크, 소개 페이지 "시작하기" → `/?signup`으로 바로 가입.
 글은 `landing-content.mjs`, 생성은 `npm run landing`. **도메인을 바꾸면 `landing.mjs`의 `SITE` 한 줄**과 `public/index.html` 머리의 주소를 고치고 다시 생성.
-- ⬜ **구글 서치 콘솔 등록**(사장님 구글 계정) → sitemap 제출. 확인용 태그를 주면 Claude가 넣음. 빙 웹마스터는 서치 콘솔에서 가져오기
+- ⬜ **구글 서치 콘솔 등록**(사장님 구글 계정) → sitemap 제출. 확인용 태그를 주면 Claude가 넣음. 빙 웹마스터는 서치 콘솔에서 가져오기 — 절차·태그 자리는 [`SEARCH_CONSOLE.md`](SEARCH_CONSOLE.md) (2026-10-26 준비, 주소 검사는 `npm test`가)
 - ✅ 비교 페이지(TT vs 구글 캘린더 vs TimeTree, `/en/compare/` 등 9개 언어) · 개인정보처리방침에 GDPR·미국 주법 절 (2026-09-30)
 - ⬜ 알리기: 추천 글 운영자에게 등재 요청, Reddit(r/LongDistance 등)·Product Hunt — 공개 게시라 사장님이
 
