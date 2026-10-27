@@ -215,7 +215,12 @@ globalThis.I18N.ja = {
 
   /* ── Notifications ── */
   'push.allow': '通知をオンにする',
-  'push.turnOff': '通知をオフにする',
+  'push.turnOff': 'すべての通知をオフ',
+  'push.questionsOff': '質問の通知だけオフ',
+  'push.questionsOn': '質問の通知をまたオン',
+  'push.questionsOffNote': '今日の質問の通知（夜8時・相手が答えた）はこの端末に届きません。',
+  'push.questionsTurnedOff': '質問の通知をオフにしました',
+  'push.questionsTurnedOn': '質問の通知をオンにしました',
   'push.onNote': '相手が予定を変えると、この端末に通知が届きます。',
   'push.offNote': '一度オンにすると、相手が予定を変えるたびにこの端末にお知らせします。',
   'push.unsupported': 'このブラウザは通知に対応していません。',

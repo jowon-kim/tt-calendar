@@ -233,7 +233,12 @@ globalThis.I18N.en = {
 
   /* ── Notifications ── */
   'push.allow': 'Turn on notifications',
-  'push.turnOff': 'Turn off notifications',
+  'push.turnOff': 'Turn off all notifications',
+  'push.questionsOff': 'Turn off question alerts',
+  'push.questionsOn': 'Turn question alerts back on',
+  'push.questionsOffNote': 'Daily-question alerts (8 pm and “they answered”) don’t come to this device.',
+  'push.questionsTurnedOff': 'Question alerts are off',
+  'push.questionsTurnedOn': 'Question alerts are on',
   'push.onNote': 'This device gets a notification when they change something.',
   'push.offNote': 'Turn this on once and this device hears about every change they make.',
   'push.unsupported': 'This browser can\'t do notifications.',

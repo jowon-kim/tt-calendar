@@ -216,7 +216,12 @@ globalThis.I18N.ko = {
 
   /* ── 알림 ── */
   'push.allow': '알림 받기',
-  'push.turnOff': '알림 끄기',
+  'push.turnOff': '전체 알림 끄기',
+  'push.questionsOff': '질문 알림만 끄기',
+  'push.questionsOn': '질문 알림 다시 켜기',
+  'push.questionsOffNote': '오늘의 질문 알림(저녁 8시·상대가 답했어요)은 이 기기로 오지 않아요.',
+  'push.questionsTurnedOff': '질문 알림을 껐어요',
+  'push.questionsTurnedOn': '질문 알림을 다시 켰어요',
   'push.onNote': '상대가 일정을 바꾸면 이 기기로 알림이 와요.',
   'push.offNote': '한 번 켜두면, 상대가 일정을 바꿀 때마다 이 기기로 알려드려요.',
   'push.unsupported': '이 브라우저는 알림을 지원하지 않아요.',

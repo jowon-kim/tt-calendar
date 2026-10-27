@@ -223,7 +223,12 @@ globalThis.I18N.es = {
 
   /* ── Notifications ── */
   'push.allow': 'Activar notificaciones',
-  'push.turnOff': 'Desactivar notificaciones',
+  'push.turnOff': 'Desactivar todas las notificaciones',
+  'push.questionsOff': 'Desactivar solo la pregunta del día',
+  'push.questionsOn': 'Volver a activar la pregunta del día',
+  'push.questionsOffNote': 'Los avisos de la pregunta del día (20:00 y “ya respondió”) no llegan a este dispositivo.',
+  'push.questionsTurnedOff': 'Avisos de la pregunta desactivados',
+  'push.questionsTurnedOn': 'Avisos de la pregunta activados',
   'push.onNote': 'Este dispositivo recibe un aviso cuando la otra persona cambia algo.',
   'push.offNote': 'Actívalo una vez y este dispositivo se enterará de cada cambio que haga la otra persona.',
   'push.unsupported': 'Este navegador no admite notificaciones.',

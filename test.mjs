@@ -687,7 +687,7 @@ const countSubs = async () => (await pg.query('select count(*)::int as n from pu
 r = await call(pushApi, { method: 'GET' });
 ok('push key needs token', r.status === 401);
 
-r = await call(pushApi, { method: 'PATCH', token });
+r = await call(pushApi, { method: 'PUT', token });
 ok('push wrong method 405', r.status === 405);
 
 r = await call(pushApi, { method: 'GET', token });
@@ -1239,6 +1239,22 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   await knock('2026-09-01T20:30');
   await knock('2026-09-02T19:30');
   ok('question: once an evening, and not before 8', ours().length === 0, JSON.stringify(ours()));
+
+  /* 질문 알림만 끈 기기: 질문은 안 가고, 다시 걸어도 꺼진 채로, 다른 커플 기기는 못 건드림 */
+  const qOff = (who, endpoint, questions) => call(pushApi, { method: 'PATCH', token: who, body: { endpoint, questions } });
+  r = await qOff(token, LAPTOP, false);
+  ok('question alerts: one device can turn them off', r.status === 200 && r.body.questions === false);
+  r = await subscribe(token, LAPTOP);
+  ok('question alerts: subscribing again keeps them off', r.body.questions === false);
+  pushed.length = 0;
+  await knock('2026-09-04T20:00');
+  ok('question alerts: the evening question skips that device only', ours().length === 1 && ours()[0].endpoint === PHONE, JSON.stringify(ours()));
+  r = await qOff(token, 'https://push.example/not-ours', false);
+  ok('question alerts: an unknown device is 404', r.status === 404);
+  r = await qOff(token, LAPTOP, 'no');
+  ok('question alerts: only true or false', r.status === 400);
+  r = await qOff(token, LAPTOP, true);
+  ok('question alerts: and back on', r.body.questions === true);
 
   const qday = nowIn('Asia/Seoul').date; // 위에서 둘 다 오늘 질문에 답했습니다
   await pg.query(`delete from answers where qday = $1 and member = 'b'`, [qday]);

@@ -2233,3 +2233,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .glance-grid [data-open="bucket"] { order: 4; }
 .glance-grid [data-open="log"] { order: 5; grid-column: 1 / -1; min-height: 0; }
 .glance-grid .home-card-money { font-size: 22px; }
+
+/* 설정 → 휴대폰 알림: 전체 끄기 아래 질문 알림만 따로 (10/27) */
+.push-q { margin-top: 8px; }
+.push-q[hidden] { display: none; }

@@ -216,7 +216,12 @@ globalThis.I18N['zh-CN'] = {
 
   /* ── Notifications ── */
   'push.allow': '开启通知',
-  'push.turnOff': '关闭通知',
+  'push.turnOff': '关闭所有通知',
+  'push.questionsOff': '只关闭问题通知',
+  'push.questionsOn': '重新开启问题通知',
+  'push.questionsOffNote': '每日问题通知（晚上8点、对方已回答）不会发到这台设备。',
+  'push.questionsTurnedOff': '已关闭问题通知',
+  'push.questionsTurnedOn': '已开启问题通知',
   'push.onNote': '对方修改日程时，这台设备会收到通知。',
   'push.offNote': '开启一次后，对方每次修改日程都会通知这台设备。',
   'push.unsupported': '这个浏览器不支持通知。',

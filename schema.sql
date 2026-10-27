@@ -236,6 +236,9 @@ alter table push_subs alter column p256dh drop not null;
 alter table push_subs add column if not exists session_id uuid references sessions (id) on delete cascade;
 alter table push_subs alter column auth drop not null;
 
+-- 오늘의 질문 알림(저녁 8시 · 상대가 답했어요)을 이 기기로 받을지. 나머지 알림은 그대로 (10/27)
+alter table push_subs add column if not exists questions boolean not null default true;
+
 -- 오늘 일정 알림을 이미 보냈는지 적어두는 자리.
 -- 바깥 시계가 5분마다 두드리기 때문에, 이 표가 없으면 같은 알림이 세 번 갑니다.
 -- key는 '커플:날짜:종류' 또는 '커플:날짜:일정id:종류' — 하루가 지나면 새 key라 다시 옵니다.
