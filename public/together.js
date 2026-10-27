@@ -178,7 +178,7 @@
     const url = c.toDataURL('image/webp', 0.82);
     const mime = url.startsWith('data:image/webp') ? 'image/webp' : 'image/png';
     const r = await fetch('/api/photos', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mime, data: url.split(',')[1] }) });
+      body: JSON.stringify({ mime, data: url.split(',')[1], purpose: 'diary' }) });
     if (!r.ok) throw new Error('upload');
     return (await r.json()).id;
   }

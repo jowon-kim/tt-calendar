@@ -225,6 +225,8 @@ globalThis.I18N.ko = {
   'push.joined': '{name}님이 들어왔어요',
   'push.today.other': '오늘 일정 {count}개',
   'push.allDay': '종일',
+  'push.question': '오늘의 질문',
+  'push.yearAgo': '1년 전 오늘',
   'push.turnedOn': '알림을 켰어요',
   'push.turnedOff': '알림을 껐어요',
 

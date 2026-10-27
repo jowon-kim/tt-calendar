@@ -233,6 +233,8 @@ globalThis.I18N['pt-BR'] = {
   'push.today.one': '{count} evento hoje',
   'push.today': '{count} eventos hoje',
   'push.allDay': 'Dia inteiro',
+  'push.question': 'Pergunta do dia',
+  'push.yearAgo': 'Há um ano, hoje',
   'push.turnedOn': 'Notificações ativadas',
   'push.turnedOff': 'Notificações desativadas',
 
