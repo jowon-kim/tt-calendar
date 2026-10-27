@@ -1,8 +1,8 @@
 # TT
 
-> One calendar for the two of you: plans, anniversaries and day counts, with a notification when your partner changes something. Works in the browser, no app store needed. Free during beta.
+> One calendar for the two of you: plans, anniversaries and day counts, with a notification when your partner changes something. Works in the browser, no app store needed. Free and open source.
 
-TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers and can be added to the home screen. It is in a free beta with no ads and no paid features. Available in English, 한국어, 日本語, 简体中文, Español, Français, Deutsch, Português (Brasil), Русский.
+TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers and can be added to the home screen. It is free and open source (MIT, https://github.com/jowon-kim/tt-calendar) with no ads and no paid features; anyone can run their own copy, so the calendar stays in their own database. Available in English, 한국어, 日本語, 简体中文, Español, Français, Deutsch, Português (Brasil), Русский.
 
 ## What it does
 
@@ -15,7 +15,7 @@ TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers
 
 ## Questions
 
-- Is TT free? Yes. TT is free while it is in beta, with no ads and no paid features.
+- Is TT free? Yes. TT is free and open source (MIT), with no ads and no paid features. You can run your own copy, so your calendar stays in your own database.
 - Do we need to download it from an app store? No. TT runs in the browser on iPhone, Android and computers. Adding it to the home screen makes it open like an app, and that is also how notifications work on iPhone.
 - Does it work on iPhone? Yes. Open it in Safari, tap Share, then “Add to Home Screen”. On iOS 16.4 and later it can send notifications once it is on the home screen.
 - How do I invite my partner? In Settings, make an invite link and send it. When your partner signs up through it, you share the same calendar. Each of you keeps your own account.

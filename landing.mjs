@@ -388,7 +388,7 @@ function llms() {
 
 > ${c.description}
 
-TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers and can be added to the home screen. It is in a free beta with no ads and no paid features. Available in ${LANGS.map((l) => NAMES[l]).join(', ')}.
+TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers and can be added to the home screen. It is free and open source (MIT, https://github.com/jowon-kim/tt-calendar) with no ads and no paid features; anyone can run their own copy, so the calendar stays in their own database. Available in ${LANGS.map((l) => NAMES[l]).join(', ')}.
 
 ## What it does
 

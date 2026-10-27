@@ -11,8 +11,8 @@ export const LANGS = ['en', 'ko', 'ja', 'zh-CN', 'es', 'fr', 'de', 'pt-BR', 'ru'
 export const CONTENT = {
   en: {
     title: 'TT — a free shared calendar for couples',
-    description: 'One calendar for the two of you: plans, anniversaries and day counts, with a notification when your partner changes something. Works in the browser, no app store needed. Free during beta.',
-    badge: 'Free beta',
+    description: 'One calendar for the two of you: plans, anniversaries and day counts, with a notification when your partner changes something. Works in the browser, no app store needed. Free and open source.',
+    badge: 'Open source',
     heroTitle: 'One calendar for the two of you',
     heroSub: 'Put in a plan and your partner’s phone knows. Anniversaries and “days together” count themselves.',
     cta: 'Start free',
@@ -34,7 +34,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Questions',
     faq: [
-      ['Is TT free?', 'Yes. TT is free while it is in beta, with no ads and no paid features.'],
+      ['Is TT free?', 'Yes. TT is free and open source (MIT), with no ads and no paid features. You can run your own copy, so your calendar stays in your own database.'],
       ['Do we need to download it from an app store?', 'No. TT runs in the browser on iPhone, Android and computers. Adding it to the home screen makes it open like an app, and that is also how notifications work on iPhone.'],
       ['Does it work on iPhone?', 'Yes. Open it in Safari, tap Share, then “Add to Home Screen”. On iOS 16.4 and later it can send notifications once it is on the home screen.'],
       ['How do I invite my partner?', 'In Settings, make an invite link and send it. When your partner signs up through it, you share the same calendar. Each of you keeps your own account.'],
@@ -75,8 +75,8 @@ export const CONTENT = {
 
   ko: {
     title: 'TT — 둘이 함께 쓰는 무료 커플 달력',
-    description: '둘이 하나의 달력을 써요. 일정·기념일·사귄 날 계산, 상대가 일정을 바꾸면 알림까지. 앱스토어 없이 브라우저에서 바로. 베타 기간 무료.',
-    badge: '무료 베타',
+    description: '둘이 하나의 달력을 써요. 일정·기념일·사귄 날 계산, 상대가 일정을 바꾸면 알림까지. 앱스토어 없이 브라우저에서 바로. 무료 오픈소스.',
+    badge: '오픈소스',
     heroTitle: '둘이 함께 쓰는 달력',
     heroSub: '일정을 넣으면 상대 폰에 바로 알려줘요. 기념일과 “함께한 날”은 저절로 세어져요.',
     cta: '무료로 시작하기',
@@ -98,7 +98,7 @@ export const CONTENT = {
     ],
     faqTitle: '자주 묻는 것',
     faq: [
-      ['TT는 무료인가요?', '네. 베타 기간 동안 무료이고, 광고나 유료 기능이 없어요.'],
+      ['TT는 무료인가요?', '네. 무료 오픈소스(MIT)이고 광고나 유료 기능이 없어요. 직접 띄워 쓰면 달력이 내 DB에만 남아요.'],
       ['앱스토어에서 받아야 하나요?', '아니요. 아이폰·안드로이드·컴퓨터 브라우저에서 바로 돼요. 홈 화면에 추가하면 앱처럼 열리고, 아이폰은 그래야 알림도 와요.'],
       ['아이폰에서도 되나요?', '네. 사파리에서 열고 공유 → “홈 화면에 추가”를 누르세요. iOS 16.4 이상이면 홈 화면에서 연 앱으로 알림을 받을 수 있어요.'],
       ['상대는 어떻게 초대하나요?', '설정에서 초대 링크를 만들어 보내면 돼요. 그 링크로 가입하면 같은 달력을 함께 써요. 계정은 각자 따로예요.'],
@@ -139,8 +139,8 @@ export const CONTENT = {
 
   ja: {
     title: 'TT — ふたりで使える無料のカップルカレンダー',
-    description: 'ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。ベータ期間は無料。',
-    badge: '無料ベータ',
+    description: 'ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。無料のオープンソース。',
+    badge: 'オープンソース',
     heroTitle: 'ふたりで使う、ひとつのカレンダー',
     heroSub: '予定を入れると相手のスマホにすぐ届きます。記念日と「一緒にいる日数」は自動で数えます。',
     cta: '無料ではじめる',
@@ -162,7 +162,7 @@ export const CONTENT = {
     ],
     faqTitle: 'よくある質問',
     faq: [
-      ['TTは無料ですか？', 'はい。ベータ期間中は無料で、広告も有料機能もありません。'],
+      ['TTは無料ですか？', 'はい。無料のオープンソース（MIT）で、広告も有料機能もありません。自分で立ち上げれば、カレンダーは自分のデータベースだけに残ります。'],
       ['アプリストアからダウンロードが必要ですか？', 'いいえ。iPhone・Android・パソコンのブラウザでそのまま使えます。ホーム画面に追加するとアプリのように開き、iPhoneではそれで通知も届きます。'],
       ['iPhoneでも使えますか？', 'はい。Safariで開いて共有 →「ホーム画面に追加」を押してください。iOS 16.4以降なら、ホーム画面から開いたアプリで通知を受け取れます。'],
       ['相手はどうやって招待しますか？', '設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。'],
@@ -203,8 +203,8 @@ export const CONTENT = {
 
   'zh-CN': {
     title: 'TT — 两个人一起用的免费情侣日历',
-    description: '两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。测试期间免费。',
-    badge: '免费测试版',
+    description: '两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。免费开源。',
+    badge: '开源',
     heroTitle: '两个人，一个日历',
     heroSub: '你加一个日程，对方手机马上知道。纪念日和“在一起的天数”自动计算。',
     cta: '免费开始',
@@ -226,7 +226,7 @@ export const CONTENT = {
     ],
     faqTitle: '常见问题',
     faq: [
-      ['TT 免费吗？', '免费。测试期间完全免费，没有广告，也没有付费功能。'],
+      ['TT 免费吗？', '免费。TT 是开源软件（MIT），没有广告，也没有付费功能。自己部署一份，日历就只保存在你自己的数据库里。'],
       ['需要从应用商店下载吗？', '不需要。在 iPhone、安卓和电脑的浏览器里都能直接用。添加到主屏幕后像应用一样打开，iPhone 也要这样才能收到通知。'],
       ['iPhone 能用吗？', '能。用 Safari 打开，点分享 →“添加到主屏幕”。iOS 16.4 及以上，从主屏幕打开的应用可以收到通知。'],
       ['怎么邀请对方？', '在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。'],
@@ -267,8 +267,8 @@ export const CONTENT = {
 
   es: {
     title: 'TT — calendario compartido gratis para parejas',
-    description: 'Un calendario para los dos: planes, aniversarios y días juntos, con un aviso cuando tu pareja cambia algo. Funciona en el navegador, sin tienda de apps. Gratis durante la beta.',
-    badge: 'Beta gratis',
+    description: 'Un calendario para los dos: planes, aniversarios y días juntos, con un aviso cuando tu pareja cambia algo. Funciona en el navegador, sin tienda de apps. Gratis y de código abierto.',
+    badge: 'Código abierto',
     heroTitle: 'Un calendario para los dos',
     heroSub: 'Añades un plan y el móvil de tu pareja se entera. Los aniversarios y los “días juntos” se cuentan solos.',
     cta: 'Empieza gratis',
@@ -290,7 +290,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Preguntas',
     faq: [
-      ['¿TT es gratis?', 'Sí. TT es gratis durante la beta, sin anuncios ni funciones de pago.'],
+      ['¿TT es gratis?', 'Sí. TT es gratis y de código abierto (MIT), sin anuncios ni funciones de pago. Puedes montar tu propia copia y tu calendario se queda en tu propia base de datos.'],
       ['¿Hay que descargarlo de una tienda de apps?', 'No. TT funciona en el navegador de iPhone, Android y ordenador. Al añadirlo a la pantalla de inicio se abre como una app, y así también llegan los avisos en iPhone.'],
       ['¿Funciona en iPhone?', 'Sí. Ábrelo en Safari, toca Compartir y luego “Añadir a pantalla de inicio”. Con iOS 16.4 o posterior puede enviar avisos cuando está en la pantalla de inicio.'],
       ['¿Cómo invito a mi pareja?', 'En Ajustes, crea un enlace de invitación y envíalo. Cuando tu pareja se registra con él, compartís el mismo calendario. Cada uno tiene su propia cuenta.'],
@@ -331,8 +331,8 @@ export const CONTENT = {
 
   fr: {
     title: 'TT — un calendrier partagé gratuit pour les couples',
-    description: 'Un seul calendrier pour vous deux : sorties, anniversaires et jours ensemble, avec une notification quand l’autre change quelque chose. Dans le navigateur, sans app store. Gratuit pendant la bêta.',
-    badge: 'Bêta gratuite',
+    description: 'Un seul calendrier pour vous deux : sorties, anniversaires et jours ensemble, avec une notification quand l’autre change quelque chose. Dans le navigateur, sans app store. Gratuit et open source.',
+    badge: 'Open source',
     heroTitle: 'Un calendrier pour vous deux',
     heroSub: 'Ajoute un projet, et le téléphone de ton partenaire le sait. Les anniversaires et les « jours ensemble » se comptent tout seuls.',
     cta: 'Commencer gratuitement',
@@ -354,7 +354,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Questions',
     faq: [
-      ['TT est-il gratuit ?', 'Oui. TT est gratuit pendant la bêta, sans publicité ni fonctions payantes.'],
+      ['TT est-il gratuit ?', 'Oui. TT est gratuit et open source (MIT), sans publicité ni fonctions payantes. Vous pouvez héberger votre propre copie : votre calendrier reste dans votre propre base de données.'],
       ['Faut-il le télécharger sur un app store ?', 'Non. TT fonctionne dans le navigateur sur iPhone, Android et ordinateur. Une fois ajouté à l’écran d’accueil, il s’ouvre comme une app — et c’est aussi ce qui permet les notifications sur iPhone.'],
       ['Ça marche sur iPhone ?', 'Oui. Ouvre-le dans Safari, touche Partager puis « Sur l’écran d’accueil ». À partir d’iOS 16.4, il peut envoyer des notifications une fois sur l’écran d’accueil.'],
       ['Comment inviter mon partenaire ?', 'Dans les Réglages, crée un lien d’invitation et envoie-le. Quand ton partenaire s’inscrit avec, vous partagez le même calendrier. Chacun garde son propre compte.'],
@@ -395,8 +395,8 @@ export const CONTENT = {
 
   de: {
     title: 'TT — kostenloser gemeinsamer Kalender für Paare',
-    description: 'Ein Kalender für euch zwei: Pläne, Jahrestage und gezählte Tage, mit einer Benachrichtigung, wenn dein Partner etwas ändert. Läuft im Browser, ohne App Store. Kostenlos während der Beta.',
-    badge: 'Kostenlose Beta',
+    description: 'Ein Kalender für euch zwei: Pläne, Jahrestage und gezählte Tage, mit einer Benachrichtigung, wenn dein Partner etwas ändert. Läuft im Browser, ohne App Store. Kostenlos und Open Source.',
+    badge: 'Open Source',
     heroTitle: 'Ein Kalender für euch zwei',
     heroSub: 'Trag einen Plan ein, und das Handy deines Partners weiß Bescheid. Jahrestage und „Tage zusammen“ zählen sich von selbst.',
     cta: 'Kostenlos starten',
@@ -418,7 +418,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Fragen',
     faq: [
-      ['Ist TT kostenlos?', 'Ja. TT ist während der Beta kostenlos, ohne Werbung und ohne kostenpflichtige Funktionen.'],
+      ['Ist TT kostenlos?', 'Ja. TT ist kostenlos und Open Source (MIT), ohne Werbung und ohne kostenpflichtige Funktionen. Ihr könnt eure eigene Kopie betreiben – dann bleibt euer Kalender in eurer eigenen Datenbank.'],
       ['Müssen wir es aus einem App Store laden?', 'Nein. TT läuft im Browser auf iPhone, Android und Computer. Auf dem Startbildschirm öffnet es sich wie eine App – so kommen auf dem iPhone auch die Benachrichtigungen an.'],
       ['Läuft es auf dem iPhone?', 'Ja. Öffne es in Safari, tippe auf Teilen und dann auf „Zum Home-Bildschirm“. Ab iOS 16.4 kann es Benachrichtigungen schicken, sobald es auf dem Startbildschirm liegt.'],
       ['Wie lade ich meinen Partner ein?', 'Erstell in den Einstellungen einen Einladungslink und schick ihn. Wenn sich dein Partner darüber registriert, teilt ihr denselben Kalender. Jeder behält sein eigenes Konto.'],
@@ -459,8 +459,8 @@ export const CONTENT = {
 
   'pt-BR': {
     title: 'TT — calendário compartilhado grátis para casais',
-    description: 'Um calendário para os dois: planos, datas especiais e dias juntos, com um aviso quando seu par muda alguma coisa. Funciona no navegador, sem loja de apps. Grátis durante o beta.',
-    badge: 'Beta grátis',
+    description: 'Um calendário para os dois: planos, datas especiais e dias juntos, com um aviso quando seu par muda alguma coisa. Funciona no navegador, sem loja de apps. Grátis e de código aberto.',
+    badge: 'Código aberto',
     heroTitle: 'Um calendário para os dois',
     heroSub: 'Coloque um plano e o celular do seu par fica sabendo. As datas especiais e os “dias juntos” se contam sozinhos.',
     cta: 'Começar grátis',
@@ -482,7 +482,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Perguntas',
     faq: [
-      ['O TT é grátis?', 'Sim. O TT é grátis durante o beta, sem anúncios e sem recursos pagos.'],
+      ['O TT é grátis?', 'Sim. O TT é grátis e de código aberto (MIT), sem anúncios e sem recursos pagos. Vocês podem rodar a própria cópia, e o calendário fica no seu próprio banco de dados.'],
       ['Precisa baixar numa loja de apps?', 'Não. O TT funciona no navegador do iPhone, Android e computador. Na tela inicial ele abre como um app, e é assim que as notificações chegam no iPhone.'],
       ['Funciona no iPhone?', 'Sim. Abra no Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”. No iOS 16.4 ou mais novo, ele envia notificações depois de estar na tela inicial.'],
       ['Como convido meu par?', 'Nas Configurações, crie um link de convite e envie. Quando seu par se cadastrar por ele, vocês usam o mesmo calendário. Cada um tem sua própria conta.'],
@@ -523,8 +523,8 @@ export const CONTENT = {
 
   ru: {
     title: 'TT — бесплатный общий календарь для пар',
-    description: 'Один календарь на двоих: планы, памятные даты и счётчик дней вместе, с уведомлением, когда партнёр что-то меняет. Работает в браузере, без магазина приложений. Бесплатно во время беты.',
-    badge: 'Бесплатная бета',
+    description: 'Один календарь на двоих: планы, памятные даты и счётчик дней вместе, с уведомлением, когда партнёр что-то меняет. Работает в браузере, без магазина приложений. Бесплатно и с открытым кодом.',
+    badge: 'Открытый код',
     heroTitle: 'Один календарь на двоих',
     heroSub: 'Добавь план — и телефон партнёра узнает. Памятные даты и «дни вместе» считаются сами.',
     cta: 'Начать бесплатно',
@@ -546,7 +546,7 @@ export const CONTENT = {
     ],
     faqTitle: 'Вопросы',
     faq: [
-      ['TT бесплатный?', 'Да. Во время беты TT бесплатный, без рекламы и платных функций.'],
+      ['TT бесплатный?', 'Да. TT бесплатный и с открытым кодом (MIT), без рекламы и платных функций. Можно развернуть свою копию — тогда календарь хранится только в вашей базе данных.'],
       ['Нужно ли скачивать его из магазина приложений?', 'Нет. TT работает в браузере на iPhone, Android и компьютере. С главного экрана он открывается как приложение — и именно так на iPhone приходят уведомления.'],
       ['Работает ли на iPhone?', 'Да. Открой в Safari, нажми «Поделиться», затем «На экран „Домой“». В iOS 16.4 и новее он может присылать уведомления, когда он на главном экране.'],
       ['Как пригласить партнёра?', 'В настройках создай ссылку-приглашение и отправь её. Когда партнёр зарегистрируется по ней, у вас будет общий календарь. У каждого свой аккаунт.'],
@@ -608,7 +608,7 @@ export const COMPARE = {
       ['Anniversaries and days together', 'Counted from the day you met: every 100 days and each anniversary appear on the calendar with a countdown', 'Add them yourself as events', 'Add them yourself as events'],
       ['Whose plan it is', 'Mine, yours or ours, each in its own colour', 'Separate calendars and colours', 'Labels and colours'],
       ['Photos', 'Up to 30 of your photos shown on the calendar', 'Not built in', 'Photo attachments on events with Premium'],
-      ['Ads and price', 'Free during beta, no ads', 'Free, no ads', 'Free with ads. Premium (about US$4.49 a month, per person) removes them'],
+      ['Ads and price', 'Free and open source, no ads', 'Free, no ads', 'Free with ads. Premium (about US$4.49 a month, per person) removes them'],
       ['Where it runs', 'In the browser; add it to the home screen', 'App or browser', 'App or browser'],
     ],
     betterTitle: 'When another one fits better',
@@ -639,7 +639,7 @@ export const COMPARE = {
       ['기념일과 함께한 날', '처음 만난 날부터 세서 100일마다, 해마다 기념일이 달력에 뜨고 남은 날도 보여요', '직접 일정으로 넣어요', '직접 일정으로 넣어요'],
       ['누구 일정인지', '내 일정, 네 일정, 우리 일정을 색으로 구분', '달력을 나눠서 색으로 구분', '라벨과 색'],
       ['사진', '우리 사진 30장까지 달력에 나와요', '기본 기능 없음', '프리미엄에서 일정에 사진 첨부'],
-      ['광고와 가격', '베타 기간 무료, 광고 없음', '무료, 광고 없음', '무료는 광고 있음. 프리미엄(1인당 월 약 4.49달러)이면 광고 없음'],
+      ['광고와 가격', '무료 오픈소스, 광고 없음', '무료, 광고 없음', '무료는 광고 있음. 프리미엄(1인당 월 약 4.49달러)이면 광고 없음'],
       ['쓰는 곳', '브라우저. 홈 화면에 추가해서 앱처럼', '앱 또는 브라우저', '앱 또는 브라우저'],
     ],
     betterTitle: '다른 게 더 맞는 경우',
@@ -670,7 +670,7 @@ export const COMPARE = {
       ['記念日と付き合った日数', '出会った日から数えて、100日ごとと毎年の記念日がカレンダーに出て、あと何日かも見える', '自分で予定として入れる', '自分で予定として入れる'],
       ['誰の予定か', 'わたし・あなた・ふたりの予定を色で区別', 'カレンダーを分けて色で区別', 'ラベルと色'],
       ['写真', 'ふたりの写真を30枚までカレンダーに表示', '標準機能なし', 'プレミアムで予定に写真を添付'],
-      ['広告と料金', 'ベータ期間は無料、広告なし', '無料、広告なし', '無料版は広告あり。プレミアム（1人あたり月額約4.49米ドル）で広告なし'],
+      ['広告と料金', '無料のオープンソース、広告なし', '無料、広告なし', '無料版は広告あり。プレミアム（1人あたり月額約4.49米ドル）で広告なし'],
       ['使う場所', 'ブラウザ。ホーム画面に追加してアプリのように', 'アプリまたはブラウザ', 'アプリまたはブラウザ'],
     ],
     betterTitle: 'ほかのほうが合うとき',
@@ -701,7 +701,7 @@ export const COMPARE = {
       ['纪念日和在一起的天数', '从认识那天算起，每 100 天和每年的纪念日都会出现在日历上，还显示倒计时', '自己添加为日程', '自己添加为日程'],
       ['是谁的日程', '我的、你的、我们的，各有颜色', '分开的日历和颜色', '标签和颜色'],
       ['照片', '最多 30 张你们的照片显示在日历上', '没有内置', '高级版可在日程中附加照片'],
-      ['广告和价格', '测试期间免费，无广告', '免费，无广告', '免费版有广告。高级版（每人每月约 4.49 美元）去除广告'],
+      ['广告和价格', '免费开源，无广告', '免费，无广告', '免费版有广告。高级版（每人每月约 4.49 美元）去除广告'],
       ['在哪里用', '浏览器；添加到主屏幕', '应用或浏览器', '应用或浏览器'],
     ],
     betterTitle: '什么时候选别的更合适',
@@ -732,7 +732,7 @@ export const COMPARE = {
       ['Aniversarios y días juntos', 'Contados desde el día en que os conocisteis: cada 100 días y cada aniversario aparecen en el calendario con cuenta atrás', 'Los añades tú como eventos', 'Los añades tú como eventos'],
       ['De quién es el plan', 'Mío, tuyo o nuestro, cada uno con su color', 'Calendarios y colores separados', 'Etiquetas y colores'],
       ['Fotos', 'Hasta 30 fotos vuestras en el calendario', 'No incluido', 'Fotos adjuntas en eventos con Premium'],
-      ['Anuncios y precio', 'Gratis durante la beta, sin anuncios', 'Gratis, sin anuncios', 'Gratis con anuncios. Premium (unos 4,49 US$ al mes por persona) los quita'],
+      ['Anuncios y precio', 'Gratis y de código abierto, sin anuncios', 'Gratis, sin anuncios', 'Gratis con anuncios. Premium (unos 4,49 US$ al mes por persona) los quita'],
       ['Dónde funciona', 'En el navegador; añádelo a la pantalla de inicio', 'App o navegador', 'App o navegador'],
     ],
     betterTitle: 'Cuándo encaja mejor otro',
@@ -763,7 +763,7 @@ export const COMPARE = {
       ['Anniversaires et jours ensemble', 'Comptés depuis le jour de votre rencontre : chaque centaine de jours et chaque anniversaire apparaissent sur le calendrier avec un compte à rebours', 'À ajouter soi-même comme événements', 'À ajouter soi-même comme événements'],
       ['À qui est le projet', 'À moi, à toi ou à nous, chacun dans sa couleur', 'Agendas et couleurs séparés', 'Étiquettes et couleurs'],
       ['Photos', 'Jusqu’à 30 de vos photos sur le calendrier', 'Non intégré', 'Photos jointes aux événements avec Premium'],
-      ['Publicité et prix', 'Gratuit pendant la bêta, sans publicité', 'Gratuit, sans publicité', 'Gratuit avec publicité. Premium (environ 4,49 $ US par mois et par personne) la retire'],
+      ['Publicité et prix', 'Gratuit et open source, sans publicité', 'Gratuit, sans publicité', 'Gratuit avec publicité. Premium (environ 4,49 $ US par mois et par personne) la retire'],
       ['Où ça marche', 'Dans le navigateur ; à ajouter à l’écran d’accueil', 'Appli ou navigateur', 'Appli ou navigateur'],
     ],
     betterTitle: 'Quand un autre convient mieux',
@@ -794,7 +794,7 @@ export const COMPARE = {
       ['Jahrestage und gemeinsame Tage', 'Ab dem Tag, an dem ihr euch kennengelernt habt: alle 100 Tage und jeder Jahrestag stehen mit Countdown im Kalender', 'Selbst als Termine eintragen', 'Selbst als Termine eintragen'],
       ['Wessen Plan', 'Meiner, deiner oder unserer, jeder in eigener Farbe', 'Getrennte Kalender und Farben', 'Labels und Farben'],
       ['Fotos', 'Bis zu 30 eurer Fotos im Kalender', 'Nicht eingebaut', 'Fotoanhänge an Terminen mit Premium'],
-      ['Werbung und Preis', 'Kostenlos während der Beta, ohne Werbung', 'Kostenlos, ohne Werbung', 'Kostenlos mit Werbung. Premium (etwa 4,49 US$ im Monat pro Person) entfernt sie'],
+      ['Werbung und Preis', 'Kostenlos und Open Source, ohne Werbung', 'Kostenlos, ohne Werbung', 'Kostenlos mit Werbung. Premium (etwa 4,49 US$ im Monat pro Person) entfernt sie'],
       ['Wo es läuft', 'Im Browser; zum Home-Bildschirm hinzufügen', 'App oder Browser', 'App oder Browser'],
     ],
     betterTitle: 'Wann ein anderer besser passt',
@@ -825,7 +825,7 @@ export const COMPARE = {
       ['Aniversários e dias juntos', 'Contados a partir do dia em que se conheceram: a cada 100 dias e cada aniversário aparecem no calendário com contagem regressiva', 'Você adiciona como eventos', 'Você adiciona como eventos'],
       ['De quem é o plano', 'Meu, seu ou nosso, cada um com sua cor', 'Agendas e cores separadas', 'Etiquetas e cores'],
       ['Fotos', 'Até 30 fotos de vocês no calendário', 'Não tem', 'Fotos anexadas aos eventos no Premium'],
-      ['Anúncios e preço', 'Grátis durante a beta, sem anúncios', 'Grátis, sem anúncios', 'Grátis com anúncios. O Premium (cerca de US$ 4,49 por mês, por pessoa) remove'],
+      ['Anúncios e preço', 'Grátis e de código aberto, sem anúncios', 'Grátis, sem anúncios', 'Grátis com anúncios. O Premium (cerca de US$ 4,49 por mês, por pessoa) remove'],
       ['Onde funciona', 'No navegador; adicione à tela inicial', 'App ou navegador', 'App ou navegador'],
     ],
     betterTitle: 'Quando outro combina mais',
@@ -856,7 +856,7 @@ export const COMPARE = {
       ['Годовщины и дни вместе', 'Считаются от дня знакомства: каждая сотня дней и каждая годовщина появляются в календаре с обратным отсчётом', 'Добавлять самим как события', 'Добавлять самим как события'],
       ['Чей это план', 'Мой, твой или наш — у каждого свой цвет', 'Отдельные календари и цвета', 'Метки и цвета'],
       ['Фото', 'До 30 ваших фото прямо в календаре', 'Нет', 'Фото во вложениях к событиям в Premium'],
-      ['Реклама и цена', 'Бесплатно во время беты, без рекламы', 'Бесплатно, без рекламы', 'Бесплатно с рекламой. Premium (около 4,49 долл. США в месяц за человека) её убирает'],
+      ['Реклама и цена', 'Бесплатно и с открытым кодом, без рекламы', 'Бесплатно, без рекламы', 'Бесплатно с рекламой. Premium (около 4,49 долл. США в месяц за человека) её убирает'],
       ['Где работает', 'В браузере; можно добавить на главный экран', 'Приложение или браузер', 'Приложение или браузер'],
     ],
     betterTitle: 'Когда лучше подойдёт другой',

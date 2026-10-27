@@ -12,7 +12,7 @@ If you already use a coding agent like Claude Code, the
 
 ## What you end up with
 
-A private calendar at an address like `https://couple-diary-abc.vercel.app`.
+A private calendar at an address like `https://tt-calendar-abc.vercel.app`.
 Each of you signs in with your own Google account, one of you sends the other an
 invite link, and from then on you share one calendar — when one of you adds
 something, the other's phone buzzes. (Google only checks who you are. Your
@@ -208,3 +208,11 @@ Names, greeting, app name, theme, the day you met and calendar photos are all in
 **Settings** — no code needed. Changing the pictures (the login image, the icon)
 means replacing files in your GitHub copy; the [README](../README.md#making-it-yours)
 lists which ones.
+
+## If you open your copy to other people
+
+For the two of you, nothing else is needed. If other people will sign up on your
+address, `public/privacy.html` still names the original author as the operator —
+replace the operator name and contact email there with your own (Korean and
+English parts). Vercel's free plan is for personal use; a copy for other couples
+is a service and needs Vercel Pro (see [AGENTS.md](../AGENTS.md)).
