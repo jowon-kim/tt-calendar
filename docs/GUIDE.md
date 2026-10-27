@@ -211,7 +211,7 @@ lists which ones.
 
 ## The "Us" tab
 
-The **heart button** at the top opens it: a question of the day, a photo diary,
+The **Us** tab at the bottom of the screen opens it: a question of the day, a photo diary,
 a bucket list, a money ledger, food and film notes, and a map of your places.
 Nothing to set up — it works as soon as you two are in. Location sharing asks
 your phone for permission the first time you switch it on, and you only see each

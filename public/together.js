@@ -74,29 +74,31 @@
   const patch = (id, b, done) => save(call('PATCH', { action: 'item', id, ...b }), done);
   const remove = (id) => save(call('DELETE', null, '?id=' + encodeURIComponent(id)));
 
-  /* ── 틀: 폰 화면 한 장 — 위에 제목, 가운데 내용, 아래 탭 ── */
+  /* ── 틀: 앱 아래 탭 [달력 | 우리] 위에 놓이는 한 장 — 위에 제목과 칸 고르기, 가운데 내용 ── */
   const root = document.createElement('section');
   root.id = 'together';
   root.className = 'together';
   root.hidden = true;
-  root.setAttribute('role', 'dialog');
-  root.setAttribute('aria-modal', 'true');
+  root.setAttribute('aria-labelledby', 'tg-title');
   root.innerHTML = `
     <div class="tg-frame">
       <header class="tg-head">
-        <button class="icon-btn tg-close" type="button">${icon('back')}</button>
-        <h2 class="tg-title"></h2>
+        <h2 class="tg-title" id="tg-title"></h2>
         <span class="tg-dday"></span>
       </header>
-      <div class="tg-body"></div>
       <nav class="tg-nav">${TABS.map((k) => `<button type="button" data-tab="${k}">${icon(k)}<span></span></button>`).join('')}</nav>
+      <div class="tg-body"></div>
       <div class="tg-lightbox" hidden><img alt=""></div>
     </div>`;
   document.body.appendChild(root);
   const body = $('.tg-body', root);
-  $('.tg-close', root).onclick = close;
   root.querySelectorAll('.tg-nav button').forEach((b) => {
-    b.onclick = () => { if (tab !== b.dataset.tab) { tab = b.dataset.tab; composing = false; editing = null; pending = null; render(); body.scrollTop = 0; } };
+    b.onclick = () => {
+      if (tab === b.dataset.tab) return;
+      tab = b.dataset.tab; composing = false; editing = null; pending = null;
+      render();
+      body.scrollTop = 0;
+    };
   });
   const box = $('.tg-lightbox', root);
   box.onclick = () => { box.hidden = true; };
@@ -105,19 +107,79 @@
     if (!box.hidden) box.hidden = true; else close();
   });
 
-  const btn = document.createElement('button');
-  btn.id = 'open-together';
-  btn.className = 'icon-btn';
-  btn.type = 'button';
-  btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${P.today}</svg>`;
-  const settingsBtn = $('#open-settings');
-  if (settingsBtn) settingsBtn.before(btn);
-  btn.onclick = open;
+  /* ── 들어오는 길: 앱 맨 아래 탭 [달력 | 우리] — 하트 아이콘 하나로는 뭔지 몰라서 이름을 붙였습니다 (10/27) ── */
+  const appMain = $('#app');
+  const nav = document.createElement('nav');
+  nav.className = 'app-nav';
+  nav.innerHTML = `
+    <button type="button" data-go="calendar" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span></span></button>
+    <button type="button" data-go="us"><svg viewBox="0 0 24 24" aria-hidden="true">${P.today}</svg><span></span><i class="app-nav-dot" hidden></i></button>
+    <div class="app-coach" hidden><span></span><button type="button" class="app-coach-x">×</button></div>`;
+  if (appMain) appMain.append(nav);
+  const goCal = $('[data-go="calendar"]', nav);
+  const goUs = $('[data-go="us"]', nav);
+  const coach = $('.app-coach', nav);
+  goCal.onclick = close;
+  goUs.onclick = () => open();
+  const SEEN = 'tt_us_seen';
+  const seen = () => { try { return localStorage.getItem(SEEN) === '1'; } catch { return true; } };
+  const markSeen = () => { try { localStorage.setItem(SEEN, '1'); } catch { /* 사생활 모드 */ } coach.hidden = true; };
+  $('.app-coach-x', coach).onclick = (e) => { e.stopPropagation(); markSeen(); };
+  coach.onclick = () => open();
 
-  async function open() {
+  /* 달력 화면의 "오늘의 질문" 카드 — 무엇을 하면 되는지 한눈에. 누르면 우리 탭의 오늘로 */
+  const teaser = document.createElement('button');
+  teaser.type = 'button';
+  teaser.className = 'home-us';
+  teaser.hidden = true;
+  const upcoming = $('.upcoming');
+  if (upcoming) upcoming.prepend(teaser);
+  teaser.onclick = () => open('today');
+
+  function paintEntry() {
+    goCal.lastElementChild.textContent = T.navCalendar;
+    goUs.querySelector('span').textContent = T.navUs;
+    $('span', coach).textContent = T.coach;
+    $('.app-coach-x', coach).setAttribute('aria-label', T.close);
+    coach.hidden = seen() || !root.hidden;
+    if (!data) { teaser.hidden = true; return; }
+    const q = data.question;
+    const other = me() === 'a' ? 'b' : 'a';
+    const waiting = q.mine === null && q.theyAnswered; // 상대가 답해 두고 내 답을 기다리는 중
+    goUs.querySelector('.app-nav-dot').hidden = !waiting;
+    const status = q.mine === null
+      ? (q.theyAnswered ? tr('statusTheirs', { name: nameFor(other) }) : T.statusNone)
+      : (q.theirs !== null ? T.statusBoth : tr('statusMine', { name: nameFor(other) }));
+    teaser.hidden = false;
+    teaser.classList.toggle('waiting', waiting);
+    teaser.innerHTML = `<span class="home-us-top"><span class="tg-kicker">${T.question}</span>${waiting ? '<i class="home-us-dot"></i>' : ''}</span>
+      <b class="home-us-q">${esc(q.text)}</b>
+      <span class="home-us-foot"><span>${esc(status)}</span><span class="home-us-go">${q.mine === null ? T.goAnswer : T.goSee} ›</span></span>`;
+  }
+
+  /* 달력이 보일 때 한 번, 다시 앞으로 왔을 때 1분에 한 번까지만 읽습니다 (Neon 깨우는 횟수 아끼기) */
+  let lastLoad = 0;
+  async function refresh(force = false) {
+    if (!appMain || appMain.hidden) return;
+    if (!force && Date.now() - lastLoad < 60000) return paintEntry();
+    lastLoad = Date.now();
+    try { await call('GET'); } catch { /* 첫 화면 카드만 못 그릴 뿐 */ }
+    paintEntry();
+  }
+  // 로그아웃하면(#app 이 숨으면) 우리 탭도 닫습니다
+  if (appMain) new MutationObserver(() => (appMain.hidden ? close() : refresh())).observe(appMain, { attributes: true, attributeFilter: ['hidden'] });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+  refresh();
+
+  async function open(to) {
+    if (to) { tab = to; composing = false; editing = null; pending = null; }
     root.hidden = false;
     document.documentElement.classList.add('tg-open');
-    try { await call('GET'); } catch (e) {
+    goCal.classList.remove('on');
+    goUs.classList.add('on');
+    markSeen();
+    render();
+    try { await call('GET'); lastLoad = Date.now(); } catch (e) {
       if (e.status === 401) { close(); return; }
       say(T.error);
     }
@@ -127,26 +189,28 @@
   function close() {
     root.hidden = true;
     document.documentElement.classList.remove('tg-open');
+    goUs.classList.remove('on');
+    goCal.classList.add('on');
     stopWatch();
+    paintEntry();
   }
 
   /* ── 그리기 ── */
   function render() {
-    btn.setAttribute('aria-label', T.title);
-    $('.tg-close', root).setAttribute('aria-label', T.close);
-    $('.tg-title', root).textContent = tab === 'today' ? T.title : T[tab];
+    $('.tg-title', root).textContent = T.title;
     $('.tg-dday', root).textContent = dday();
     root.querySelectorAll('.tg-nav button').forEach((b) => {
       b.classList.toggle('on', b.dataset.tab === tab);
       b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false');
       b.lastElementChild.textContent = T[b.dataset.tab];
     });
+    paintEntry();
     root.dataset.tab = tab;
     if (!data || root.hidden) return;
     if (tab === 'map') return renderMap();
     if (map) { map.remove(); map = null; }
     const views = { today: todayView, diary: diaryView, bucket: bucketView, ledger: ledgerView, log: logView };
-    body.innerHTML = views[tab]();
+    body.innerHTML = `<p class="tg-lead">${T['lead' + tab[0].toUpperCase() + tab.slice(1)]}</p>` + views[tab]();
     wire();
   }
 
@@ -502,8 +566,8 @@
             <div><b>${loc.on ? T.sharing : T.share}</b><p class="tg-hint">${esc(status)}</p></div>
             <button class="tg-switch ${loc.on ? 'on' : ''}" type="button" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-act="share"><i></i></button>
           </div>
-          ${places.length ? `<div class="tg-chips">${places.map((p) => `<button type="button" class="tg-chip" data-fly="${p.id}"><i class="tg-who ${p.member === 'b' ? 'b' : 'a'}"></i>${esc(p.title)}</button>`).join('')}</div>`
-            : `<p class="tg-hint">${T.tapMap}</p>`}
+          ${places.length ? `<div class="tg-chips">${places.map((p) => `<button type="button" class="tg-chip" data-fly="${p.id}"><i class="tg-who ${p.member === 'b' ? 'b' : 'a'}"></i>${esc(p.title)}</button>`).join('')}</div>` : ''}
+          <p class="tg-hint tg-tap">📍 ${T.tapMap}</p>
         </div>`}`;
   }
   let markers = [];

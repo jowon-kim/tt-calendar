@@ -20,7 +20,7 @@ push itself.
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
-| **Tests** | 719, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
+| **Tests** | 716, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
 | **Cost** | $0 a month (free tiers) |
 | **Read next** | [How it works](#how-it-works) · [Why it is built this way](#why-it-is-built-this-way) |
 
@@ -47,7 +47,7 @@ push itself.
   drops it
 - **Reminders** — about half an hour to an hour before anything with a time, and
   one summary of the day at 8am. In your own time zone
-- **The "Us" tab** — a question of the day (your partner's answer opens once you
+- **The "Us" tab** (bottom tab, next to the calendar) — a question of the day (your partner's answer opens once you
   have answered too; at 8pm whoever hasn't answered gets a nudge), a photo diary
   and album with "one year ago today" in the morning summary, a bucket list, a
   date ledger, food and culture logs, a map of your places, a "poke" (three a day)
@@ -66,7 +66,7 @@ push itself.
 
 About 15,000 lines across `api/`, `lib/` and `public/` (nine language packs
 included), with 422 integration tests that run the real handlers against an
-in-memory Postgres, 223 that run the screen itself, 58 for i18n and holidays,
+in-memory Postgres, 220 that run the screen itself, 58 for i18n and holidays,
 and 16 for the service worker.
 
 ## Your data stays with you
@@ -332,7 +332,7 @@ fastlane/ .github/  store builds in CI, no Mac needed
 schema.sql          eighteen tables — the app runs it itself on first start
 landing.mjs         builds the public pages (words in landing-content.mjs)
 test.mjs            422 integration tests against the real handlers
-screen-test.mjs     223 tests that drive public/app.js: sign-in, editor, settings, app push, install
+screen-test.mjs     220 tests that drive public/app.js: sign-in, editor, settings, app push, install
 ```
 
 ```bash
