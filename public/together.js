@@ -127,14 +127,91 @@
   $('.app-coach-x', coach).onclick = (e) => { e.stopPropagation(); markSeen(); };
   coach.onclick = () => open();
 
-  /* 달력 화면의 "오늘의 질문" 카드 — 무엇을 하면 되는지 한눈에. 누르면 우리 탭의 오늘로 */
-  const teaser = document.createElement('button');
-  teaser.type = 'button';
-  teaser.className = 'home-us';
-  teaser.hidden = true;
-  const upcoming = $('.upcoming');
-  if (upcoming) upcoming.prepend(teaser);
-  teaser.onclick = () => open('today');
+  /* 달력 바로 위 "우리" 카드 줄 — 오늘의 질문부터 일기·버킷·가계부·기록·지도까지 옆으로 넘겨 봅니다.
+     카드를 누르면 우리 탭의 그 칸이 "바로 쓸 수 있는 상태로" 열리고, 작은 단추는 그 자리에서 끝납니다 (원터치) */
+  const strip = document.createElement('section');
+  strip.className = 'home-us';
+  strip.hidden = true;
+  strip.innerHTML = '<div class="home-us-track"></div><div class="home-us-dots"></div>';
+  const track = $('.home-us-track', strip);
+  const dots = $('.home-us-dots', strip);
+  const monthbar = $('#app .monthbar');
+  if (monthbar) monthbar.before(strip);
+  track.addEventListener('scroll', () => {
+    const i = Math.round(track.scrollLeft / ((track.firstElementChild?.offsetWidth || 1) + 10));
+    dots.querySelectorAll('i').forEach((d, n) => d.classList.toggle('on', n === i));
+  }, { passive: true });
+
+  function cards() {
+    const q = data.question;
+    const other = me() === 'a' ? 'b' : 'a';
+    const waiting = q.mine === null && q.theyAnswered; // 상대가 답해 두고 내 답을 기다리는 중
+    const status = q.mine === null
+      ? (q.theyAnswered ? tr('statusTheirs', { name: nameFor(other) }) : T.statusNone)
+      : (q.theirs !== null ? T.statusBoth : tr('statusMine', { name: nameFor(other) }));
+    const quick = (act, label, cls = '') => `<button type="button" class="home-quick ${cls}" data-quick="${act}">${label}</button>`;
+    const card = (to, cls, inner, actions = '') => `<div role="button" tabindex="0" class="home-card ${cls}" data-open="${to}">
+      <span class="home-card-top">${icon(to)}<span class="tg-kicker">${to === 'today' ? T.question : T[to]}</span><span class="tg-grow"></span><span class="home-card-go" aria-hidden="true">›</span></span>
+      ${inner}${actions ? `<span class="home-card-acts">${actions}</span>` : ''}</div>`;
+
+    const out = [card('today', waiting ? 'hot' : 'question',
+      `<b class="home-card-q">${esc(q.text)}</b><span class="home-card-line">${esc(status)}</span>`,
+      `${quick('answer', q.mine === null ? `✍️ ${T.goAnswer}` : T.goSee, 'solid')}${data.nudgesLeft ? quick('poke', `💗 ${T.actPoke}`) : ''}`)];
+
+    const diary = items('diary')[0];
+    out.push(card('diary', diary?.photoId ? 'photo' : '', diary
+      ? `${diary.photoId ? `<img class="home-card-bg" src="${photoUrl(diary.photoId)}" alt="" loading="lazy">` : ''}
+         <b class="home-card-big">${esc(diary.title || diary.memo.split('\n')[0])}</b><span class="home-card-line">${who(diary.member)} ${fmtDay(diary.day)}</span>`
+      : `<span class="home-card-line">${T.diaryEmpty}</span>`, quick('write', `＋ ${T.writeDiary}`, 'solid')));
+
+    const bucket = items('bucket');
+    const done = bucket.filter((i) => i.done).length;
+    const nextUp = bucket.find((i) => !i.done);
+    out.push(card('bucket', '', bucket.length
+      ? `<b class="home-card-big">${tr('bucketProgress', { done, total: bucket.length })}</b>
+         <span class="tg-bar"><i style="width:${Math.round((done / bucket.length) * 100)}%"></i></span>
+         ${nextUp ? `<span class="home-card-line">${tr('nextUp', { title: esc(nextUp.title) })}</span>` : ''}`
+      : `<span class="home-card-line">${T.bucketEmpty}</span>`,
+      nextUp ? quick(`done:${nextUp.id}`, `✓ ${T.actDone}`, 'solid') : quick('addBucket', `＋ ${T.add}`, 'solid')));
+
+    const thisMonth = q.day.slice(0, 7);
+    const spent = items('ledger').filter((i) => (i.day || String(i.createdAt).slice(0, 10)).startsWith(thisMonth));
+    const sum = spent.reduce((s, i) => s + (i.amount || 0), 0);
+    const byA = spent.filter((i) => i.member !== 'b').reduce((s, i) => s + (i.amount || 0), 0);
+    const pa = sum ? Math.round((byA / sum) * 100) : 50;
+    out.push(card('ledger', '', `<span class="home-card-line">${T.thisMonth}</span><b class="home-card-money">${money(sum)}</b>
+      ${sum ? `<span class="tg-split"><i class="a" style="width:${pa}%"></i><i class="b" style="width:${100 - pa}%"></i></span>` : ''}`,
+      quick('spend', `＋ ${T.actSpend}`, 'solid')));
+
+    const food = items('food'), culture = items('culture');
+    const latest = [...food, ...culture].sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)))[0];
+    out.push(card('log', '', latest
+      ? `<b class="home-card-big">${esc(latest.title)}</b>${stars(latest.rating)}<span class="home-card-line">${T.food} ${food.length} · ${T.culture} ${culture.length}</span>`
+      : `<span class="home-card-line">${T.logEmpty}</span>`, quick('addLog', `＋ ${T.add}`, 'solid')));
+
+    const loc = data.location;
+    const where = loc.on && loc.them
+      ? (() => { const d = km(loc.me, loc.them); return tr('distance', { km: d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(d < 10 ? 1 : 0)}km` }); })()
+      : loc.on ? T.theyOff : T.shareOffShort;
+    out.push(card('map', '', `<b class="home-card-big">${tr('placesCount', { n: items('place').length })}</b><span class="home-card-line">${esc(where)}</span>`,
+      `<button type="button" class="tg-switch small ${loc.on ? 'on' : ''}" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-quick="share"><i></i></button><span class="home-card-line">${loc.on ? T.sharing : T.share}</span>`));
+    return { html: out.join(''), waiting };
+  }
+
+  /* 카드 단추: 그 자리에서 끝내거나(콕·했어요·위치 공유), 우리 탭을 쓰는 칸까지 열어 줍니다 */
+  function quickAct(act) {
+    if (act === 'answer') return open('today', data.question.mine === null ? 'answer' : null);
+    if (act === 'poke') return save(call('POST', { action: 'nudge' }), () => say(T.nudgeSent));
+    if (act === 'write') return open('diary', 'compose');
+    if (act === 'addBucket') return open('bucket', 'add');
+    if (act === 'spend') return open('ledger', 'amount');
+    if (act === 'addLog') return open('log', 'add');
+    if (act === 'share') return toggleShare();
+    if (act.startsWith('done:')) {
+      const id = act.slice(5);
+      return patch(id, { done: true }, () => say(T.doneToast));
+    }
+  }
 
   function paintEntry() {
     goCal.lastElementChild.textContent = T.navCalendar;
@@ -142,19 +219,32 @@
     $('span', coach).textContent = T.coach;
     $('.app-coach-x', coach).setAttribute('aria-label', T.close);
     coach.hidden = seen() || !root.hidden;
-    if (!data) { teaser.hidden = true; return; }
-    const q = data.question;
-    const other = me() === 'a' ? 'b' : 'a';
-    const waiting = q.mine === null && q.theyAnswered; // 상대가 답해 두고 내 답을 기다리는 중
+    if (!data) { strip.hidden = true; return; }
+    const { html, waiting } = cards();
     goUs.querySelector('.app-nav-dot').hidden = !waiting;
-    const status = q.mine === null
-      ? (q.theyAnswered ? tr('statusTheirs', { name: nameFor(other) }) : T.statusNone)
-      : (q.theirs !== null ? T.statusBoth : tr('statusMine', { name: nameFor(other) }));
-    teaser.hidden = false;
-    teaser.classList.toggle('waiting', waiting);
-    teaser.innerHTML = `<span class="home-us-top"><span class="tg-kicker">${T.question}</span>${waiting ? '<i class="home-us-dot"></i>' : ''}</span>
-      <b class="home-us-q">${esc(q.text)}</b>
-      <span class="home-us-foot"><span>${esc(status)}</span><span class="home-us-go">${q.mine === null ? T.goAnswer : T.goSee} ›</span></span>`;
+    const keep = track.scrollLeft;
+    track.innerHTML = html;
+    track.scrollLeft = keep;
+    track.querySelectorAll('[data-open]').forEach((c) => {
+      const go = () => open(c.dataset.open, c.dataset.open === 'today' && data.question.mine === null ? 'answer' : null);
+      c.onclick = go;
+      c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+    });
+    track.querySelectorAll('[data-quick]').forEach((b) => {
+      b.onclick = (e) => { e.stopPropagation(); if (!busy) quickAct(b.dataset.quick); };
+    });
+    const n = track.children.length;
+    if (dots.children.length !== n) {
+      // 점을 누르면 그 카드로 — 마우스로는 옆으로 밀기 어려운 컴퓨터에서도 넘겨 볼 수 있게
+      dots.innerHTML = Array.from({ length: n }, (_, i) => `<i class="${i === 0 ? 'on' : ''}" data-to="${i}"></i>`).join('');
+      dots.querySelectorAll('i').forEach((d) => {
+        d.onclick = () => {
+          const card = track.children[Number(d.dataset.to)];
+          if (card) track.scrollTo({ left: card.offsetLeft - track.firstElementChild.offsetLeft, behavior: 'smooth' });
+        };
+      });
+    }
+    strip.hidden = false;
   }
 
   /* 달력이 보일 때 한 번, 다시 앞으로 왔을 때 1분에 한 번까지만 읽습니다 (Neon 깨우는 횟수 아끼기) */
@@ -171,8 +261,9 @@
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
   refresh();
 
-  async function open(to) {
-    if (to) { tab = to; composing = false; editing = null; pending = null; }
+  /** to = 열 칸, focus = 열자마자 쓸 수 있게 할 곳 ('answer' · 'compose' · 'add' · 'amount') */
+  async function open(to, focus) {
+    if (to) { tab = to; composing = focus === 'compose'; editing = null; pending = null; }
     root.hidden = false;
     document.documentElement.classList.add('tg-open');
     goCal.classList.remove('on');
@@ -185,6 +276,11 @@
     }
     if (data?.location.on) startWatch(); // 켜 둔 채 다시 열면 이어서 올립니다
     render();
+    if (focus) {
+      const target = { answer: '.tg-answer textarea', compose: '.tg-compose textarea', add: 'form[data-form="item"] input[name="title"]', amount: '.tg-ledger-add input[name="amount"]' }[focus];
+      const el = target && $(target, body);
+      if (el) { el.scrollIntoView({ block: 'center' }); el.focus({ preventScroll: true }); }
+    }
   }
   function close() {
     root.hidden = true;
@@ -230,7 +326,10 @@
     return new Intl.DateTimeFormat(locale(), { ...opts, timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, n)));
   };
   const money = (n) => new Intl.NumberFormat(locale()).format(n || 0);
-  const delBtn = (id) => `<button class="tg-icon-btn ${armed === id ? 'armed' : ''}" type="button" data-del="${id}" aria-label="${armed === id ? T.confirmDel : T.del}">${armed === id ? `<span>${T.confirmDel}</span>` : icon('trash')}</button>`;
+  /* 지우기는 한 번에 — 실수면 토스트의 "되돌리기". 사진 붙은 일기만은 사진을 되살릴 수 없어서 한 번 더 묻습니다 */
+  const delBtn = (id, confirm = false) => `<button class="tg-icon-btn ${armed === id ? 'armed' : ''}" type="button" data-del="${id}" ${confirm ? 'data-confirm' : ''} aria-label="${armed === id ? T.confirmDel : T.del}">${armed === id ? `<span>${T.confirmDel}</span>` : icon('trash')}</button>`;
+  /** 줄 글씨를 누르면 그 자리에서 고치기 */
+  const editable = (i, inner) => `<span class="tg-text" role="button" tabindex="0" data-edit="${i.id}" aria-label="${T.edit}">${inner}</span>`;
   const editBtn = (id) => `<button class="tg-icon-btn" type="button" data-edit="${id}" aria-label="${T.edit}">${icon('pen')}</button>`;
   const empty = (k, text) => `<div class="tg-empty">${icon(k)}<p>${text}</p></div>`;
 
@@ -296,7 +395,7 @@
         ${i.photoId ? `<img class="tg-entry-photo" src="${photoUrl(i.photoId)}" alt="" loading="lazy" data-zoom>` : ''}
         <div class="tg-entry-body">
           <div class="tg-entry-meta">${who(i.member)}<span>${fmtDay(i.day, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })}</span>
-            <span class="tg-grow"></span>${editBtn(i.id)}${delBtn(i.id)}</div>
+            <span class="tg-grow"></span>${editBtn(i.id)}${delBtn(i.id, !!i.photoId)}</div>
           ${i.title ? `<h4>${esc(i.title)}</h4>` : ''}${i.memo ? `<p>${esc(i.memo)}</p>` : ''}
         </div>
       </article>`).join('');
@@ -314,9 +413,9 @@
     const pct = list.length ? Math.round((done.length / list.length) * 100) : 0;
     const row = (i) => editing === i.id ? editRow(i) : `
       <li class="tg-check ${i.done ? 'done' : ''}">
-        <label><input type="checkbox" data-done="${i.id}" ${i.done ? 'checked' : ''}><span class="tg-box"></span>
-          <span class="tg-text"><b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}</span></label>
-        ${who(i.member)}${editBtn(i.id)}${delBtn(i.id)}</li>`;
+        <label class="tg-tick"><input type="checkbox" data-done="${i.id}" ${i.done ? 'checked' : ''} aria-label="${esc(i.title)}"><span class="tg-box"></span></label>
+        ${editable(i, `<b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}`)}
+        ${who(i.member)}${delBtn(i.id)}</li>`;
     return `${list.length ? `<article class="tg-card tg-progress"><div class="tg-progress-top"><b>${tr('bucketProgress', { done: done.length, total: list.length })}</b><span>${pct}%</span></div>
         <div class="tg-bar"><i style="width:${pct}%"></i></div></article>` : ''}
       ${addRow('bucket', T.bucketPlaceholder)}
@@ -359,21 +458,23 @@
           <div class="tg-legend"><span>${who('a')}${esc(nameFor('a'))} ${money(by.a)}</span><span>${who('b')}${esc(nameFor('b'))} ${money(by.b)}</span></div>` : ''}
       </article>
       <form class="tg-card tg-ledger-add" data-form="item" data-kind="ledger">
-        <input name="title" placeholder="${T.ledgerPlaceholder}" required maxlength="120" aria-label="${T.title_}">
-        <div class="tg-two"><input name="amount" type="number" inputmode="numeric" min="0" placeholder="${T.amount}" required aria-label="${T.amount}">
+        <input class="tg-amount-in" name="amount" type="number" inputmode="numeric" min="0" placeholder="${T.amount}" required aria-label="${T.amount}">
+        <div class="tg-two"><input name="title" placeholder="${T.ledgerPlaceholder}" required maxlength="120" aria-label="${T.title_}">
           <input name="day" type="date" value="${month === data.question.day.slice(0, 7) ? data.question.day : `${month}-01`}" aria-label="${T.day}"></div>
         <button class="btn btn-solid">${T.add}</button>
       </form>
       ${list.length ? Object.keys(groups).sort().reverse().map((d) => `<section class="tg-section"><h3 class="tg-sub">${fmtDay(d, { month: 'long', day: 'numeric', weekday: 'short' })}</h3>
         <ul class="tg-list">${groups[d].map((i) => editing === i.id ? editRow(i) : `<li class="tg-money">${who(i.member)}
-          <span class="tg-text"><b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}</span>
-          <b class="tg-amount">${money(i.amount)}</b>${editBtn(i.id)}${delBtn(i.id)}</li>`).join('')}</ul></section>`).join('') : empty('ledger', T.ledgerEmpty)}`;
+          ${editable(i, `<b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}`)}
+          <b class="tg-amount" data-edit="${i.id}">${money(i.amount)}</b>${delBtn(i.id)}</li>`).join('')}</ul></section>`).join('') : empty('ledger', T.ledgerEmpty)}`;
   }
 
   /* 기록: 맛집 · 문화 */
-  const stars = (n, input = false) => `<span class="tg-stars ${input ? 'input' : ''}" ${input ? `role="radiogroup" aria-label="${T.rate}"` : `aria-label="${n || 0}/5"`}>${[1, 2, 3, 4, 5].map((s) => input
+  /** 별: input = 입력 칸 안, id = 목록에서 바로 눌러 바꾸기, 둘 다 없으면 보기만 */
+  const stars = (n, input = false, id = null) => `<span class="tg-stars ${input ? 'input' : id ? 'tap' : ''}" ${input ? `role="radiogroup" aria-label="${T.rate}"` : `aria-label="${n || 0}/5"`}>${[1, 2, 3, 4, 5].map((s) => input
     ? `<label><input type="radio" name="rating" value="${s}" ${n === s ? 'checked' : ''}><i class="${s <= (n || 0) ? 'on' : ''}">★</i></label>`
-    : `<i class="${s <= (n || 0) ? 'on' : ''}">★</i>`).join('')}</span>`;
+    : id ? `<button type="button" class="${s <= (n || 0) ? 'on' : ''}" data-rate="${id}" data-v="${s}" aria-label="${s}/5">★</button>`
+      : `<i class="${s <= (n || 0) ? 'on' : ''}">★</i>`).join('')}</span>`;
   function logView() {
     const list = items(logKind);
     return `<div class="tg-seg">${['food', 'culture'].map((k) => `<button type="button" data-kind="${k}" class="${logKind === k ? 'on' : ''}">${T[k]} <span class="tg-count">${items(k).length}</span></button>`).join('')}</div>
@@ -383,21 +484,29 @@
         <div class="tg-two">${stars(0, true)}<button class="btn btn-solid">${T.add}</button></div>
       </form>
       ${list.length ? `<ul class="tg-list">${list.map((i) => editing === i.id ? editRow(i) : `<li class="tg-log">
-        <span class="tg-text"><b>${esc(i.title)}</b>${stars(i.rating)}${i.memo ? `<small>${esc(i.memo)}</small>` : ''}</span>
-        ${who(i.member)}${editBtn(i.id)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('log', T.logEmpty)}`;
+        <span class="tg-text">${editable(i, `<b>${esc(i.title)}</b>`)}${stars(i.rating, false, i.id)}${i.memo ? `<small data-edit="${i.id}">${esc(i.memo)}</small>` : ''}</span>
+        ${who(i.member)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('log', T.logEmpty)}`;
   }
 
   /* ── 동작 ── */
   function wire() {
     body.querySelectorAll('[data-del]').forEach((b) => {
-      b.onclick = () => {
-        // 한 번 더 눌러야 지웁니다 — 3초 안에
-        if (armed !== b.dataset.del) { armed = b.dataset.del; clearTimeout(armTimer); armTimer = setTimeout(() => { armed = null; render(); }, 3000); render(); return; }
+      b.onclick = async () => {
+        const id = b.dataset.del;
+        if ('confirm' in b.dataset && armed !== id) { armed = id; clearTimeout(armTimer); armTimer = setTimeout(() => { armed = null; render(); }, 3000); render(); return; }
         armed = null; clearTimeout(armTimer);
-        remove(b.dataset.del);
+        const gone = data.items.find((i) => i.id === id);
+        if (!(await remove(id)) || !gone) return;
+        // 되돌리기: 같은 내용으로 다시 적습니다 (사진 붙은 일기는 위에서 두 번 물었으니 여기 오지 않습니다)
+        if (window.toast) toast(T.deleted, { label: T.undo, run: () => item(Object.fromEntries(Object.entries(gone).filter(([k]) => ['kind', 'title', 'memo', 'done', 'amount', 'day', 'lat', 'lng', 'rating'].includes(k)))) });
       };
     });
-    body.querySelectorAll('[data-edit]').forEach((b) => { b.onclick = () => { editing = b.dataset.edit; composing = false; preview = null; render(); }; });
+    body.querySelectorAll('[data-edit]').forEach((b) => {
+      const go = () => { editing = b.dataset.edit; composing = false; preview = null; render(); $('.tg-edit input', body)?.focus(); };
+      b.onclick = go;
+      b.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } };
+    });
+    body.querySelectorAll('[data-rate]').forEach((b) => { b.onclick = () => patch(b.dataset.rate, { rating: Number(b.dataset.v) }); });
     body.querySelectorAll('[data-done]').forEach((c) => { c.onchange = () => patch(c.dataset.done, { done: c.checked }); });
     body.querySelectorAll('[data-zoom]').forEach((img) => { img.onclick = () => { $('img', box).src = img.src; box.hidden = false; }; });
     body.querySelectorAll('[data-month]').forEach((b) => {
@@ -476,6 +585,18 @@
       body: JSON.stringify({ mime, data: url.split(',')[1], purpose: 'diary' }) });
     if (!r.ok) throw new Error('upload');
     return (await r.json()).id;
+  }
+
+  /** 위치 공유 켜기·끄기 — 지도 카드와 첫 화면 카드가 같이 씁니다.
+      켜는 순간 한 번 바로 올리고, 그 뒤로는 우리 탭이 열려 있는 동안 1분에 한 번 */
+  function toggleShare(button) {
+    if (data.location.on) return save(call('POST', { action: 'location', on: false }), () => stopWatch());
+    if (!navigator.geolocation) return say(T.denied);
+    button?.classList.add('on');
+    navigator.geolocation.getCurrentPosition((p) => {
+      lastSent = Date.now();
+      save(call('POST', { action: 'location', on: true, lat: p.coords.latitude, lng: p.coords.longitude }), () => { fitted = false; if (!root.hidden) startWatch(); });
+    }, () => { button?.classList.remove('on'); say(T.denied); }, { timeout: 20000, maximumAge: 60000 });
   }
 
   /* ── 위치: 켜 둔 동안 이 화면이 열려 있으면 1분에 한 번만 올립니다 ── */
@@ -644,18 +765,7 @@
   function wireMap() {
     const card = $('.tg-mapcard', body);
     const share = $('[data-act="share"]', card);
-    if (share) {
-      share.onclick = () => {
-        if (data.location.on) return save(call('POST', { action: 'location', on: false }), () => stopWatch());
-        if (!navigator.geolocation) return say(T.denied);
-        // 켜는 순간 한 번 바로 올리고, 그 뒤로는 화면이 열려 있는 동안 1분에 한 번
-        share.classList.add('on');
-        navigator.geolocation.getCurrentPosition((p) => {
-          lastSent = Date.now();
-          save(call('POST', { action: 'location', on: true, lat: p.coords.latitude, lng: p.coords.longitude }), () => { fitted = false; startWatch(); });
-        }, () => { share.classList.remove('on'); say(T.denied); }, { timeout: 20000, maximumAge: 60000 });
-      };
-    }
+    if (share) share.onclick = () => toggleShare(share);
     card.querySelectorAll('[data-fly]').forEach((c) => {
       c.onclick = () => {
         const p = data.items.find((i) => i.id === c.dataset.fly);
