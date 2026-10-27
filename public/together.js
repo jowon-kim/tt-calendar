@@ -40,7 +40,7 @@
   let data = null, tab = 'today', busy = false;
   let composing = false, editing = null, armed = null, armTimer = 0, preview = null;
   let month = null, logKind = 'food', pending = null;
-  let map = null, watch = null, lastSent = 0, fitted = false;
+  let map = null, watch = null, lastSent = 0, fitted = false, mapMode = 'map';
 
   /* ── 서버 ── */
   async function call(method, body, query = '') {
@@ -103,7 +103,9 @@
   const box = $('.tg-lightbox', root);
   box.onclick = () => { box.hidden = true; };
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape' || root.hidden) return;
+    if (e.key !== 'Escape') return;
+    if (!glance.hidden) return closeGlance();
+    if (root.hidden) return;
     if (!box.hidden) box.hidden = true; else close();
   });
 
@@ -137,6 +139,22 @@
   const dots = $('.home-us-dots', strip);
   const monthbar = $('#app .monthbar');
   if (monthbar) monthbar.before(strip);
+  /* 한눈에 보기 (10/27) — 설정 옆 단추. 같은 카드들을 위에서 내려오는 한 장에 두 줄로 다 펼쳐 봅니다 */
+  const glanceBtn = $('#open-glance');
+  const glance = document.createElement('div');
+  glance.className = 'glance';
+  glance.hidden = true;
+  glance.innerHTML = `<div class="glance-panel" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="glance-title">
+      <header class="glance-head"><h2 id="glance-title"></h2><span class="tg-dday"></span><span class="tg-grow"></span>
+        <button type="button" class="icon-btn glance-x"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+      <div class="glance-grid"></div></div>`;
+  document.body.appendChild(glance);
+  const grid = $('.glance-grid', glance);
+  const openGlance = () => { if (!data) return; glance.hidden = false; paintEntry(); $('.glance-panel', glance).focus({ preventScroll: true }); };
+  const closeGlance = () => { glance.hidden = true; };
+  if (glanceBtn) glanceBtn.onclick = openGlance;
+  glance.onclick = (e) => { if (e.target === glance) closeGlance(); };
+  $('.glance-x', glance).onclick = closeGlance;
   track.addEventListener('scroll', () => {
     const i = Math.round(track.scrollLeft / ((track.firstElementChild?.offsetWidth || 1) + 10));
     dots.querySelectorAll('i').forEach((d, n) => d.classList.toggle('on', n === i));
@@ -191,7 +209,7 @@
 
     const loc = data.location;
     const where = loc.on && loc.them
-      ? (() => { const d = km(loc.me, loc.them); return tr('distance', { km: d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(d < 10 ? 1 : 0)}km` }); })()
+      ? (() => { const d = km(loc.me, loc.them); return tr('distance', { km: dist(d) }); })()
       : loc.on ? T.theyOff : T.shareOffShort;
     out.push(card('map', '', `<b class="home-card-big">${tr('placesCount', { n: items('place').length })}</b><span class="home-card-line">${esc(where)}</span>`,
       `<button type="button" class="tg-switch small ${loc.on ? 'on' : ''}" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-quick="share"><i></i></button><span class="home-card-line">${loc.on ? T.sharing : T.share}</span>`));
@@ -213,26 +231,42 @@
     }
   }
 
+  function wireCards(box) {
+    box.querySelectorAll('[data-open]').forEach((c) => {
+      const go = () => open(c.dataset.open, c.dataset.open === 'today' && data.question.mine === null ? 'answer' : null);
+      c.onclick = go;
+      c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+    });
+    box.querySelectorAll('[data-quick]').forEach((b) => {
+      b.onclick = (e) => { e.stopPropagation(); if (!busy) quickAct(b.dataset.quick); };
+    });
+  }
+
   function paintEntry() {
     goCal.lastElementChild.textContent = T.navCalendar;
     goUs.querySelector('span').textContent = T.navUs;
     $('span', coach).textContent = T.coach;
     $('.app-coach-x', coach).setAttribute('aria-label', T.close);
     coach.hidden = seen() || !root.hidden;
-    if (!data) { strip.hidden = true; return; }
+    if (!data) { strip.hidden = true; if (glanceBtn) glanceBtn.hidden = true; return; }
     const { html, waiting } = cards();
     goUs.querySelector('.app-nav-dot').hidden = !waiting;
     const keep = track.scrollLeft;
     track.innerHTML = html;
     track.scrollLeft = keep;
-    track.querySelectorAll('[data-open]').forEach((c) => {
-      const go = () => open(c.dataset.open, c.dataset.open === 'today' && data.question.mine === null ? 'answer' : null);
-      c.onclick = go;
-      c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
-    });
-    track.querySelectorAll('[data-quick]').forEach((b) => {
-      b.onclick = (e) => { e.stopPropagation(); if (!busy) quickAct(b.dataset.quick); };
-    });
+    wireCards(track);
+    if (glanceBtn) {
+      glanceBtn.hidden = false;
+      glanceBtn.classList.toggle('hot', waiting);
+      glanceBtn.setAttribute('aria-label', T.glance);
+    }
+    if (!glance.hidden) {
+      $('h2', glance).textContent = T.glance;
+      $('.tg-dday', glance).textContent = dday();
+      $('.glance-x', glance).setAttribute('aria-label', T.close);
+      grid.innerHTML = html;
+      wireCards(grid);
+    }
     const n = track.children.length;
     if (dots.children.length !== n) {
       // 점을 누르면 그 카드로 — 마우스로는 옆으로 밀기 어려운 컴퓨터에서도 넘겨 볼 수 있게
@@ -264,6 +298,7 @@
   /** to = 열 칸, focus = 열자마자 쓸 수 있게 할 곳 ('answer' · 'compose' · 'add' · 'amount') */
   async function open(to, focus) {
     if (to) { tab = to; composing = focus === 'compose'; editing = null; pending = null; }
+    glance.hidden = true;
     root.hidden = false;
     document.documentElement.classList.add('tg-open');
     goCal.classList.remove('on');
@@ -283,6 +318,7 @@
     }
   }
   function close() {
+    glance.hidden = true;
     root.hidden = true;
     document.documentElement.classList.remove('tg-open');
     goUs.classList.remove('on');
@@ -448,12 +484,17 @@
     const pa = sum ? Math.round((by.a / sum) * 100) : 50;
     const [y, m] = month.split('-').map(Number);
     const title = new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, 1)));
+    // 지난달과 견주기 — 두 달 다 적은 게 있을 때만
+    const before = new Date(Date.UTC(y, m - 2, 1)).toISOString().slice(0, 7);
+    const prev = all.filter((i) => (i.day || String(i.createdAt).slice(0, 10)).startsWith(before)).reduce((s, i) => s + (i.amount || 0), 0);
+    const diff = sum - prev;
     const groups = {};
     list.forEach((i) => { (groups[i.day || ''] ||= []).push(i); });
     return `<article class="tg-card tg-month">
         <div class="tg-month-nav"><button class="icon-btn" type="button" data-month="-1" aria-label="${T.prev}">${icon('back')}</button>
           <b>${title}</b><button class="icon-btn" type="button" data-month="1" aria-label="${T.next}">${icon('next')}</button></div>
         <p class="tg-total">${money(sum)}</p>
+        ${sum && prev && diff ? `<p class="tg-vs ${diff > 0 ? 'up' : 'down'}">${tr(diff > 0 ? 'vsMore' : 'vsLess', { amount: money(Math.abs(diff)) })}</p>` : ''}
         ${sum ? `<div class="tg-split"><i class="a" style="width:${pa}%"></i><i class="b" style="width:${100 - pa}%"></i></div>
           <div class="tg-legend"><span>${who('a')}${esc(nameFor('a'))} ${money(by.a)}</span><span>${who('b')}${esc(nameFor('b'))} ${money(by.b)}</span></div>` : ''}
       </article>
@@ -631,6 +672,7 @@
     const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2;
     return 12742 * Math.asin(Math.sqrt(h));
   };
+  const dist = (d) => (d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(d < 10 ? 1 : 0)}km`);
   const ago = (at) => {
     const s = (Date.parse(at) - Date.now()) / 1000;
     const f = new Intl.RelativeTimeFormat(locale(), { numeric: 'auto' });
@@ -670,11 +712,10 @@
 
   function mapCard() {
     const loc = data.location;
-    const places = items('place');
     let status = T.shareNote;
     if (loc.on && loc.them) {
       const d = km(loc.me, loc.them);
-      status = tr('distance', { km: d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(d < 10 ? 1 : 0)}km` }) + ' · ' + tr('updated', { time: ago(loc.them.at) });
+      status = tr('distance', { km: dist(d) }) + ' · ' + tr('updated', { time: ago(loc.them.at) });
     } else if (loc.on) status = T.theyOff;
     return `
       ${pending ? `<form class="tg-sheet" data-form="place">
@@ -687,23 +728,48 @@
             <div><b>${loc.on ? T.sharing : T.share}</b><p class="tg-hint">${esc(status)}</p></div>
             <button class="tg-switch ${loc.on ? 'on' : ''}" type="button" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-act="share"><i></i></button>
           </div>
-          ${places.length ? `<div class="tg-chips">${places.map((p) => `<button type="button" class="tg-chip" data-fly="${p.id}"><i class="tg-who ${p.member === 'b' ? 'b' : 'a'}"></i>${esc(p.title)}</button>`).join('')}</div>` : ''}
           <p class="tg-hint tg-tap">📍 ${T.tapMap}</p>
         </div>`}`;
+  }
+  /** 저장한 장소 목록 — 내 위치를 알면 가까운 순, 모르면 최근 순. 줄을 누르면 지도에서 그 장소로 */
+  function placesList() {
+    const mine = data.location.me;
+    const list = items('place').filter((i) => i.lat != null)
+      .map((i) => ({ i, d: mine ? km(mine, i) : null }))
+      .sort((x, y) => (mine ? x.d - y.d : String(y.i.createdAt).localeCompare(String(x.i.createdAt))));
+    return `<button class="tg-cta" type="button" data-act="here">${icon('locate')}<span>${T.saveHere}</span></button>
+      ${list.length ? `<h3 class="tg-sub">${mine ? T.nearFirst : T.newFirst}</h3>
+        <ul class="tg-list">${list.map(({ i, d }) => editing === i.id ? editRow(i) : `<li class="tg-place">
+          <span class="tg-pin mini ${i.member === 'b' ? 'b' : 'a'}"><svg viewBox="0 0 24 24">${P.today}</svg></span>
+          <span class="tg-text" role="button" tabindex="0" data-fly="${i.id}" aria-label="${T.showOnMap}"><b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}
+            <small class="tg-place-meta">${d != null ? `${dist(d)} · ` : ''}${fmtDay(String(i.createdAt).slice(0, 10))}</small></span>
+          ${editBtn(i.id)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('map', T.placesEmpty)}`;
   }
   let markers = [];
   async function renderMap() {
     if (!$('#tg-map', body)) {
-      body.innerHTML = `<div class="tg-mapwrap"><div id="tg-map" class="tg-map"></div>
+      body.innerHTML = `<div class="tg-seg tg-mapseg"><button type="button" data-mode="map"></button><button type="button" data-mode="list"></button></div>
+        <div class="tg-mapwrap"><div id="tg-map" class="tg-map"></div>
         <button class="tg-fab" type="button" data-act="locate" aria-label="${T.locate}">${icon('locate')}</button>
-        <div class="tg-mapcard"></div></div>`;
+        <div class="tg-mapcard"></div></div>
+        <div class="tg-places"></div>`;
       fitted = false;
     }
+    // [지도 | 목록 n] — 지도는 숨겨만 두고 살려 둡니다 (다시 볼 때 새로 불러오지 않게)
+    body.querySelectorAll('[data-mode]').forEach((b) => {
+      b.classList.toggle('on', b.dataset.mode === mapMode);
+      b.innerHTML = b.dataset.mode === 'map' ? T.map : `${T.viewList} <span class="tg-count">${items('place').length}</span>`;
+    });
+    $('.tg-mapwrap', body).hidden = mapMode !== 'map';
+    $('.tg-places', body).hidden = mapMode !== 'list';
+    $('.tg-places', body).innerHTML = mapMode === 'list' ? placesList() : '';
     $('.tg-mapcard', body).innerHTML = mapCard();
+    wire();
     wireMap();
+    if (mapMode === 'list') return;
     try { await loadMap(); } catch { say(T.error); return; }
     const el = $('#tg-map', body);
-    if (!el || root.hidden || tab !== 'map') return;
+    if (!el || root.hidden || tab !== 'map' || mapMode !== 'map') return;
     if (!map || map.getContainer() !== el) {
       if (map) map.remove();
       const night = document.documentElement.dataset.theme === 'night';
@@ -737,8 +803,24 @@
         map.fitBounds(b, { padding: { top: 70, bottom: 190, left: 50, right: 50 }, maxZoom: 15, duration: 0 });
       } else if (pts.length === 1) map.jumpTo({ center: pts[0], zoom: 14 });
     }
+    map.resize();
     setTimeout(() => map && map.resize(), 60);
   }
+  /** 목록에서 고른 장소를 지도에서 — 핀의 말풍선까지 열어 둡니다 */
+  async function showPlace(id) {
+    const p = data.items.find((i) => i.id === id);
+    if (p?.lat == null) return;
+    mapMode = 'map'; editing = null; fitted = true;
+    await renderMap();
+    if (!map) return;
+    map.jumpTo({ center: [p.lng, p.lat], zoom: 16 });
+    const m = markers.find((k) => { const l = k.getLngLat(); return Math.abs(l.lat - p.lat) < 1e-9 && Math.abs(l.lng - p.lng) < 1e-9; });
+    if (m && !m.getPopup()?.isOpen()) m.togglePopup();
+  }
+  /** 길찾기 — 한국어 화면은 카카오맵, 그 밖은 구글 지도 (앱이 깔려 있으면 앱으로 열립니다) */
+  const route = (p) => (locale().startsWith('ko')
+    ? `https://map.kakao.com/link/to/${encodeURIComponent(String(p.title).replace(/,/g, ' '))},${p.lat},${p.lng}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`);
   function drawMarkers() {
     if (!map) return;
     markers.forEach((m) => m.remove());
@@ -754,7 +836,7 @@
     };
     items('place').filter((i) => i.lat != null).forEach((i) => {
       add(`<span class="tg-pin ${i.member === 'b' ? 'b' : 'a'}"><svg viewBox="0 0 24 24">${P.today}</svg></span>`, i.lat, i.lng, 'bottom',
-        `<b>${esc(i.title)}</b>${i.memo ? `<br>${esc(i.memo)}` : ''}`);
+        `<b>${esc(i.title)}</b>${i.memo ? `<br>${esc(i.memo)}` : ''}<br><a class="tg-route" href="${esc(route(i))}" target="_blank" rel="noopener">${T.directions} ›</a>`);
     });
     if (pending) add(`<span class="tg-pin new"><svg viewBox="0 0 24 24">${P.plus}</svg></span>`, pending.lat, pending.lng, 'bottom');
     const loc = data.location;
@@ -766,14 +848,27 @@
     const card = $('.tg-mapcard', body);
     const share = $('[data-act="share"]', card);
     if (share) share.onclick = () => toggleShare(share);
-    card.querySelectorAll('[data-fly]').forEach((c) => {
-      c.onclick = () => {
-        const p = data.items.find((i) => i.id === c.dataset.fly);
-        if (!map || p?.lat == null) return;
-        map.flyTo({ center: [p.lng, p.lat], zoom: 16, duration: 700 });
-        markers.find((m) => { const l = m.getLngLat(); return Math.abs(l.lat - p.lat) < 1e-9 && Math.abs(l.lng - p.lng) < 1e-9; })?.togglePopup();
-      };
+    body.querySelectorAll('[data-mode]').forEach((b) => {
+      b.onclick = () => { if (mapMode === b.dataset.mode) return; mapMode = b.dataset.mode; editing = null; pending = null; renderMap(); };
     });
+    body.querySelectorAll('[data-fly]').forEach((c) => {
+      c.onclick = () => showPlace(c.dataset.fly);
+      c.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); showPlace(c.dataset.fly); } };
+    });
+    // 지금 있는 곳 저장: 내 자리에 새 핀을 꽂고 이름 칸을 엽니다
+    const here = $('[data-act="here"]', body);
+    if (here) {
+      here.onclick = () => {
+        if (!navigator.geolocation) return say(T.denied);
+        navigator.geolocation.getCurrentPosition(async (p) => {
+          pending = { lat: p.coords.latitude, lng: p.coords.longitude };
+          mapMode = 'map'; fitted = true;
+          await renderMap();
+          map?.jumpTo({ center: [pending.lng, pending.lat], zoom: 16 });
+          $('.tg-sheet input', body)?.focus();
+        }, () => say(T.denied), { timeout: 20000, maximumAge: 60000 });
+      };
+    }
     const cancel = $('[data-act="cancel"]', card);
     if (cancel) cancel.onclick = () => { pending = null; drawMarkers(); card.innerHTML = mapCard(); wireMap(); };
     const form = $('form[data-form="place"]', card);

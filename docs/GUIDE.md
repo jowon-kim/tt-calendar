@@ -212,7 +212,7 @@ lists which ones.
 ## The "Us" tab
 
 The **Us** tab at the bottom of the screen opens it: a question of the day, a photo diary,
-a bucket list, a money ledger, food and film notes, and a map of your places.
+a bucket list, a money ledger, food and film notes, and a map of your places (also as a nearest-first list).
 Nothing to set up — it works as soon as you two are in. Location sharing asks
 your phone for permission the first time you switch it on, and you only see each
 other while **both** of you have it on.
