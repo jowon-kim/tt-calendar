@@ -20,7 +20,7 @@ push itself.
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
-| **Tests** | 675, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
+| **Tests** | 708, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
 | **Cost** | $0 a month (free tiers) |
 | **Read next** | [How it works](#how-it-works) · [Why it is built this way](#why-it-is-built-this-way) |
 
@@ -45,6 +45,12 @@ push itself.
   drops it
 - **Reminders** — about half an hour to an hour before anything with a time, and
   one summary of the day at 8am. In your own time zone
+- **The "Us" tab** — a question of the day (your partner's answer opens once you
+  have answered too; at 8pm whoever hasn't answered gets a nudge), a photo diary
+  and album with "one year ago today" in the morning summary, a bucket list, a
+  date ledger, food and culture logs, a map of your places, a "poke" (three a day)
+  and location sharing (only while *both* of you have it on, only the last spot,
+  deleted the moment you turn it off). One extra serverless function: `api/together.js`
 - **Nine languages** — English, Korean, Japanese, Simplified Chinese, Spanish,
   French, German, Brazilian Portuguese and Russian — with i18n that needs no
   library; a language pack is a plain object in one file
@@ -57,7 +63,7 @@ push itself.
   with FAQ structured data, hreflang, a sitemap and `llms.txt`
 
 About 13,000 lines across `api/`, `lib/` and `public/` (nine language packs
-included), with 380 integration tests that run the real handlers against an
+included), with 413 integration tests that run the real handlers against an
 in-memory Postgres, 221 that run the screen itself, 58 for i18n and holidays,
 and 16 for the service worker.
 
@@ -73,7 +79,13 @@ meant to be **deployed by the two of you** ([no-code guide](docs/GUIDE.md), abou
   removes all of it
 - **No analytics, no ads, no trackers.** There is no third-party script that
   watches what you do. The page loads two fonts (Google Fonts, jsDelivr) and
-  Google's sign-in button; those see the request, not your calendar
+  Google's sign-in button; those see the request, not your calendar. Opening the
+  map in the "Us" tab also loads Leaflet from unpkg and map tiles from
+  `tile.openstreetmap.org` — they see which area you are looking at, never your
+  pins or locations, which are drawn in your browser
+- **Location sharing is opt-in, both ways.** Your position is only sent while the
+  "Us" tab is open with sharing on, at most once a minute; only the latest spot is
+  kept, your partner sees it only if they share too, and turning it off deletes it
 - **Google only checks who you are.** Sign-in sends an ID token that your server
   verifies with Google's public keys. Your events never go to Google
 - **Notifications are end-to-end encrypted on the web.** Web Push payloads are
@@ -104,9 +116,9 @@ flowchart LR
 | Piece | What it does here | Where |
 |---|---|---|
 | **Vercel** | Serves `public/` as-is and runs `api/` as serverless functions. One deployment for every couple; pushing to `main` deploys | `vercel.json`, `api/` |
-| **Neon Postgres** | Thirteen tables, every calendar row keyed by `couple_id`. Each preview deployment gets its own database branch, so testing never touches real calendars | `schema.sql`, `lib/store.js` |
+| **Neon Postgres** | Eighteen tables, every calendar row keyed by `couple_id`. Each preview deployment gets its own database branch, so testing never touches real calendars | `schema.sql`, `lib/store.js` |
 | **Vercel Blob** | Calendar photos, private; the database keeps only where each one is | `lib/blob.js` |
-| **Outside clock** | Knocks on `/api/cron` every 30 minutes for "starting soon" and the 8am summary, read in each calendar's own time zone | `api/cron.js`, `lib/remind.js` |
+| **Outside clock** | Knocks on `/api/cron` every 30 minutes for "starting soon", the 8am summary and the 8pm question of the day, read in each calendar's own time zone | `api/cron.js`, `lib/remind.js` |
 | **Encrypted backup** | GitHub Actions dumps the database every night and encrypts it with GPG before keeping it for 30 days — the repo is public, so the artifact has to be useless without the passphrase | `.github/workflows/backup.yml` |
 | **PWA** | Manifest, a service worker that opens the app with no signal, an install button on Chrome/Edge and picture steps on iPhone | `public/sw.js`, `public/manifest.json` |
 | **Store apps** | Capacitor shells around the same site with native notifications. The Android `.aab` and the iOS TestFlight build come out of CI, no Mac | `android/`, `ios/`, `.github/workflows/` |
@@ -315,10 +327,10 @@ public/holidays/    holiday sets, one file per country
 public/privacy.html privacy policy (a draft — fill in the blanks)
 android/ ios/       Capacitor shells for the store apps
 fastlane/ .github/  store builds in CI, no Mac needed
-schema.sql          thirteen tables — the app runs it itself on first start
+schema.sql          eighteen tables — the app runs it itself on first start
 landing.mjs         builds the public pages (words in landing-content.mjs)
-test.mjs            369 integration tests against the real handlers
-screen-test.mjs     146 tests that drive public/app.js: sign-in, editor, settings, app push, install
+test.mjs            413 integration tests against the real handlers
+screen-test.mjs     221 tests that drive public/app.js: sign-in, editor, settings, app push, install
 ```
 
 ```bash
