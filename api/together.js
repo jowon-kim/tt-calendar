@@ -9,8 +9,8 @@ import { questionFor } from '../lib/questions.js';
  * "우리" 탭 (10/27) — 버킷리스트·가계부·맛집·문화·일기·장소, 오늘의 질문, 콕 찌르기, 위치 공유를 함수 하나로.
  * (Vercel 무료 플랜은 함수 12개까지 — test.mjs 가 센다. 그래서 종류마다 파일을 만들지 않습니다.)
  *
- *   GET                         → { items, question, location, nudgesLeft }
- *   POST   { action: 'item', kind, title, memo, done, amount, day, lat, lng, photoId }
+ *   GET                         → { items, question, history, location, nudgesLeft }
+ *   POST   { action: 'item', kind, title, memo, done, amount, day, lat, lng, photoId, rating }
  *   PATCH  { action: 'item', id, ...바꿀 칸 }
  *   DELETE ?id=                 → 그 항목
  *   POST   { action: 'answer', text }          오늘 질문에 답 — 둘 다 답해야 상대 답이 보입니다
@@ -54,6 +54,12 @@ function cleanItem(input, partial = false) {
     out[k] = v;
   }
   if ('photoId' in input) out.photoId = input.photoId || null;
+  if ('rating' in input) {
+    // 맛집·문화 별점 1~5. 비우면 null
+    const v = input.rating === null || input.rating === '' ? null : Math.round(Number(input.rating));
+    if (v !== null && !(v >= 1 && v <= 5)) throw new ValidationError('error.badRating');
+    out.rating = v;
+  }
   if (!partial && !out.title && out.kind !== 'diary') throw new ValidationError('error.titleRequired');
   return out;
 }
@@ -61,7 +67,7 @@ function cleanItem(input, partial = false) {
 async function listItems(coupleId) {
   return sql`
     select id, kind, title, memo, done, amount, to_char(day, 'YYYY-MM-DD') as day, lat, lng,
-           photo_id as "photoId", member, created_at as "createdAt"
+           photo_id as "photoId", rating, member, created_at as "createdAt"
     from items where couple_id = ${coupleId}
     order by day desc nulls last, created_at desc`;
 }
@@ -72,6 +78,20 @@ async function question(coupleId, slot, day, locale) {
   const theirs = rows.find((r) => r.member === other(slot))?.text ?? null;
   // 내가 답하기 전엔 상대 답을 내려보내지 않습니다 — 화면에서 가리는 게 아니라 아예 안 보냅니다
   return { day, text: questionFor(day, locale), mine, theirs: mine === null ? null : theirs, theyAnswered: theirs !== null };
+}
+
+/** 지난 질문 (최근 60일). 내가 답한 날만 — 내가 안 한 날의 상대 답은 오늘 질문처럼 보내지 않습니다 */
+async function history(coupleId, slot, day, locale) {
+  const rows = await sql`
+    select to_char(qday, 'YYYY-MM-DD') as day, member, text from answers
+    where couple_id = ${coupleId} and qday < ${day}::date and qday >= ${day}::date - 60
+    order by qday desc`;
+  const days = [...new Set(rows.map((r) => r.day))];
+  return days.map((d) => {
+    const mine = rows.find((r) => r.day === d && r.member === slot)?.text ?? null;
+    const theirs = rows.find((r) => r.day === d && r.member === other(slot))?.text ?? null;
+    return { day: d, text: questionFor(d, locale), mine, theirs: mine === null ? null : theirs };
+  }).filter((h) => h.mine !== null).slice(0, 30);
 }
 
 async function location(coupleId, slot) {
@@ -96,6 +116,7 @@ export default guard(async (req, res) => {
   const state = async () => ({
     items: await listItems(coupleId),
     question: await question(coupleId, slot, day, settings.locale),
+    history: await history(coupleId, slot, day, settings.locale),
     location: await location(coupleId, slot),
     nudgesLeft: await nudgesLeft(coupleId, slot),
   });
@@ -124,7 +145,8 @@ export default guard(async (req, res) => {
       day = case when ${'day' in p} then ${p.day ?? null}::date else day end,
       lat = case when ${'lat' in p} then ${p.lat ?? null}::float8 else lat end,
       lng = case when ${'lng' in p} then ${p.lng ?? null}::float8 else lng end,
-      photo_id = case when ${'photoId' in p} then ${p.photoId ?? null}::uuid else photo_id end
+      photo_id = case when ${'photoId' in p} then ${p.photoId ?? null}::uuid else photo_id end,
+      rating = case when ${'rating' in p} then ${p.rating ?? null}::smallint else rating end
       where couple_id = ${coupleId} and id = ${input.id}`;
     return res.status(200).json(await state());
   }
@@ -132,9 +154,9 @@ export default guard(async (req, res) => {
 
   if (input.action === 'item') {
     const p = cleanItem(input);
-    await sql`insert into items (couple_id, kind, title, memo, done, amount, day, lat, lng, photo_id, member)
+    await sql`insert into items (couple_id, kind, title, memo, done, amount, day, lat, lng, photo_id, rating, member)
       values (${coupleId}, ${p.kind}, ${p.title ?? ''}, ${p.memo ?? ''}, ${p.done ?? false}, ${p.amount ?? null},
-              ${p.day ?? null}, ${p.lat ?? null}, ${p.lng ?? null}, ${p.photoId ?? null}, ${slot})`;
+              ${p.day ?? null}, ${p.lat ?? null}, ${p.lng ?? null}, ${p.photoId ?? null}, ${p.rating ?? null}, ${slot})`;
     return res.status(201).json(await state());
   }
   if (input.action === 'answer') {

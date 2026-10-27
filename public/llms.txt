@@ -12,6 +12,8 @@ TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers
 - Days together, counted: Enter the day you met: 100 days, 200 days and every anniversary appear on the calendar, with a countdown to each.
 - Your photos on it: Add up to 30 photos and they turn up beside plans and on empty days.
 - Your language, your holidays: Nine languages, public holidays for nine countries, and your own time zone.
+- The “Us” tab: A question a day — their answer opens once you have answered too — plus a photo diary that comes back a year later, a bucket list, a date-money ledger, food and film notes with stars, and a poke to say “thinking of you”.
+- A map of your places: Pin the places that matter to you two. Location sharing is off until both of you turn it on, keeps only the latest spot and is deleted the moment you turn it off.
 
 ## Questions
 
@@ -21,6 +23,7 @@ TT is a web app (a PWA): it runs in the browser on iPhone, Android and computers
 - How do I invite my partner? In Settings, make an invite link and send it. When your partner signs up through it, you share the same calendar. Each of you keeps your own account.
 - What do you collect? Your Google account number and email address (to know it is you), and what you put in the calendar: plans, names, dates and photos. No password. You can delete your account at any time from Settings.
 - What if one of us deletes their account? The calendar stays with the other person. When both of you have left, the plans and photos are deleted.
+- Is our location shared? Only if both of you turn location sharing on in the “Us” tab. Only the latest spot is kept, it is sent at most once a minute while that screen is open, and turning it off deletes it.
 
 ## Pages
 

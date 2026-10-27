@@ -1051,6 +1051,8 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('the setup tab is three steps: invite, the day you met, notifications', JSON.stringify(steps) === '["invite","since","push"]', steps);
   ok('without the name or the install it already did',
     !/settings\.appName|settings\.people|guide\.addToHome|install\./.test(setup));
+  ok('"day to day" explains the "Us" tab after coming-up, before looks', /guide\.use5\.h[\s\S]*guide\.useUs\.h[\s\S]*guide\.setup4\.h/.test(html.slice(html.indexOf('id="guide-use"'))));
+  ok('and every language has those words', run('Object.keys(I18N)').every((l) => ['h', 'p1', 'p2', 'p3', 'fig1'].every((k) => run(`I18N['${l}']['guide.useUs.${k}']`))));
   ok('looks, language and account moved to "day to day"', /guide\.setup4\.h[\s\S]*guide\.setup5\.h[\s\S]*guide\.setup6\.h/.test(html.slice(html.indexOf('id="guide-use"'))));
 
   const fake = steps.map((step) => { const el = new El('section'); el.dataset.step = step; const n = new El('span'); el.querySelector = () => n; el.n = n; return el; });

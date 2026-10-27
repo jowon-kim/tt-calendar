@@ -19,7 +19,7 @@
 | **데모** | ![Mina가 넣은 일정이 Leo 폰에 바로 보임](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25초, 실서비스의 데모 커플 |
 | **상태** | 오픈소스(MIT). 웹(PWA)으로 돌아가고, Capacitor 스토어 앱은 CI에서 빌드되지만 스토어에 올리지는 않았습니다. 직접 띄우기: [코드 없이 설치하기](docs/GUIDE.md) · [코딩 에이전트용](AGENTS.md) · [오래 굴리기](docs/RUNNING.md) |
 | **기술** | 순수 JS · Vercel 서버리스(함수 12개 이하, 테스트로 지킴) · Neon Postgres · Vercel Blob · 웹 푸시 / FCM / APNs · Capacitor |
-| **테스트** | 710개, `npm test` (메모리 Postgres에 대고 도는 실제 핸들러, 화면, 다국어, 공휴일, 서비스 워커, 공개 페이지) |
+| **테스트** | 719개, `npm test` (메모리 Postgres에 대고 도는 실제 핸들러, 화면, 다국어, 공휴일, 서비스 워커, 공개 페이지) |
 | **비용** | 월 0원 (무료 플랜) |
 | **더 읽기** | [어떻게 돌아가나](#어떻게-돌아가나) · [왜 이렇게 만들었나](#왜-이렇게-만들었나) |
 
@@ -28,6 +28,8 @@
 <img src="public/screenshots/02-day.webp" width="200" alt="하루 일정">
 <img src="public/screenshots/03-editor.webp" width="200" alt="일정 넣기: 누구 일정, 시간, 반복">
 <img src="public/screenshots/05-settings.webp" width="200" alt="설정">
+<img src="public/screenshots/06-us-today.webp" width="200" alt="우리 탭: 오늘의 질문">
+<img src="public/screenshots/07-us-map.webp" width="200" alt="우리 탭: 우리 장소 지도">
 </p>
 
 - **빌드가 없습니다.** 번들러도 프레임워크도 없어요. `public/`이 그대로 서빙됩니다
@@ -46,8 +48,8 @@
 - **검색엔진·AI가 읽는 공개 페이지** — 소개 페이지와 "사귄 지 며칠" 계산기를 9개 언어로. `landing.mjs`가
   FAQ 구조화 데이터·hreflang·sitemap·`llms.txt`까지 만듭니다
 
-`api/`·`lib/`·`public/`에 약 13,000줄(언어팩 9개 포함). 실제 핸들러를 메모리 Postgres에 붙여 돌리는
-통합 테스트 415개, 화면을 직접 돌리는 테스트 221개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
+`api/`·`lib/`·`public/`에 약 15,000줄(언어팩 9개 포함). 실제 핸들러를 메모리 Postgres에 붙여 돌리는
+통합 테스트 422개, 화면을 직접 돌리는 테스트 223개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
 
 ## 우리 데이터는 우리 DB에
 
@@ -58,7 +60,7 @@
   사람을 포함해 다른 누구도 들어갈 수 없고, 프로젝트와 DB를 지우면 전부 사라집니다
 - **분석·광고·추적 없음.** 쓰는 걸 지켜보는 외부 스크립트가 없습니다. 화면은 글꼴 두 개(구글 폰트, jsDelivr)와
   구글 로그인 버튼만 불러오고, 그쪽에 가는 건 그 요청뿐 — 달력 내용은 가지 않습니다. "우리" 탭 지도를 열 때만
-  unpkg에서 Leaflet을, `tile.openstreetmap.org`에서 지도 그림을 받습니다 — 어느 동네를 보는지는 알아도, 핀과 위치는
+  unpkg에서 MapLibre를, `tiles.openfreemap.org`에서 지도 데이터(OpenStreetMap)를 받습니다 — 어느 동네를 보는지는 알아도, 핀과 위치는
   브라우저 안에서 그려서 가지 않습니다
 - **구글은 누군지만 확인합니다.** 로그인은 ID 토큰을 내 서버가 구글 공개키로 확인하는 것뿐, 일정은 구글로 가지 않습니다
 - **웹 알림은 종단 간 암호화.** 웹 푸시 내용은 받는 브라우저만 풀 수 있게 암호화되어(`aes128gcm`) 푸시 서버는
@@ -262,8 +264,8 @@ android/ ios/        스토어 앱 껍데기 (Capacitor)
 fastlane/ .github/   Mac 없이 CI에서 스토어 빌드
 schema.sql  표 열여덟 개 — 앱이 처음 켜질 때 스스로 돌립니다
 landing.mjs 공개 페이지 생성 (글은 landing-content.mjs)
-test.mjs    핸들러 통합 테스트 415개
-screen-test.mjs  public/app.js를 직접 돌리는 테스트 221개 — 로그인, 일정 창, 설정, 앱 알림, 설치
+test.mjs    핸들러 통합 테스트 422개
+screen-test.mjs  public/app.js를 직접 돌리는 테스트 223개 — 로그인, 일정 창, 설정, 앱 알림, 설치
 ```
 
 ```bash
