@@ -2,11 +2,12 @@
 
 **English** · [한국어](README.ko.md)
 
-A shared calendar for two people, run as one service for many couples. Each of
-you signs up, one invites the other, and from then on you share a calendar. When
+An open-source shared calendar for two people that **you run yourself** — so your
+plans stay in your own database, not on a couple-app company's server. Each of
+you signs in, one invites the other, and from then on you share a calendar. When
 one of you adds something, it shows up on the other's lock screen, and on the
 morning of the day it speaks up again. No KakaoTalk, no Slack — the app sends the
-push itself, to the browser or to the iOS and Android apps.
+push itself.
 
 <p align="center">
 <img src="docs/handoff-shots/07-calendar-shared.png" width="280" alt="The shared calendar: this month, with what is coming up underneath">
@@ -14,8 +15,8 @@ push itself, to the browser or to the iOS and Android apps.
 
 | | |
 |---|---|
-| **In one line** | A shared calendar for couples, run as one multi-tenant service — plain JavaScript, no framework, no build step |
-| **Live** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) · [what it is](https://tt-calendar.vercel.app/en/) · [days-together calculator](https://tt-calendar.vercel.app/en/days-together/) |
+| **In one line** | A couples' calendar you host yourself in 15 minutes, for free — your data in your own Postgres. Plain JavaScript, no framework, no build step |
+| **Live** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) is the author's own copy · [what it is](https://tt-calendar.vercel.app/en/) · [days-together calculator](https://tt-calendar.vercel.app/en/days-together/) |
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
@@ -59,6 +60,33 @@ About 13,000 lines across `api/`, `lib/` and `public/` (nine language packs
 included), with 369 integration tests that run the real handlers against an
 in-memory Postgres, 146 that run the screen itself, 58 for i18n and holidays,
 and 16 for the service worker.
+
+## Your data stays with you
+
+Most couple apps keep your diary, photos and plans on the company's servers. TT is
+meant to be **deployed by the two of you** ([no-code guide](docs/GUIDE.md), about
+15 minutes, free):
+
+- **Your own database.** Plans, notes and photos go to the Neon Postgres and
+  Vercel Blob store on *your* accounts. No one else — including the author of
+  this code — has access to them, and deleting the project and the database
+  removes all of it
+- **No analytics, no ads, no trackers.** There is no third-party script that
+  watches what you do. The page loads two fonts (Google Fonts, jsDelivr) and
+  Google's sign-in button; those see the request, not your calendar
+- **Google only checks who you are.** Sign-in sends an ID token that your server
+  verifies with Google's public keys. Your events never go to Google
+- **Notifications are end-to-end encrypted on the web.** Web Push payloads are
+  encrypted for the receiving browser (`aes128gcm`), so the push service relays
+  them without being able to read them. (The optional store apps use FCM and
+  APNs, which do not encrypt this way — they are not published, and the web app
+  doesn't need them)
+- **Open code.** Every query is scoped to your couple, and `test.mjs` runs two
+  couples against every endpoint to prove nothing leaks between them — read it
+
+The hosting companies (Vercel, Neon) still run the machines, as with any cloud
+app; the difference is that the data sits in an account *you* own, not in a
+service that holds everyone's.
 
 ## How it works
 
