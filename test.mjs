@@ -1174,6 +1174,29 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   r = await t(tokenB, { method: 'POST', body: { action: 'answer', text: '차분해 보였어' } });
   ok('question: after both answer, both are open', r.body.question.theirs === '웃는 게 예뻤어');
 
+  /* 지난 질문: 내가 답한 날만, 상대 답은 그날 나도 답했을 때만 */
+  {
+    const cid = await coupleOf('nana');
+    const back = (n) => new Date(Date.parse(r.body.question.day) - n * 864e5).toISOString().slice(0, 10);
+    await pg.query(`insert into answers values ($1, $2, 'a', '어제 내 답'), ($1, $2, 'b', '어제 상대 답'), ($1, $3, 'b', '나만 한 날'), ($1, $4, 'a', '너무 옛날')`,
+      [cid, back(1), back(2), back(90)]);
+    const mine = (await t(token)).body.history;
+    ok('history: yesterday shows both answers with its question',
+      mine[0]?.day === back(1) && mine[0].mine === '어제 내 답' && mine[0].theirs === '어제 상대 답' && mine[0].text, JSON.stringify(mine));
+    ok('history: a day I skipped is not there — their answer stays closed', !mine.some((h) => h.day === back(2)));
+    ok('history: only the last 60 days', !mine.some((h) => h.day === back(90)));
+    const theirs = (await t(tokenB)).body.history;
+    ok('history: the partner sees the day they answered alone, without mine', theirs.some((h) => h.day === back(2) && h.mine === '나만 한 날' && h.theirs === null));
+  }
+
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'food', title: '을지로 냉면', rating: 4 } });
+  ok('rating: a food place keeps its stars', r.body.items.some((i) => i.title === '을지로 냉면' && i.rating === 4));
+  const foodId = r.body.items.find((i) => i.title === '을지로 냉면').id;
+  r = await t(tokenB, { method: 'PATCH', body: { action: 'item', id: foodId, rating: 5, title: '을지로 평양냉면' } });
+  ok('rating: and both can change it, title too', r.body.items.some((i) => i.id === foodId && i.rating === 5 && i.title === '을지로 평양냉면'));
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'culture', title: 'x', rating: 9 } });
+  ok('rating: six stars is refused', r.status === 400);
+
   for (let i = 0; i < 3; i++) r = await t(token, { method: 'POST', body: { action: 'nudge' } });
   ok('nudge: three a day', r.status === 200 && r.body.nudgesLeft === 0);
   r = await t(token, { method: 'POST', body: { action: 'nudge' } });
@@ -1249,7 +1272,7 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
 
   const outsider = await join('outsider');
   r = await t(outsider);
-  ok('together: another couple sees none of it', r.body.items.length === 0 && r.body.question.mine === null && r.body.location.theyOn === false);
+  ok('together: another couple sees none of it', r.body.items.length === 0 && r.body.history.length === 0 && r.body.question.mine === null && r.body.location.theyOn === false);
   r = await t(outsider, { method: 'PATCH', body: { action: 'item', id, done: false } });
   ok('together: nor can it change it', r.status === 404);
   await t(outsider, { method: 'DELETE', query: { id } });

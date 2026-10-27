@@ -271,6 +271,8 @@ create table if not exists items (
   created_at timestamptz not null default now()
 );
 create index if not exists items_couple on items (couple_id, kind, day);
+-- 맛집·문화 별점 (1~5, 비우면 null)
+alter table items add column if not exists rating smallint;
 
 -- 오늘의 질문: 둘 다 답해야 상대 답이 열립니다 (서버가 막습니다)
 create table if not exists answers (

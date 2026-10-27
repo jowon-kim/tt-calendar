@@ -75,6 +75,9 @@
   --shade-rgb: 150, 90, 100;
 
   --tap: cubic-bezier(.34, 1.56, .5, 1);
+
+  /* 폰 화면 폭 — 데스크탑에서도 이 폭 기둥 하나로만 그립니다 (10/27, 모바일 전용) */
+  --frame: 440px;
 }
 
 /* ═══════════════ 테마 ═══════════════
@@ -522,7 +525,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .pill:active { transform: scale(.94); }
 
 /* ═══════════════ 앱 상단 ═══════════════ */
-.app { max-width: 660px; margin: 0 auto; padding: 0 16px 120px; }
+.app { max-width: var(--frame); margin: 0 auto; padding: 0 16px 120px; }
 
 .topbar {
   display: flex;
@@ -865,7 +868,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ═══════════════ 추가 버튼 (FAB) ═══════════════ */
 .fab {
   position: fixed;
-  right: max(20px, calc(50% - 330px + 20px));
+  right: max(20px, calc(50% - var(--frame) / 2 + 20px));
   bottom: calc(24px + env(safe-area-inset-bottom));
   width: 60px; height: 60px;
   border: none; border-radius: 22px;
@@ -895,7 +898,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 50;
-  max-width: 660px; margin: 0 auto;
+  max-width: var(--frame); margin: 0 auto;
   background: var(--surface);
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
@@ -1345,10 +1348,6 @@ img.install-step-icon { padding: 0; }
 @keyframes toast-in { from { transform: translate(-50%, -50%) scale(.9); opacity: 0; } }
 
 /* ═══════════════ 반응형 ═══════════════ */
-@media (min-width: 560px) {
-  .day { min-height: 78px; }
-  .day .num { font-size: 16.5px; }
-}
 @media (max-width: 400px) {
   .app { padding-left: 12px; padding-right: 12px; }
   .branch { gap: 3.5px; }
@@ -1686,31 +1685,358 @@ img.install-step-icon { padding: 0; }
 .pane-lead { margin: -6px 0 16px; }
 .note a { color: inherit; text-underline-offset: 3px; }
 
-/* ── "우리" 탭 (public/together.js, 10/27) ── */
-.together { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg, #fff7f5); color: var(--ink); padding: 0 16px 40px; }
+/* ═══════════════ "우리" 탭 (public/together.js, 10/27) ═══════════════
+   폰 화면 한 장. 데스크탑에서도 가운데 --frame 폭 기둥 하나로만 그립니다.
+   색은 전부 테마 토큰 — 다섯 테마(밤 포함)에서 그대로 읽힙니다. */
+html.tg-open, html.tg-open body { overflow: hidden; }
+.together {
+  position: fixed; inset: 0; z-index: 55;
+  display: flex; justify-content: center;
+  background: var(--scrim);
+  backdrop-filter: blur(4px);
+  animation: fade .2s ease;
+}
 .together[hidden] { display: none; }
-.tg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 6px; }
-.tg-head h2 { margin: 0; font-size: 1.3rem; }
-.tg-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0 12px; }
-.tg-tabs button { border: 1px solid var(--accent-line, #f5d0d4); background: transparent; color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; white-space: nowrap; }
-.tg-tabs button.on { background: rgb(var(--accent-rgb, 217, 101, 112)); border-color: transparent; color: #fff; }
-.tg-card { background: rgba(255, 255, 255, .7); border-radius: 16px; padding: 14px; margin-bottom: 12px; display: grid; gap: 8px; }
-.tg-card h3 { margin: 0; font-size: 1rem; }
-.tg-q { font-size: 1.1rem; font-weight: 600; margin: 0; }
-.tg-card textarea, .tg-card input, .tg-row input { width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--accent-line, #f5d0d4); }
-.tg-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
-.tg-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 6px; }
-.tg-list li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(255, 255, 255, .6); border-radius: 10px; }
-.tg-list li > span { flex: 1; }
-.tg-list li.done span b { text-decoration: line-through; opacity: .6; }
-.tg-total { text-align: right; }
-.tg-album { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 12px; }
-.tg-album img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
-.tg-entry { background: rgba(255, 255, 255, .7); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
-.tg-entry img { width: 100%; border-radius: 10px; margin: 6px 0; }
-.tg-entry h4 { margin: 4px 0; }
-.tg-date { font-size: .85rem; opacity: .7; }
-.tg-map { height: 340px; border-radius: 16px; overflow: hidden; margin: 8px 0; }
-.together .link { background: none; border: 0; color: var(--ink-soft, #6e5b63); font: inherit; font-size: .85rem; text-decoration: underline; }
-.tg-row[data-kind="ledger"] { grid-template-columns: 1fr 1fr; }
-.tg-row[data-kind="ledger"] button { grid-column: 1 / -1; }
+.tg-frame {
+  position: relative;
+  width: 100%; max-width: var(--frame);
+  height: 100dvh;
+  display: flex; flex-direction: column;
+  background:
+    radial-gradient(120% 60% at 0% 0%, var(--bg-1) 0%, transparent 55%),
+    radial-gradient(90% 50% at 100% 0%, var(--bg-2) 0%, transparent 50%),
+    var(--paper);
+  color: var(--ink);
+  box-shadow: 0 0 60px -20px rgba(var(--shade-rgb), .5);
+  animation: tg-in .32s var(--tap);
+  overflow: hidden;
+}
+@keyframes tg-in { from { transform: translateY(24px); opacity: 0; } }
+
+/* 머리 */
+.tg-head {
+  display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 6px;
+  padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
+}
+.tg-title { margin: 0; font-family: var(--display); font-size: 26px; font-weight: 400; letter-spacing: .01em; }
+.tg-dday {
+  font-family: var(--serif); font-weight: 700; font-size: 13px; color: var(--cherry-ink);
+  background: var(--wash-a); border-radius: 999px; padding: 5px 11px;
+}
+.tg-dday:empty { display: none; }
+
+/* 내용 */
+.tg-body {
+  flex: 1; overflow-y: auto; overscroll-behavior: contain;
+  padding: 4px 16px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* 폰처럼 — 데스크탑에서도 스크롤 막대 없이 */
+}
+.tg-body::-webkit-scrollbar { display: none; }
+.together[data-tab="map"] .tg-body { padding: 0; overflow: hidden; }
+.together.busy .tg-body { cursor: progress; }
+.together.busy .btn-solid, .together.busy .tg-add-btn { opacity: .6; pointer-events: none; }
+
+/* 아래 탭 */
+.tg-nav {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -10px 30px -22px rgba(var(--shade-rgb), .6);
+}
+.tg-nav button {
+  display: grid; justify-items: center; gap: 2px;
+  border: 0; background: none; cursor: pointer;
+  padding: 6px 0 4px; border-radius: 14px;
+  color: var(--muted); font-size: 10.5px; font-weight: 600;
+  transition: color .2s, background .2s;
+}
+.tg-nav svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s var(--tap); }
+.tg-nav button.on { color: var(--cherry-ink); }
+.tg-nav button.on svg { transform: translateY(-1px) scale(1.08); fill: var(--wash-a2); }
+.tg-nav button:active svg { transform: scale(.88); }
+
+/* 공통 조각 */
+.tg-card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: grid; gap: 10px;
+}
+.tg-kicker { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--cherry-ink); }
+.tg-hint { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.tg-count { font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface-sink); border-radius: 999px; padding: 1px 7px; margin-left: 2px; }
+.tg-sub { margin: 6px 4px 0; font-size: 12.5px; font-weight: 700; color: var(--ink-soft); }
+.tg-section { display: grid; gap: 10px; }
+.tg-section > h3 { margin: 4px 4px 0; font-size: 14px; }
+.tg-grow { flex: 1; }
+.tg-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+.tg-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.tg-actions .btn { padding: 10px 18px; }
+.together input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), .together textarea {
+  width: 100%; box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1.5px solid var(--line-2); border-radius: var(--r-sm);
+  background: var(--paper-2); color: var(--ink);
+  font-size: 15px; /* 16px 미만이면 아이폰이 확대합니다 — 15px 은 확대 안 되는 기기만 */
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+@supports (-webkit-touch-callout: none) { .together input, .together textarea { font-size: 16px !important; } }
+.together textarea { resize: none; line-height: 1.55; }
+.together input:focus, .together textarea:focus { outline: none; border-color: var(--cherry); background: var(--surface); box-shadow: 0 0 0 4px var(--glow); }
+.together input::placeholder, .together textarea::placeholder { color: var(--faint); }
+.together .btn { font-size: 14px; }
+.tg-who { display: inline-block; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--cherry); vertical-align: middle; }
+.tg-who.b { background: var(--plum); }
+.tg-icon-btn {
+  flex: none; min-width: 32px; height: 32px; padding: 0 6px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 10px; background: transparent; cursor: pointer;
+  color: var(--faint); transition: background .2s, color .2s;
+}
+.tg-icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tg-icon-btn:hover { background: var(--surface-sink); color: var(--ink-soft); }
+.tg-icon-btn.armed { background: var(--cherry-ink); color: #fff; font-size: 11.5px; font-weight: 700; padding: 0 10px; animation: pop .2s var(--tap); }
+.tg-text-btn { justify-self: end; border: 0; background: none; color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 4px 6px; }
+.tg-empty { display: grid; justify-items: center; gap: 10px; padding: 36px 20px; text-align: center; color: var(--muted); }
+.tg-empty svg { width: 46px; height: 46px; fill: var(--wash-a); stroke: var(--accent-line); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.tg-empty p { margin: 0; font-size: 13.5px; line-height: 1.55; max-width: 240px; }
+
+/* 오늘: 질문 카드 */
+.tg-qcard {
+  position: relative; overflow: hidden;
+  border-radius: var(--r-xl);
+  padding: 22px 18px 16px;
+  background: linear-gradient(150deg, var(--accent-hi) 0%, var(--accent-lo) 100%);
+  color: var(--on-accent);
+  box-shadow: 0 18px 36px -18px rgba(var(--accent-rgb), .8);
+  display: grid; gap: 14px;
+}
+.tg-qcard::after { content: ''; position: absolute; right: -40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255, 255, 255, .14); pointer-events: none; }
+.tg-qcard .tg-kicker { color: inherit; opacity: .85; }
+.tg-q { margin: 0; font-family: var(--serif); font-size: 21px; line-height: 1.45; font-weight: 700; word-break: keep-all; }
+.tg-answers { display: grid; gap: 8px; }
+.tg-qcard .tg-hint { color: inherit; opacity: .85; }
+.tg-answer { display: grid; gap: 8px; }
+.tg-qcard textarea { background: rgba(255, 255, 255, .92) !important; border-color: transparent !important; color: #40323A !important; }
+.tg-qcard .btn-solid { background: var(--surface); color: var(--cherry-ink); box-shadow: none; }
+.tg-qcard .tg-text-btn { color: inherit; opacity: .8; }
+.tg-bubble {
+  max-width: 84%;
+  padding: 10px 14px; border-radius: 18px;
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, .35);
+  animation: pop .26s var(--tap);
+}
+.tg-bubble b { display: block; font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.tg-bubble p { margin: 0; font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.tg-bubble.left { justify-self: start; border-bottom-left-radius: 6px; }
+.tg-bubble.right { justify-self: end; border-bottom-right-radius: 6px; background: var(--wash-a); }
+.tg-bubble.b.right { background: var(--wash-b); }
+.tg-bubble.wait p, .tg-bubble.locked p { color: var(--muted); font-size: 13px; }
+.tg-bubble.locked { display: flex; align-items: center; gap: 8px; }
+.tg-bubble.locked svg { width: 18px; height: 18px; fill: none; stroke: var(--muted); stroke-width: 1.8; flex: none; }
+
+/* 오늘: 콕 */
+.tg-nudge { grid-template-columns: auto 1fr; align-items: center; gap: 14px; }
+.tg-nudge b { font-size: 15px; }
+.tg-heart {
+  width: 58px; height: 58px; border-radius: 50%;
+  border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--wash-a); color: var(--cherry-ink);
+  transition: transform .2s var(--tap), background .2s;
+}
+.tg-heart svg { width: 30px; height: 30px; fill: var(--cherry); stroke: var(--cherry-ink); stroke-width: 1.4; }
+.tg-heart:active { transform: scale(.88); }
+.tg-heart.beat { animation: tg-beat .5s ease; }
+.tg-heart:disabled { opacity: .45; cursor: default; }
+@keyframes tg-beat { 30% { transform: scale(1.25); } 60% { transform: scale(.92); } }
+.tg-dots { display: flex; gap: 5px; margin-top: 6px; }
+.tg-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-2); }
+.tg-dots i.on { background: var(--cherry); }
+
+/* 오늘: 1년 전 · 지난 질문 */
+.tg-polaroids { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 6px; }
+.tg-polaroid { flex: none; width: 150px; margin: 0; background: #fff; padding: 8px 8px 10px; border-radius: 6px; box-shadow: var(--shadow-sm); transform: rotate(-2deg); color: #40323A; }
+.tg-polaroid:nth-child(even) { transform: rotate(2deg); }
+.tg-polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; cursor: zoom-in; }
+.tg-polaroid figcaption { font-family: var(--display); font-size: 15px; line-height: 1.3; margin-top: 6px; }
+.tg-blank {
+  aspect-ratio: 1; border-radius: 3px; padding: 12px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  background: linear-gradient(140deg, var(--wash-a) 0%, var(--wash-b) 100%);
+  font-family: var(--display); font-size: 17px; line-height: 1.35; color: #6E5B63; word-break: keep-all;
+}
+.tg-history summary { cursor: pointer; font-weight: 700; font-size: 14px; list-style: none; display: flex; align-items: center; gap: 6px; }
+.tg-history summary::-webkit-details-marker { display: none; }
+.tg-history summary::after { content: '›'; margin-left: auto; color: var(--muted); font-size: 20px; transition: transform .2s; }
+.tg-history[open] summary::after { transform: rotate(90deg); }
+.tg-past { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 4px; }
+.tg-past p { margin: 0; font-size: 13.5px; line-height: 1.5; }
+.tg-past b { color: var(--ink-soft); font-size: 12px; margin-right: 4px; }
+.tg-past-q { font-family: var(--serif); font-weight: 700; }
+
+/* 일기 */
+.tg-cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 15px; border-radius: var(--r-lg);
+  border: 1.5px dashed var(--accent-line); background: var(--surface);
+  color: var(--cherry-ink); font-weight: 700; font-size: 14.5px; cursor: pointer;
+  transition: background .2s, transform .16s var(--tap);
+}
+.tg-cta:active { transform: scale(.97); }
+.tg-cta svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.tg-compose { animation: pop .24s var(--tap); }
+.tg-photo-pick {
+  display: grid; place-items: center; gap: 4px;
+  min-height: 92px; border-radius: var(--r-md);
+  border: 1.5px dashed var(--line-2); background: var(--paper-2);
+  color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; overflow: hidden;
+}
+.tg-photo-pick svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+.tg-photo-pick img { width: 100%; max-height: 260px; object-fit: cover; }
+.tg-album { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: var(--r-md); overflow: hidden; }
+.tg-album img { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: zoom-in; display: block; }
+.tg-entry { background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.tg-entry-photo { width: 100%; max-height: 380px; object-fit: cover; display: block; cursor: zoom-in; }
+.tg-entry-body { padding: 12px 14px 14px; }
+.tg-entry-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.tg-entry h4 { margin: 6px 0 2px; font-family: var(--serif); font-size: 17px; }
+.tg-entry p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+
+/* 버킷 */
+.tg-progress { gap: 8px; }
+.tg-progress-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+.tg-progress-top span { font-family: var(--serif); font-weight: 700; color: var(--leaf-ink); font-size: 18px; }
+.tg-bar { height: 10px; border-radius: 999px; background: var(--surface-sink); overflow: hidden; }
+.tg-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--leaf), var(--leaf-ink)); transition: width .5s var(--tap); }
+.tg-add {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border-radius: var(--r-lg); padding: 6px 6px 6px 8px;
+  box-shadow: var(--shadow-sm);
+}
+.tg-add input { border: 0 !important; background: transparent !important; box-shadow: none !important; }
+.tg-add-btn {
+  flex: none; width: 42px; height: 42px; border-radius: 14px; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent-hi), var(--accent-lo)); color: var(--on-accent);
+}
+.tg-add-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.tg-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tg-list > li {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border-radius: var(--r-md);
+  padding: 10px 6px 10px 14px; box-shadow: var(--shadow-sm);
+  animation: pop .22s var(--tap);
+}
+.tg-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.tg-text b { font-size: 14.5px; font-weight: 600; word-break: break-word; }
+.tg-text small { font-size: 12.5px; color: var(--muted); word-break: break-word; }
+.tg-check label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.tg-check input { position: absolute; opacity: 0; pointer-events: none; }
+.tg-box {
+  flex: none; width: 24px; height: 24px; border-radius: 50%;
+  border: 2px solid var(--line-2); display: grid; place-items: center;
+  transition: background .2s, border-color .2s, transform .2s var(--tap);
+}
+.tg-check input:checked + .tg-box { background: var(--leaf-ink); border-color: var(--leaf-ink); transform: scale(1.06); }
+.tg-check input:checked + .tg-box::after { content: ''; width: 10px; height: 6px; border: solid #fff; border-width: 0 0 2.4px 2.4px; transform: translateY(-1px) rotate(-45deg); }
+.tg-check input:focus-visible + .tg-box { box-shadow: 0 0 0 4px var(--glow); }
+.tg-check.done .tg-text b { text-decoration: line-through; text-decoration-color: var(--leaf-ink); color: var(--muted); }
+.tg-check.done { background: var(--wash-both); box-shadow: none; }
+.tg-editing { padding: 12px !important; display: block !important; }
+.tg-edit { display: grid; gap: 8px; }
+
+/* 가계부 */
+.tg-month { text-align: center; gap: 6px; }
+.tg-month-nav { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; font-size: 15px; }
+.tg-total { margin: 2px 0 4px; font-family: var(--serif); font-size: 32px; font-weight: 700; letter-spacing: -.01em; }
+.tg-split { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--surface-sink); }
+.tg-split i { display: block; height: 100%; transition: width .5s var(--tap); }
+.tg-split .a { background: var(--cherry); }
+.tg-split .b { background: var(--plum); }
+.tg-legend { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); }
+.tg-legend span { display: flex; align-items: center; gap: 6px; }
+.tg-ledger-add { gap: 8px; }
+.tg-money .tg-amount { font-family: var(--serif); font-size: 15.5px; white-space: nowrap; }
+
+/* 기록 */
+.tg-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface-sink); border-radius: 16px; }
+.tg-seg button { border: 0; background: transparent; border-radius: 12px; padding: 10px; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; transition: background .2s, color .2s; }
+.tg-seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.tg-log-add .tg-two { grid-template-columns: 1fr auto; }
+.tg-stars { display: inline-flex; gap: 1px; color: var(--line-2); font-size: 13px; letter-spacing: 1px; }
+.tg-stars i { font-style: normal; }
+.tg-stars i.on { color: var(--gold-ink); }
+.tg-stars.input { font-size: 26px; gap: 2px; }
+.tg-stars.input label { cursor: pointer; }
+.tg-stars.input input { position: absolute; opacity: 0; pointer-events: none; }
+.tg-stars.input input:focus-visible + i { outline: 2px solid var(--cherry); border-radius: 4px; }
+
+/* 지도: 판 가득, 아래에 떠 있는 카드 */
+.tg-mapwrap { position: relative; flex: 1; height: 100%; min-height: 0; }
+/* maplibre-gl.css 가 .maplibregl-map 에 position: relative 를 걸어 높이가 0 이 됩니다 — 이겨야 합니다 */
+.tg-mapwrap .tg-map { position: absolute; inset: 0; background: var(--surface-sink); }
+.tg-map .maplibregl-ctrl-attrib { font-size: 10px; }
+.tg-marker { cursor: pointer; }
+.tg-popup .maplibregl-popup-content { border-radius: 14px; padding: 9px 14px; box-shadow: var(--shadow); font-family: var(--body); font-size: 13px; line-height: 1.5; background: var(--surface); color: var(--ink); }
+.tg-popup .maplibregl-popup-tip { border-top-color: var(--surface) !important; border-bottom-color: var(--surface) !important; }
+.tg-fab {
+  position: absolute; right: 14px; top: 14px; z-index: 500;
+  width: 44px; height: 44px; border-radius: 14px; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  background: var(--surface); color: var(--ink-soft); box-shadow: var(--shadow);
+}
+.tg-fab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+.tg-mapcard { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 500; }
+.tg-sheet {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 14px; box-shadow: var(--shadow-pop);
+  display: grid; gap: 10px;
+  animation: rise .28s var(--tap);
+}
+.tg-share { display: flex; align-items: center; gap: 12px; }
+.tg-share > div { flex: 1; min-width: 0; }
+.tg-share b { font-size: 14.5px; }
+.tg-switch {
+  flex: none; width: 50px; height: 30px; border-radius: 999px; border: 0; cursor: pointer; padding: 3px;
+  background: var(--line-2); transition: background .2s;
+}
+.tg-switch i { display: block; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .2); transition: transform .22s var(--tap); }
+.tg-switch.on { background: var(--leaf-ink); }
+.tg-switch.on i { transform: translateX(20px); }
+.tg-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.tg-chips::-webkit-scrollbar { display: none; }
+.tg-chip { flex: none; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line-2); background: var(--paper-2); color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.tg-pin {
+  position: relative; display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
+  background: var(--cherry-ink); border: 2.5px solid #fff;
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, .45);
+}
+.tg-pin.b { background: var(--plum-ink); }
+.tg-pin.new { background: var(--leaf-ink); animation: tg-drop .4s var(--tap); }
+.tg-pin svg { width: 16px; height: 16px; transform: rotate(45deg); fill: #fff; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; }
+@keyframes tg-drop { from { translate: 0 -24px; opacity: 0; } }
+.tg-face {
+  position: relative; display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--cherry); border: 3px solid #fff;
+  box-shadow: 0 6px 16px -4px rgba(0, 0, 0, .45);
+  color: #fff; font-weight: 800; font-size: 17px;
+}
+.tg-face.b { background: var(--plum-ink); }
+.tg-face::before { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; animation: tg-ping 2.2s ease-out infinite; color: var(--cherry); }
+.tg-face.b::before { color: var(--plum); }
+@keyframes tg-ping { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
+
+/* 사진 크게 보기 */
+.tg-lightbox { position: absolute; inset: 0; z-index: 900; display: grid; place-items: center; background: rgba(15, 10, 14, .9); cursor: zoom-out; animation: fade .2s ease; padding: 16px; }
+.tg-lightbox[hidden] { display: none; }
+.tg-lightbox img { max-width: 100%; max-height: 100%; border-radius: 12px; }
+
+@media (prefers-reduced-motion: reduce) { .tg-face::before { animation: none; } }

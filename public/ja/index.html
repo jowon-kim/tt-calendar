@@ -77,7 +77,7 @@ ul.better{padding-left:22px;margin:0;color:var(--soft)}
 ul.better li{margin:0 0 8px}
 .fine{font-size:14px;color:var(--muted)}
 </style>
-<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。無料のオープンソース。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["わたし・あなた・ふたり","相手に知らせます","ちょうどいい通知","一緒にいる日数を数えます","ふたりの写真で","言語と祝日"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TTは無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。無料のオープンソース（MIT）で、広告も有料機能もありません。自分で立ち上げれば、カレンダーは自分のデータベースだけに残ります。"}},{"@type":"Question","name":"アプリストアからダウンロードが必要ですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。iPhone・Android・パソコンのブラウザでそのまま使えます。ホーム画面に追加するとアプリのように開き、iPhoneではそれで通知も届きます。"}},{"@type":"Question","name":"iPhoneでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。Safariで開いて共有 →「ホーム画面に追加」を押してください。iOS 16.4以降なら、ホーム画面から開いたアプリで通知を受け取れます。"}},{"@type":"Question","name":"相手はどうやって招待しますか？","acceptedAnswer":{"@type":"Answer","text":"設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。"}},{"@type":"Question","name":"どんな情報を集めますか？","acceptedAnswer":{"@type":"Answer","text":"ユーザー名、パスワード（ハッシュ化して保存）、カレンダーに入れた予定・名前・日付・写真です。メールアドレスは預かりません。アカウントは設定からいつでも削除できます。"}},{"@type":"Question","name":"どちらかがアカウントを削除したら？","acceptedAnswer":{"@type":"Answer","text":"カレンダーは残った人にそのまま残ります。ふたりとも抜けると予定と写真は削除されます。"}}]}]</script>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"ふたりでひとつのカレンダー。予定・記念日・付き合った日数、相手が予定を変えると通知も。アプリストア不要、ブラウザですぐ使えます。無料のオープンソース。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["わたし・あなた・ふたり","相手に知らせます","ちょうどいい通知","一緒にいる日数を数えます","ふたりの写真で","言語と祝日","「ふたり」タブ","ふたりの場所マップ"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TTは無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。無料のオープンソース（MIT）で、広告も有料機能もありません。自分で立ち上げれば、カレンダーは自分のデータベースだけに残ります。"}},{"@type":"Question","name":"アプリストアからダウンロードが必要ですか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。iPhone・Android・パソコンのブラウザでそのまま使えます。ホーム画面に追加するとアプリのように開き、iPhoneではそれで通知も届きます。"}},{"@type":"Question","name":"iPhoneでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。Safariで開いて共有 →「ホーム画面に追加」を押してください。iOS 16.4以降なら、ホーム画面から開いたアプリで通知を受け取れます。"}},{"@type":"Question","name":"相手はどうやって招待しますか？","acceptedAnswer":{"@type":"Answer","text":"設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。"}},{"@type":"Question","name":"どんな情報を集めますか？","acceptedAnswer":{"@type":"Answer","text":"ユーザー名、パスワード（ハッシュ化して保存）、カレンダーに入れた予定・名前・日付・写真です。メールアドレスは預かりません。アカウントは設定からいつでも削除できます。"}},{"@type":"Question","name":"どちらかがアカウントを削除したら？","acceptedAnswer":{"@type":"Answer","text":"カレンダーは残った人にそのまま残ります。ふたりとも抜けると予定と写真は削除されます。"}},{"@type":"Question","name":"位置は共有されますか？","acceptedAnswer":{"@type":"Answer","text":"「ふたり」タブでふたりとも位置共有をオンにしたときだけです。最後の位置ひとつだけを残し、その画面を開いている間に1分に1回まで送られ、オフにするとすぐ消えます。"}}]}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -101,6 +101,8 @@ ul.better li{margin:0 0 8px}
 <div class="card"><h3>一緒にいる日数を数えます</h3><p>出会った日を入れると、100日・200日や毎年の記念日がカレンダーに出て、あと何日かもわかります。</p></div>
 <div class="card"><h3>ふたりの写真で</h3><p>写真を30枚まで入れると、予定の横や空いた日に出てきます。</p></div>
 <div class="card"><h3>言語と祝日</h3><p>9つの言語、9か国の祝日、ふたりのタイムゾーンに合わせて使えます。</p></div>
+<div class="card"><h3>「ふたり」タブ</h3><p>1日ひとつの質問（自分が答えると相手の答えが見られる）、1年後に戻ってくる写真日記、やりたいことリスト、デート家計簿、星を付けるグルメ・カルチャー記録、「会いたい」の代わりのつんつんまで。</p></div>
+<div class="card"><h3>ふたりの場所マップ</h3><p>ふたりにとって大切な場所をピンで残せます。位置共有はふたりともオンにしたときだけ見え、最後の位置ひとつだけを残し、オフにした瞬間に消えます。</p></div>
 </div>
 <h2>はじめかた</h2>
 <ol class="steps">
@@ -116,6 +118,7 @@ ul.better li{margin:0 0 8px}
 <div class="card"><h3>相手はどうやって招待しますか？</h3><p>設定で招待リンクを作って送るだけです。そのリンクから登録すると同じカレンダーを使えます。アカウントはそれぞれ別です。</p></div>
 <div class="card"><h3>どんな情報を集めますか？</h3><p>ユーザー名、パスワード（ハッシュ化して保存）、カレンダーに入れた予定・名前・日付・写真です。メールアドレスは預かりません。アカウントは設定からいつでも削除できます。</p></div>
 <div class="card"><h3>どちらかがアカウントを削除したら？</h3><p>カレンダーは残った人にそのまま残ります。ふたりとも抜けると予定と写真は削除されます。</p></div>
+<div class="card"><h3>位置は共有されますか？</h3><p>「ふたり」タブでふたりとも位置共有をオンにしたときだけです。最後の位置ひとつだけを残し、その画面を開いている間に1分に1回まで送られ、オフにするとすぐ消えます。</p></div>
 </div>
 <p class="more"><a href="/ja/days-together/">付き合って何日？計算してみる →</a></p>
 <p class="more"><a href="/ja/compare/">TT・Googleカレンダー・TimeTree比較 →</a></p>

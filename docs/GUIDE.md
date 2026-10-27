@@ -209,6 +209,14 @@ Names, greeting, app name, theme, the day you met and calendar photos are all in
 means replacing files in your GitHub copy; the [README](../README.md#making-it-yours)
 lists which ones.
 
+## The "Us" tab
+
+The **heart button** at the top opens it: a question of the day, a photo diary,
+a bucket list, a money ledger, food and film notes, and a map of your places.
+Nothing to set up — it works as soon as you two are in. Location sharing asks
+your phone for permission the first time you switch it on, and you only see each
+other while **both** of you have it on.
+
 ## If you open your copy to other people
 
 For the two of you, nothing else is needed. If other people will sign up on your

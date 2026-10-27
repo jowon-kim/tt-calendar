@@ -16,6 +16,12 @@ day itself.
   Android notifications (FCM) and iPhone notifications (APNs) are plain `fetch`
   and Node's own `http2`, not SDKs (`lib/fcm.js`, `lib/apns.js`)
 - Vercel serverless functions + Neon Postgres + Vercel Blob for photos
+- The **"Us" tab** (heart button at the top; `public/together.js` + one function,
+  `api/together.js`): question of the day, poke, photo diary, bucket list, money
+  ledger, food/culture log with stars, and a map (MapLibre + OpenFreeMap, loaded
+  only when opened; no key). Location sharing shows only while **both** have it on,
+  keeps only the last spot, and is deleted when turned off. The screen is drawn
+  phone-width only (`--frame` in `style.css`), on desktop too
 - Store apps for iOS and Android are thin Capacitor shells around the same site
   (`android/`, `ios/`, see [docs/APPS.md](docs/APPS.md))
 - Ships in nine languages (English is the reference pack) and holidays for nine
@@ -117,6 +123,11 @@ Events also announce themselves on the day they happen. Two rules:
 - **Every morning at 8** — one summary of the day: all-day events and everything
   from 8am on (earlier ones already had their reminder)
 
+The "Us" tab rides the same knock: at **8pm** whoever has not answered the question
+of the day is reminded (nobody, if both answered), and the 8am summary gains a
+"one year ago today" line when a diary entry exists for that date (on a day with
+no events it goes out alone).
+
 Unlike the change notifications, these go to **both** people. An event spanning
 several days is announced on the day it starts, not every day it covers.
 
@@ -215,7 +226,10 @@ their phone.
 - **Wording** — never write a user-visible string inline. Add a key to
   `public/i18n/en.js` (and the other packs), then use `t('key')` on the screen or
   `t(locale, 'key')` on the server. `npm run i18n` catches a pack that fell behind
-- **Shared limits** (photos per calendar, photo size) — `public/limits.js`, read by both sides
+- **Shared limits** (photos per calendar, photo size, diary photos) — `public/limits.js`, read by both sides
+- **"Us" tab** — screen `public/together.js` (strings `together.*`), server
+  `api/together.js` (`?` actions in one function — Vercel Hobby allows 12), questions
+  in `lib/questions.js` (same 30 slots in every language)
 - Run `npm test` after any change
 
 ## Customizations users ask for

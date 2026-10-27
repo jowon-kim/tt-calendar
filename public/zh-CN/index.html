@@ -77,7 +77,7 @@ ul.better{padding-left:22px;margin:0;color:var(--soft)}
 ul.better li{margin:0 0 8px}
 .fine{font-size:14px;color:var(--muted)}
 </style>
-<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。免费开源。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["我的、你的、我们的","对方会收到通知","及时的提醒","帮你数在一起的天数","放上你们的照片","语言和节假日"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TT 免费吗？","acceptedAnswer":{"@type":"Answer","text":"免费。TT 是开源软件（MIT），没有广告，也没有付费功能。自己部署一份，日历就只保存在你自己的数据库里。"}},{"@type":"Question","name":"需要从应用商店下载吗？","acceptedAnswer":{"@type":"Answer","text":"不需要。在 iPhone、安卓和电脑的浏览器里都能直接用。添加到主屏幕后像应用一样打开，iPhone 也要这样才能收到通知。"}},{"@type":"Question","name":"iPhone 能用吗？","acceptedAnswer":{"@type":"Answer","text":"能。用 Safari 打开，点分享 →“添加到主屏幕”。iOS 16.4 及以上，从主屏幕打开的应用可以收到通知。"}},{"@type":"Question","name":"怎么邀请对方？","acceptedAnswer":{"@type":"Answer","text":"在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。"}},{"@type":"Question","name":"会收集哪些信息？","acceptedAnswer":{"@type":"Answer","text":"用户名、密码（加密后保存），以及你们放进日历的日程、名字、日期和照片。不收集邮箱。随时可以在设置里删除账号。"}},{"@type":"Question","name":"如果一方删除了账号呢？","acceptedAnswer":{"@type":"Answer","text":"日历会原样留给另一方。两个人都离开后，日程和照片会被删除。"}}]}]</script>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"TT","url":"https://tt-calendar.vercel.app/","description":"两个人共用一个日历：日程、纪念日、在一起的天数，对方改了日程还会通知你。不用应用商店，浏览器里直接用。免费开源。","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser (iPhone, Android, computer)","inLanguage":["en","ko","ja","zh-CN","es","fr","de","pt-BR","ru"],"image":"https://tt-calendar.vercel.app/landing/og.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["我的、你的、我们的","对方会收到通知","及时的提醒","帮你数在一起的天数","放上你们的照片","语言和节假日","“我们”页","我们的地点地图"],"dateModified":"2026-09-30"},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"TT 免费吗？","acceptedAnswer":{"@type":"Answer","text":"免费。TT 是开源软件（MIT），没有广告，也没有付费功能。自己部署一份，日历就只保存在你自己的数据库里。"}},{"@type":"Question","name":"需要从应用商店下载吗？","acceptedAnswer":{"@type":"Answer","text":"不需要。在 iPhone、安卓和电脑的浏览器里都能直接用。添加到主屏幕后像应用一样打开，iPhone 也要这样才能收到通知。"}},{"@type":"Question","name":"iPhone 能用吗？","acceptedAnswer":{"@type":"Answer","text":"能。用 Safari 打开，点分享 →“添加到主屏幕”。iOS 16.4 及以上，从主屏幕打开的应用可以收到通知。"}},{"@type":"Question","name":"怎么邀请对方？","acceptedAnswer":{"@type":"Answer","text":"在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。"}},{"@type":"Question","name":"会收集哪些信息？","acceptedAnswer":{"@type":"Answer","text":"用户名、密码（加密后保存），以及你们放进日历的日程、名字、日期和照片。不收集邮箱。随时可以在设置里删除账号。"}},{"@type":"Question","name":"如果一方删除了账号呢？","acceptedAnswer":{"@type":"Answer","text":"日历会原样留给另一方。两个人都离开后，日程和照片会被删除。"}},{"@type":"Question","name":"我们的位置会被共享吗？","acceptedAnswer":{"@type":"Answer","text":"只有你们两人都在“我们”页开启位置共享时才会。只保留最后一个位置，在该页面打开时每分钟最多上传一次，关闭即删除。"}}]}]</script>
 </head>
 <body>
 <div class="wrap">
@@ -101,6 +101,8 @@ ul.better li{margin:0 0 8px}
 <div class="card"><h3>帮你数在一起的天数</h3><p>填上相识的日子，100天、200天和每年的纪念日都会出现在日历上，还能看到还剩几天。</p></div>
 <div class="card"><h3>放上你们的照片</h3><p>最多放30张照片，会出现在日程旁边和空白的日子里。</p></div>
 <div class="card"><h3>语言和节假日</h3><p>9种语言，9个国家的节假日，按你们的时区使用。</p></div>
+<div class="card"><h3>“我们”页</h3><p>每天一个问题（你回答后才能看到对方的答案）、一年后会再回来的照片日记、愿望清单、约会账本、可以打星的美食和文化记录，还有代替“想你了”的戳一下。</p></div>
+<div class="card"><h3>我们的地点地图</h3><p>把对你们有意义的地方钉在地图上。位置共享只有两人都开启时才可见，只保留最后一个位置，关闭的那一刻就删除。</p></div>
 </div>
 <h2>怎么开始</h2>
 <ol class="steps">
@@ -116,6 +118,7 @@ ul.better li{margin:0 0 8px}
 <div class="card"><h3>怎么邀请对方？</h3><p>在设置里生成邀请链接发给对方。对方通过链接注册后，你们就共用同一个日历。账号各自独立。</p></div>
 <div class="card"><h3>会收集哪些信息？</h3><p>用户名、密码（加密后保存），以及你们放进日历的日程、名字、日期和照片。不收集邮箱。随时可以在设置里删除账号。</p></div>
 <div class="card"><h3>如果一方删除了账号呢？</h3><p>日历会原样留给另一方。两个人都离开后，日程和照片会被删除。</p></div>
+<div class="card"><h3>我们的位置会被共享吗？</h3><p>只有你们两人都在“我们”页开启位置共享时才会。只保留最后一个位置，在该页面打开时每分钟最多上传一次，关闭即删除。</p></div>
 </div>
 <p class="more"><a href="/zh-CN/days-together/">我们在一起多少天了？算一算 →</a></p>
 <p class="more"><a href="/zh-CN/compare/">TT、Google 日历、TimeTree 对比 →</a></p>
