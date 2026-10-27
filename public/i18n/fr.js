@@ -223,7 +223,12 @@ globalThis.I18N.fr = {
 
   /* ── Notifications ── */
   'push.allow': 'Activer les notifications',
-  'push.turnOff': 'Désactiver les notifications',
+  'push.turnOff': 'Désactiver toutes les notifications',
+  'push.questionsOff': 'Couper seulement la question du jour',
+  'push.questionsOn': 'Réactiver la question du jour',
+  'push.questionsOffNote': 'Les alertes de la question du jour (20 h et « a répondu ») n’arrivent plus sur cet appareil.',
+  'push.questionsTurnedOff': 'Alertes de la question coupées',
+  'push.questionsTurnedOn': 'Alertes de la question réactivées',
   'push.onNote': 'Cet appareil reçoit une notification quand l\'autre change quelque chose.',
   'push.offNote': 'Active-les une fois et cet appareil sera prévenu de chaque changement de l\'autre.',
   'push.unsupported': 'Ce navigateur ne gère pas les notifications.',

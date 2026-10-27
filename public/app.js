@@ -1828,6 +1828,7 @@ function afterPhotoChange(message) {
 
 /* 이 기기의 구독. 켜져 있으면 객체, 꺼져 있으면 null. */
 let pushSub = null;
+let pushQuestions = true; // 이 기기로 오늘의 질문 알림을 받는지 — 서버가 알려준 값
 
 const pushable = () =>
   'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -1904,7 +1905,8 @@ async function registerApp() {
     tokenWaiters.push({ resolve, reject });
     push.register();
   });
-  await api.call('POST', '/api/push', { platform: window.Capacitor.getPlatform(), token });
+  const saved = await api.call('POST', '/api/push', { platform: window.Capacitor.getPlatform(), token });
+  pushQuestions = saved?.questions !== false;
   pushSub = { endpoint: token, unsubscribe: () => push.unregister() };
 }
 
@@ -1949,7 +1951,7 @@ async function syncPush() {
         });
       }
       // 누구 앞으로 걸지는 서버가 로그인한 계정을 보고 정합니다
-      if (pushSub) await api.call('POST', '/api/push', { subscription: pushSub.toJSON() });
+      if (pushSub) pushQuestions = (await api.call('POST', '/api/push', { subscription: pushSub.toJSON() }))?.questions !== false;
     }
   } catch { /* 알림이 안 갈 뿐이라 조용히 넘어갑니다 */ }
   renderPush();
@@ -1974,8 +1976,11 @@ function renderPush() {
   // 아이폰 사파리 탭은 막힌 게 아니라 홈 화면에 두면 되는 것 — 눌러서 그림 안내로 갑니다
   button.disabled = !!blocked && !safariTab();
   note.textContent = blocked || (pushSub
-    ? t('push.onNote')
+    ? t('push.onNote') + (pushQuestions ? '' : ' ' + t('push.questionsOffNote'))
     : t('push.offNote'));
+  const q = $('s-push-q');
+  q.hidden = !pushSub;
+  q.textContent = t(pushQuestions ? 'push.questionsOff' : 'push.questionsOn');
   renderSetupSteps(); // 알림을 켜고 끄면 사용법 "처음 설정"의 알림 단계도 따라 숨고 나타납니다
 }
 
@@ -1993,7 +1998,7 @@ async function subscribePush() {
     userVisibleOnly: true,
     applicationServerKey: keyBytes(publicKey),
   });
-  await api.call('POST', '/api/push', { subscription: sub.toJSON() });
+  pushQuestions = (await api.call('POST', '/api/push', { subscription: sub.toJSON() }))?.questions !== false;
   pushSub = sub;
   toast(t('push.turnedOn'));
 }
@@ -2012,6 +2017,21 @@ async function togglePush() {
         return;
       }
       await subscribePush();
+    } catch (err) {
+      toast(err.message || t('error.pushFailed'));
+    }
+  });
+  renderPush();
+}
+
+/** 오늘의 질문 알림만 켜고 끄기 — 이 기기 것만, 다른 알림은 그대로 */
+async function togglePushQuestions() {
+  if (!pushSub) return;
+  await once($('s-push-q'), async () => {
+    try {
+      const { questions } = await api.call('PATCH', '/api/push', { endpoint: pushSub.endpoint, questions: !pushQuestions });
+      pushQuestions = questions;
+      toast(t(questions ? 'push.questionsTurnedOn' : 'push.questionsTurnedOff'));
     } catch (err) {
       toast(err.message || t('error.pushFailed'));
     }
@@ -2734,6 +2754,7 @@ $('pw-form').addEventListener('submit', (e) => {
   });
 });
 $('s-push').addEventListener('click', togglePush);
+$('s-push-q').addEventListener('click', togglePushQuestions);
 
 /* ── 홈 화면에 설치 ──
    크롬·엣지는 설치할 수 있을 때 beforeinstallprompt를 한 번 줍니다 — 이미 설치했으면 안 줘요.

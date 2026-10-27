@@ -67,7 +67,7 @@ async function remind({ coupleId, locale }, now) {
     const answered = await listAnswered(coupleId, now.date);
     if (answered.length < 2 && await claimReminder(coupleId, `${now.date}:question`)) {
       const except = answered.length === 1 ? answered[0] : undefined;
-      await notifyAll(coupleId, describeQuestion(questionFor(now.date, locale), locale), `question:${now.date}`, { except });
+      await notifyAll(coupleId, describeQuestion(questionFor(now.date, locale), locale), `question:${now.date}`, { except, question: true });
       sent.push(`question:${2 - answered.length}`);
     }
   }

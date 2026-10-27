@@ -1,5 +1,5 @@
 import { requireSession, body, guard, methodNotAllowed, ValidationError } from '../../lib/http.js';
-import { savePushSub, removePushSub } from '../../lib/store.js';
+import { savePushSub, removePushSub, setPushQuestions } from '../../lib/store.js';
 import { publicKey } from '../../lib/push.js';
 
 const ENDPOINT_LIMIT = 500; // 실제로는 300자 안팎입니다 — 터무니없는 건 받지 않습니다
@@ -9,13 +9,14 @@ const FCM_TOKEN = /^[A-Za-z0-9_:.-]{20,4096}$/; // FCM 토큰은 150자 안팎�
  * GET    이 앱의 공개키 — 브라우저가 구독을 만들 때 필요합니다
  * POST   이 기기로 알림 받기 (같은 기기가 다시 켜면 덮어씁니다)
  *        브라우저는 { subscription }, 스토어 앱은 { platform, token }
+ * PATCH  { endpoint, questions } 이 기기의 오늘의 질문 알림만 켜고 끄기 — 다른 알림은 그대로
  * DELETE 이 기기만 끄기 — 같은 사람의 다른 기기는 그대로 둡니다
  *
  * 알림을 받을 사람(a/b)은 로그인한 계정이 정합니다. 예전엔 화면이 보낸 owner를
  * 믿었는데, 그러면 상대 이름으로 기기를 걸어 상대 몫의 알림을 가로챌 수 있습니다.
  */
 export default guard(async (req, res) => {
-  const allowed = ['GET', 'POST', 'DELETE'];
+  const allowed = ['GET', 'POST', 'PATCH', 'DELETE'];
   if (!allowed.includes(req.method)) return methodNotAllowed(res, allowed);
   const session = await requireSession(req, res);
   if (!session) return;
@@ -31,12 +32,20 @@ export default guard(async (req, res) => {
 
   const input = body(req);
 
+  if (req.method === 'PATCH') {
+    const endpoint = String(input.endpoint || '');
+    if (!endpoint || typeof input.questions !== 'boolean') throw new ValidationError('error.noDevice');
+    const questions = await setPushQuestions(session.coupleId, endpoint, input.questions);
+    if (questions === null) return res.status(404).json({ error: 'error.noDevice' });
+    return res.status(200).json({ questions });
+  }
+
   /* 스토어 앱: { platform: 'ios' | 'android', token } — FCM이 준 토큰 하나면 됩니다 */
   if (input.platform === 'ios' || input.platform === 'android') {
     const token = input.token;
     if (typeof token !== 'string' || !FCM_TOKEN.test(token)) throw new ValidationError('error.pushFailed');
-    await savePushSub(session.coupleId, session.slot, { endpoint: token }, input.platform, session.sessionId);
-    return res.status(201).json({ ok: true });
+    const { questions } = await savePushSub(session.coupleId, session.slot, { endpoint: token }, input.platform, session.sessionId);
+    return res.status(201).json({ ok: true, questions });
   }
 
   const { subscription } = input;
@@ -50,6 +59,6 @@ export default guard(async (req, res) => {
     typeof auth === 'string' && auth;
   if (!ok) throw new ValidationError('error.pushFailed');
 
-  await savePushSub(session.coupleId, session.slot, { endpoint, p256dh, auth }, 'web', session.sessionId);
-  res.status(201).json({ ok: true });
+  const { questions } = await savePushSub(session.coupleId, session.slot, { endpoint, p256dh, auth }, 'web', session.sessionId);
+  res.status(201).json({ ok: true, questions });
 });

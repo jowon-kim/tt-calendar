@@ -170,7 +170,7 @@ export default guard(async (req, res) => {
     const s = await state();
     if (!s.question.theyAnswered) {
       const name = settings.names?.[slot] || '';
-      await notifyAll(coupleId, { title: '💬', body: `${name} ✓ ${questionFor(day, settings.locale)}` }, `answer-${day}`, { except: slot });
+      await notifyAll(coupleId, { title: '💬', body: `${name} ✓ ${questionFor(day, settings.locale)}` }, `answer-${day}`, { except: slot, question: true });
     }
     return res.status(200).json(s);
   }

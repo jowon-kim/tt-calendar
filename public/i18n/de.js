@@ -222,7 +222,12 @@ globalThis.I18N.de = {
 
   /* ── Notifications ── */
   'push.allow': 'Benachrichtigungen einschalten',
-  'push.turnOff': 'Benachrichtigungen ausschalten',
+  'push.turnOff': 'Alle Mitteilungen ausschalten',
+  'push.questionsOff': 'Nur Fragen-Mitteilungen aus',
+  'push.questionsOn': 'Fragen-Mitteilungen wieder an',
+  'push.questionsOffNote': 'Mitteilungen zur Tagesfrage (20 Uhr und „hat geantwortet“) kommen nicht auf dieses Gerät.',
+  'push.questionsTurnedOff': 'Fragen-Mitteilungen sind aus',
+  'push.questionsTurnedOn': 'Fragen-Mitteilungen sind an',
   'push.onNote': 'Dieses Gerät wird benachrichtigt, wenn der oder die andere etwas ändert.',
   'push.offNote': 'Einmal einschalten, und dieses Gerät erfährt von jeder Änderung des oder der anderen.',
   'push.unsupported': 'Dieser Browser kann keine Benachrichtigungen.',
