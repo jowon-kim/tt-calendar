@@ -1427,6 +1427,10 @@ const BUSY_IP = '203.0.113.9';
   await call(photosCreate, { method: 'POST', token: leaverA, body: { mime: 'image/webp', data: TINY } });
   await subscribe(leaverA, 'https://web.push.apple.com/leave-a');
   await subscribe(leaverB, 'https://web.push.apple.com/leave-b');
+  const { default: together } = await import('./api/together.js');
+  await call(together, { method: 'POST', token: leaverA, body: { action: 'location', on: true, lat: 37.5, lng: 127 } });
+  await call(together, { method: 'POST', token: leaverB, body: { action: 'location', on: true, lat: 37.6, lng: 127.1 } });
+  await call(together, { method: 'POST', token: leaverA, body: { action: 'answer', text: '떠나기 전 답' } });
 
   r = await call(account, { method: 'GET', token: leaverB });
   ok('there is no download any more — only the way out', r.status === 405);
@@ -1446,12 +1450,15 @@ const BUSY_IP = '203.0.113.9';
   r = await call(state, { token: leaverB });
   ok('the one who stays keeps the whole calendar',
     r.body.events.some((e) => e.title === 'our trip') && r.body.photos.length === 1 && files.size === 1);
+  const after = await call(together, { token: leaverB });
+  ok('the one who left is no longer on the map, nor their answer', after.body.location.them === null && !after.body.location.theyOn
+    && !after.body.question.theyAnswered, JSON.stringify(after.body.location));
   ok('and can invite someone into the empty seat', r.body.paired === false
     && (await call(invite, { method: 'POST', token: leaverB })).status === 201);
 
   r = await call(account, { method: 'DELETE', token: leaverB, body: { password: PW } });
   ok('the last one leaves too', r.status === 204);
-  const tables = ['events', 'settings', 'photos', 'push_subs', 'reminders_sent', 'invites'];
+  const tables = ['events', 'settings', 'photos', 'push_subs', 'reminders_sent', 'invites', 'items', 'answers', 'locations', 'nudges'];
   const left = {};
   for (const table of tables) left[table] = await rows(table, shared);
   ok('and nothing of that calendar is left anywhere', Object.values(left).every((n) => n === 0), JSON.stringify(left));

@@ -150,6 +150,8 @@ export default guard(async (req, res) => {
     return res.status(200).json(s);
   }
   if (input.action === 'nudge') {
+    // 하루 지난 콕은 셀 일이 없으니 지웁니다 (개인정보처리방침: 하루 보관)
+    await sql`delete from nudges where couple_id = ${coupleId} and at < now() - interval '24 hours'`;
     if ((await nudgesLeft(coupleId, slot)) <= 0) return res.status(429).json({ error: 'error.nudgeLimit' });
     await sql`insert into nudges (couple_id, member) values (${coupleId}, ${slot})`;
     const name = settings.names?.[slot] || '';
