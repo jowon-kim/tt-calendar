@@ -1,7 +1,11 @@
 # Setting it up without writing code
 
 This guide is for someone who has never used a terminal. Everything happens in a
-web browser, on a computer. It takes about 5 minutes, and nothing costs money.
+web browser, on a computer. It takes about 15 minutes, and nothing costs money.
+
+Your copy runs on **your own** Vercel and Neon accounts. Your plans, photos and
+notes are stored in **your** database — not on a company's server, and not on
+mine. Nobody else has the keys.
 
 If you already use a coding agent like Claude Code, the
 [README](../README.md#install) has a faster way.
@@ -9,9 +13,10 @@ If you already use a coding agent like Claude Code, the
 ## What you end up with
 
 A private calendar at an address like `https://couple-diary-abc.vercel.app`.
-Each of you signs up with your own username and password (or Google), one of you sends the
-other an invite link, and from then on you share one calendar — when one of you
-adds something, the other's phone buzzes.
+Each of you signs in with your own Google account, one of you sends the other an
+invite link, and from then on you share one calendar — when one of you adds
+something, the other's phone buzzes. (Google only checks who you are. Your
+calendar never goes to Google.)
 
 This guide sets up **your own copy for the two of you.** Vercel's free plan is
 for personal use; if you want to let other couples sign up too, that is a
@@ -25,7 +30,9 @@ service and needs Vercel Pro (see [AGENTS.md](../AGENTS.md)).
   where your copy of the app is kept
 - **A Vercel account** — [vercel.com/signup](https://vercel.com/signup). Choose
   **Hobby** and **Continue with GitHub**. This is what runs the app
-- **About 5 minutes**
+- **A Google account** — the one you already have. It is used once, to make the
+  sign-in button work on your address
+- **About 15 minutes**
 
 You do not need a credit card. Both services are free at this size, and if a
 limit is ever reached they stop rather than bill you.
@@ -39,7 +46,7 @@ own tables the first time it runs.
 
 Click this button:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjowon-kim%2Fcouple-diary&project-name=couple-diary&repository-name=couple-diary&stores=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22neon%22%2C%22productSlug%22%3A%22neon%22%2C%22protocol%22%3A%22storage%22%7D%5D)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjowon-kim%2Ftt-calendar&project-name=tt-calendar&repository-name=tt-calendar&stores=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22neon%22%2C%22productSlug%22%3A%22neon%22%2C%22protocol%22%3A%22storage%22%7D%5D)
 
 Vercel walks you through a few screens. The labels change now and then, but the
 order is:
@@ -60,11 +67,31 @@ When it's done, Vercel shows your address.
 > **⋯** menu on the newest one and choose **Redeploy**. The sign-in screen tells
 > you if this is what's missing.
 
-## 2. Sign up and invite
+## 2. Turn on Google sign-in
 
-Open your address and tap **New here? Create an account**. A username (3–20
-lowercase letters, numbers, `. _ -`) and a password of 8 characters or more —
-that's you in. If you added a Google client ID, **Continue with Google** works too.
+Until you do this, the sign-in screen says *"Google sign-in isn't set up on this
+server"*. You are making a "client ID" — a label that tells Google this address
+is allowed to show a Google sign-in button.
+
+1. Open [console.cloud.google.com](https://console.cloud.google.com) with your
+   Google account and create a **new project** (any name, e.g. "our calendar")
+2. **APIs & Services → OAuth consent screen.** User type **External**. Fill in an
+   app name and your email; skip the optional fields. Then, under **Audience**
+   (or **Test users**), choose **Publish app** — otherwise only the email
+   addresses you list there can sign in
+3. **APIs & Services → Credentials → Create credentials → OAuth client ID.**
+   Application type **Web application**. Under **Authorized JavaScript origins**
+   add your address exactly as Vercel showed it, e.g.
+   `https://tt-calendar-abc.vercel.app` (no slash at the end). No redirect URI is
+   needed. Press **Create** and copy the **Client ID** (it ends in
+   `.apps.googleusercontent.com`)
+4. On vercel.com: your project → **Settings** → **Environment Variables** → add
+   `GOOGLE_CLIENT_IDS` with that Client ID as the value
+5. **Deployments** → **⋯** on the newest one → **Redeploy**
+
+## 3. Sign in and invite
+
+Open your address and tap **Continue with Google** — that's you in.
 
 Then open **Settings**:
 
@@ -77,7 +104,7 @@ Then open **Settings**:
 - **Language**, **Holidays**, **Theme**, **The day you met** — whatever you like.
   There is no save button; it saves as you type
 
-## 3. Turn on notifications — both of you, on each phone
+## 4. Turn on notifications — both of you, on each phone
 
 **iPhone:** open the address in **Safari** → tap **Share** → **Add to Home
 Screen** → open the app **from that new icon** → Settings → **Phone
@@ -94,7 +121,7 @@ never get notified about your own changes**, so test it with two phones.
 
 ---
 
-## 4. Optional: reminders on the morning of the day
+## 5. Optional: reminders on the morning of the day
 
 Change notifications work without this. This step adds reminders: a
 **"starting soon"** 30–60 minutes before anything with a time, and **one summary
@@ -125,11 +152,16 @@ monthly allowance. Every 30 minutes stays well inside it.
 
 ## When something is off
 
-**"The username or password doesn't match"** — check capital letters and spaces in
-the password. Ten wrong tries lock that username for 15 minutes.
+**"Google sign-in isn't set up on this server"** — `GOOGLE_CLIENT_IDS` is missing,
+or you didn't redeploy after adding it. See [step 2](#2-turn-on-google-sign-in).
 
-**Forgot the password** — there is no reset: the app never asks for an email, so
-it has nowhere to send one. Keep your password somewhere safe, or sign in with Google.
+**Google says the origin isn't allowed, or the button never appears** — the
+address under *Authorized JavaScript origins* must match the one in your browser
+exactly: `https://`, no slash at the end. Google can take a few minutes to pick
+up a change.
+
+**Your partner can't sign in, you can** — the consent screen is still in testing
+mode. Publish it (step 2.2), or add their email as a test user.
 
 **"No database is connected yet"** — the Neon step was skipped. See the box at
 the end of [step 1](#1-deploy).
@@ -162,7 +194,7 @@ Environment variables live on vercel.com: your project → **Settings** →
   plan can only restore the last six hours
 - **Don't raise the database size** in Neon above the smallest setting (0.25). It
   burns through the free allowance faster
-- **Don't run the cron job all day** (see step 4)
+- **Don't run the cron job all day** (see step 5)
 
 ## Backing up
 
