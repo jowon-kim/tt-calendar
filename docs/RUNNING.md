@@ -109,5 +109,4 @@ pg_restore --no-owner --no-privileges -d "<새 DB 연결 문자열>" diary.dump
   (`lib/store.js`). `test.mjs`의 두 커플 구간이 모든 창구를 두드려 새는지 봅니다
 - 사진 주소도 이제 로그인한 그 달력 사람만 엽니다 (로그인 쿠키가 `<img>` 요청에도 실려서)
 
-**아직 안 한 것** — 결제, Postgres RLS(DB가 한 번 더 막는 장치. 지금은 앱에서만 거릅니다.
-이유는 `docs/HANDOFF.md`), 구글·애플 캘린더 연동.
+**아직 안 한 것** — 결제, Postgres RLS(DB가 한 번 더 막는 장치. 지금은 앱에서만 거릅니다), 구글·애플 캘린더 연동.

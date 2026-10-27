@@ -6,7 +6,7 @@
  * 구글 로그인만 가짜입니다: 이 서버가 직접 서명한 ID 토큰을 /__dev/token?sub=아무거나&name=이름 으로 내주고,
  * 그 공개키를 lib/google.js에 끼워 넣습니다. 화면의 구글 버튼(accounts.google.com 스크립트)은 그대로라,
  * 브라우저로 직접 쓸 땐 콘솔에서  google.accounts.id 대신  fetch('/__dev/token?sub=a&name=미나')  로 받은
- * 토큰을 signInWithGoogle(토큰) 에 넘기면 들어가집니다. 헤드리스 크롬 점검(docs/UX_AUDIT.md)은 GSI 스크립트를
+ * 토큰을 signInWithGoogle(토큰) 에 넘기면 들어가집니다. 헤드리스 크롬 점검은 GSI 스크립트를
  * 가짜로 바꿔 끼워 버튼 한 번으로 들어갔습니다. 푸시는 보내지 않고 버립니다. 껐다 켜면 데이터는 사라집니다.
  * 운영에는 절대 쓰지 마세요 — 아무 토큰이나 서명해 줍니다.
  */

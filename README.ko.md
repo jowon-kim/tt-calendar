@@ -14,9 +14,9 @@
 | | |
 |---|---|
 | **한 줄** | 커플이 같이 쓰는 캘린더를 여러 커플이 가입하는 서비스로 — 프레임워크·빌드 없는 순수 자바스크립트 |
-| **링크** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) · [소개](https://tt-calendar.vercel.app/ko/) · [사귄 지 며칠 계산기](https://tt-calendar.vercel.app/ko/days-together/) — 무료 베타 |
+| **링크** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) · [소개](https://tt-calendar.vercel.app/ko/) · [사귄 지 며칠 계산기](https://tt-calendar.vercel.app/ko/days-together/) |
 | **데모** | ![Mina가 넣은 일정이 Leo 폰에 바로 보임](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25초, 실서비스의 데모 커플 |
-| **상태** | 웹(PWA)으로 운영 중. 스토어 앱은 CI에서 빌드되고, Play 조직 계정용 D-U-N-S 번호를 기다리는 중 |
+| **상태** | 오픈소스(MIT). 웹(PWA)으로 돌아가고, Capacitor 스토어 앱은 CI에서 빌드되지만 스토어에 올리지는 않았습니다. 직접 띄우기: [코드 없이 설치하기](docs/GUIDE.md) · [코딩 에이전트용](AGENTS.md) · [오래 굴리기](docs/RUNNING.md) |
 | **기술** | 순수 JS · Vercel 서버리스(함수 12개 이하, 테스트로 지킴) · Neon Postgres · Vercel Blob · 웹 푸시 / FCM / APNs · Capacitor |
 | **테스트** | 589개, `npm test` (메모리 Postgres에 대고 도는 실제 핸들러, 화면, 다국어, 공휴일, 서비스 워커, 공개 페이지) |
 | **비용** | 월 0원 (무료 플랜) |
@@ -247,4 +247,4 @@ npm run verify
 
 ## 라이선스
 
-무단 사용 금지(All rights reserved). [LICENSE](LICENSE)를 보세요.
+MIT — 가져다 쓰고, 고치고, 둘만의 달력으로 띄워도 됩니다. [LICENSE](LICENSE)를 보세요.
