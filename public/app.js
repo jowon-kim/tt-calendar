@@ -1530,7 +1530,6 @@ function openSettings() {
   showSettingsTab('basic');
   fillSettings();
   renderPush();
-  renderInvite();
   restoreTheme();
   renderPhotoNote();
   $('s-account').textContent = state.login ? t('settings.signedInAs', { name: state.login }) : '';
@@ -1540,24 +1539,13 @@ function openSettings() {
 
 /* ── 상대 부르기 ─────────────────────────── */
 
-/* 상대가 아직 안 들어왔을 때만 보입니다. 링크 주소는 지금 앱이 열린 주소 그대로라
-   네이티브 앱 안에서 만들어도 맞는 주소가 나옵니다. */
-function renderInvite() {
-  $('s-invite-field').hidden = state.paired;
-  // 공유 시트가 있는 폰은 누르면 바로 보내지니 "보내기", 없으면 링크를 만들어 칸에 보여줍니다
-  $('s-invite').dataset.i18n = navigator.share ? 'home.inviteGo' : 'settings.inviteMake';
-  $('s-invite').textContent = t($('s-invite').dataset.i18n);
-}
-
-/** 초대 링크를 새로 만들어 보냅니다. 설정의 버튼과 첫 화면의 초대 카드가 같이 씁니다. */
+/** 초대 링크를 새로 만들어 보냅니다. 상대가 없을 때 첫 화면의 초대 카드가 씁니다 (설정에는 두지 않습니다 — 10/27).
+    폰이면 공유 시트로 바로, 공유 시트가 없거나 못 열면 링크를 복사해 둡니다. 복사도 안 되면 토스트에 주소를 그대로 */
 async function sendInvite(button) {
   await once(button, async () => {
     try {
       const { code } = await api.call('POST', '/api/invite');
       const url = `${location.origin}/?invite=${encodeURIComponent(code)}`;
-      $('s-invite-link').value = url;
-      // 폰이면 공유 시트로 바로 보냅니다 — 긴 주소 칸은 띄우지 않아요. 닫았으면 그대로 끝, 다시 누르면 됩니다.
-      // 공유 시트가 없거나 못 열면 주소 칸과 복사 단추를 보여주고 복사해 둡니다
       if (navigator.share) {
         try {
           await navigator.share({ text: t('invite.shareText'), url });
@@ -1566,21 +1554,12 @@ async function sendInvite(button) {
           if (err?.name === 'AbortError') return;
         }
       }
-      $('s-invite-row').hidden = false;
-      await copyInvite();
+      const copied = await (navigator.clipboard?.writeText(url).then(() => true, () => false) ?? false);
+      toast(copied ? t('invite.copied') : url);
     } catch (err) {
       toast(err.message || t('error.saveFailed'));
     }
   });
-}
-
-const makeInvite = () => sendInvite($('s-invite'));
-
-/** 칸에 있는 초대 링크를 복사합니다. 클립보드를 못 쓰면 골라 두기만 해서 길게 눌러 복사하게 */
-async function copyInvite() {
-  const box = $('s-invite-link');
-  box.select();
-  await navigator.clipboard?.writeText(box.value).then(() => toast(t('invite.copied')), () => {});
 }
 
 /** 초대 링크로 들어왔는데 이미 로그인해 있었다면, 지금 달력을 떠나 상대 달력으로 옮겨갑니다. */
@@ -1995,6 +1974,7 @@ function renderPush() {
   note.textContent = blocked || (pushSub
     ? t('push.onNote')
     : t('push.offNote'));
+  renderSetupSteps(); // 알림을 켜고 끄면 사용법 "처음 설정"의 알림 단계도 따라 숨고 나타납니다
 }
 
 /** 권한을 받고 이 기기를 서버에 등록합니다. 설정과 사용법 양쪽에서 부릅니다. */
@@ -2220,21 +2200,24 @@ function showGuideTab(which) {
 
 /* 처음 온 사람은 설정할 게 있고, 다시 찾아온 사람은 쓰는 법이 궁금합니다. */
 function openGuide(tab = 'use') {
-  renderSetupSteps();
-  showGuideTab(tab);
+  // 처음 설정이 다 끝났으면(둘이 됐고, 처음 만난 날도, 알림도) "평소에 쓰기"로 엽니다
+  const left = renderSetupSteps();
+  showGuideTab(tab === 'setup' && left === 0 ? 'use' : tab);
   renderGuideCta();
   $('guide').showModal();
 }
 
-/** "처음 설정"은 남은 할 일만 — 상대가 들어왔으면 부르기를, 처음 만난 날이 있으면 그 단계를 숨기고
-    보이는 것만 1, 2, 3으로 다시 셉니다. 알림 켜기는 마지막 단추가 그 자리에서 하니 늘 남겨요. */
+/** "처음 설정"은 남은 할 일만 — 상대가 들어왔으면 부르기를, 처음 만난 날이 있으면 그 단계를,
+    이 기기에서 알림을 이미 켰으면 알림 단계를 숨기고 보이는 것만 1, 2, 3으로 다시 셉니다. 남은 수를 돌려줍니다. */
 function renderSetupSteps() {
-  const done = { invite: state.paired, since: !!state.settings.since };
+  const done = { invite: state.paired, since: !!state.settings.since, push: !!pushSub };
   let n = 0;
-  for (const step of $('guide-setup').querySelectorAll('.guide-step')) {
+  const steps = [...$('guide-setup').querySelectorAll('.guide-step')];
+  for (const step of steps) {
     step.hidden = !!done[step.dataset.step];
     if (!step.hidden) step.querySelector('.guide-n').textContent = String(++n);
   }
+  return steps.length ? n : null;
 }
 
 /** 이 기기에서 처음 열었으면 한 번 보여줍니다. */
@@ -2967,9 +2950,6 @@ $('name-ask').addEventListener('cancel', (e) => e.preventDefault()); // 이름�
 $('install-offer-go').addEventListener('click', takeInstall);
 $('install-offer-later').addEventListener('click', skipInstall);
 $('install-offer').addEventListener('cancel', (e) => { e.preventDefault(); skipInstall(); });
-$('s-invite').addEventListener('click', makeInvite);
-$('s-invite-copy').addEventListener('click', copyInvite);
-$('s-invite-link').addEventListener('focus', (e) => e.target.select()); // 누르면 통째로 골라져서 복사하기 쉽게
 $('guide-open').addEventListener('click', () => openGuide('use'));
 $('guide-tab-setup').addEventListener('click', () => showGuideTab('setup'));
 $('guide-tab-use').addEventListener('click', () => showGuideTab('use'));
@@ -3034,7 +3014,6 @@ async function sync(force = false) {
       refreshPhotos();
       renderTitle();
       restoreTheme();
-      renderInvite();
       renderPeople(); // 상대가 막 들어왔으면 그 이름 칸을 엽니다
       state.picked ? openSheet(state.picked) : render();
     }

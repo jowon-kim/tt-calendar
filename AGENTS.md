@@ -16,7 +16,7 @@ day itself.
   Android notifications (FCM) and iPhone notifications (APNs) are plain `fetch`
   and Node's own `http2`, not SDKs (`lib/fcm.js`, `lib/apns.js`)
 - Vercel serverless functions + Neon Postgres + Vercel Blob for photos
-- The **"Us" tab** (heart button at the top; `public/together.js` + one function,
+- The **"Us" tab** ("Us" tab at the bottom of the screen; `public/together.js` + one function,
   `api/together.js`): question of the day, poke, photo diary, bucket list, money
   ledger, food/culture log with stars, and a map (MapLibre + OpenFreeMap, loaded
   only when opened; no key). Location sharing shows only while **both** have it on,

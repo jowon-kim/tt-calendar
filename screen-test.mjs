@@ -414,48 +414,37 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run(`state.settings.names = { a: '조원', b: '' }`);
   ok('a name someone wrote wins', run(`nameOf('a')`) === '조원');
 
-  /* 상대가 아직이면 설정이 초대를 권하고, 들어온 계정도 보여줍니다 */
+  /* 설정에는 초대가 없습니다 — 혼자면 첫 화면 카드가 부릅니다 (10/27). 들어온 계정은 보여줍니다 */
   run('openSettings()');
-  ok('settings offer an invite while they are one', !$('s-invite-field').hidden);
+  ok('settings no longer carry an invite', !/s-invite/.test(readFileSync('public/index.html', 'utf8')));
   ok('and say who is signed in', $('s-account').textContent.includes('we'), $('s-account').textContent);
 
-  /* 초대 링크를 만들면 칸 오른쪽에 복사 버튼(종이 두 장 아이콘)이 같이 뜹니다 */
+  /* 공유 시트가 없으면(컴퓨터) 초대 링크를 복사해 두고, 복사도 안 되면 주소를 토스트로 */
   const copied = [];
   navigator.clipboard = { writeText: async (text) => { copied.push(text); } };
-  ok('the link row waits until there is a link', /<div id="s-invite-row"[^>]* hidden>/.test(readFileSync('public/index.html', 'utf8')));
   const realCall = run('api.call');
-  run(`api.call = async (method, url) => (url === '/api/invite' ? { code: 'abc 123' } : {})`);
-  await run('makeInvite()');
-  ok('making a link shows it with a copy button beside it',
-    !$('s-invite-row').hidden && $('s-invite-link').value.endsWith('/?invite=abc%20123') && !!$('s-invite-copy'), $('s-invite-link').value);
-  copied.length = 0;
-  $('s-invite-copy').click();
-  await sleep(10);
-  ok('the copy button copies the link', copied[0] === $('s-invite-link').value && $('toast').textContent === run(`t('invite.copied')`), copied);
   globalThis.__realCall = realCall;
-  run('api.call = globalThis.__realCall');
+  run(`api.call = async (method, url) => (url === '/api/invite' ? { code: 'abc 123' } : {})`);
+  await run(`sendInvite($('s-push'))`);
+  ok('without a share sheet the invite link is copied', copied[0]?.endsWith('/?invite=abc%20123') && $('toast').textContent === run(`t('invite.copied')`), copied);
+  navigator.clipboard = { writeText: async () => { throw new Error('denied'); } };
+  await run(`sendInvite($('s-push'))`);
+  ok('and when copying is blocked the address itself is shown', $('toast').textContent.endsWith('/?invite=abc%20123'), $('toast').textContent);
   delete navigator.clipboard;
 
-  /* 공유 시트가 있는 폰: 긴 주소 칸 없이 "상대 초대하기" 한 번으로 보냅니다 */
-  run(`$('s-invite-row').hidden = true; api.call = async (method, url) => (url === '/api/invite' ? { code: 'xyz' } : {})`);
+  /* 공유 시트가 있는 폰: 한 번으로 보내고, 닫으면 아무것도 남지 않습니다 */
+  run(`api.call = async (method, url) => (url === '/api/invite' ? { code: 'xyz' } : {})`);
   const sent = [];
   navigator.share = async (data) => { sent.push(data); };
-  run('renderInvite()');
-  ok('with a share sheet the settings button says send', $('s-invite').textContent === run(`t('home.inviteGo')`), $('s-invite').textContent);
-  await run('makeInvite()');
-  ok('it opens the share sheet and shows no long address box', sent.length === 1 && sent[0].url.endsWith('/?invite=xyz') && $('s-invite-row').hidden, sent);
+  await run(`sendInvite($('s-push'))`);
+  ok('with a share sheet it opens the sheet', sent.length === 1 && sent[0].url.endsWith('/?invite=xyz'), sent);
+  run(`$('toast').textContent = ''`);
   navigator.share = async () => { throw Object.assign(new Error('closed'), { name: 'AbortError' }); };
-  await run('makeInvite()');
-  ok('closing the share sheet leaves nothing behind', $('s-invite-row').hidden);
-  navigator.share = async () => { throw Object.assign(new Error('nope'), { name: 'NotAllowedError' }); };
-  await run('makeInvite()');
-  ok('if the share sheet cannot open, the address box comes back', !$('s-invite-row').hidden);
+  await run(`sendInvite($('s-push'))`);
+  ok('closing the share sheet leaves nothing behind', $('toast').textContent === '');
   delete navigator.share;
-  run('renderInvite()');
-  ok('without a share sheet the button makes a link', $('s-invite').textContent === run(`t('settings.inviteMake')`));
   run('api.call = globalThis.__realCall');
-  run(`state.paired = true; renderInvite()`);
-  ok('once they are two the invite goes away', $('s-invite-field').hidden);
+  run('state.paired = true');
   run(`$('settings').close()`);
   await sleep(20);
 
@@ -1062,6 +1051,11 @@ ok('and is left alone', savedLocale().length === 0, fetches);
     fake[0].hidden && fake[1].hidden && !fake[2].hidden && fake[2].n.textContent === '1');
   run(`state.paired = false; state.settings.since = null; renderSetupSteps()`);
   ok('alone with no day, all three show as 1, 2, 3', fake.every((f, i) => !f.hidden && f.n.textContent === String(i + 1)));
+  run(`state.paired = true; state.settings.since = '2024-02-14'; pushSub = { endpoint: 'x' }`);
+  ok('with notifications already on, the notification step is gone too', run('renderSetupSteps()') === 0 && fake.every((f) => f.hidden));
+  run('openGuide("setup")');
+  ok('and with nothing left the guide opens on "day to day"', $('guide-setup').hidden && !$('guide-use').hidden);
+  run(`$('guide').close(); pushSub = null; state.paired = false; state.settings.since = null`);
   $('guide-setup').querySelectorAll = () => [];
   run('state.paired = true');
 }
@@ -1113,12 +1107,12 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   delete $('s-photo-file').click;
 }
 
-/* 설정은 자주 쓰는 것부터 — 두 사람·초대·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 */
+/* 설정은 자주 쓰는 것부터 — 두 사람·처음 만난 날·알림이 위, 언어·시간대·앱 이름은 아래 (초대는 첫 화면 카드로, 10/27) */
 {
   const html = readFileSync('public/index.html', 'utf8');
   const basic = html.slice(html.indexOf('id="s-pane-basic"'), html.indexOf('id="s-pane-design"'));
   const at = (key) => basic.indexOf(`data-i18n="settings.${key}"`);
-  const order = ['people', 'invite', 'since', 'push', 'install', 'language', 'holidays', 'timezone', 'appName', 'greeting', 'account'];
+  const order = ['people', 'since', 'push', 'install', 'language', 'holidays', 'timezone', 'appName', 'greeting', 'account'];
   ok('settings put the everyday things first', order.every((key, i) => at(key) >= 0 && (i === 0 || at(order[i - 1]) < at(key))),
     order.map((key) => [key, at(key)]));
 }
