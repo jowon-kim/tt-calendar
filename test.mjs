@@ -92,7 +92,7 @@ ok('the sign-in cookie cannot be read by scripts or sent from other sites',
 
 /* ── 처음 켜질 때 — 설치하는 사람이 표도 열쇠도 만들지 않습니다 ── */
 ok('the first sign-up creates the tables',
-  (await tables()) === 'active_days,app_meta,couple_members,couples,events,invites,login_failures,photos,push_subs,reminders_sent,sessions,settings,signups,users',
+  (await tables()) === 'active_days,answers,app_meta,couple_members,couples,events,invites,items,locations,login_failures,nudges,photos,push_subs,reminders_sent,sessions,settings,signups,users',
   await tables());
 const first = await meta();
 ok('it makes a clock key', /^[0-9a-f]{48}$/.test(first.cron_secret) && !('diary_secret' in first), JSON.stringify(Object.keys(first)));
@@ -1144,6 +1144,59 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   r = await call(cron, { method: 'GET', query: { key: CRON } });
   ok('where they live it is 40 minutes away, so it goes', r.body.sent.includes(`soon:${soonThere.id}`), `${here} ${JSON.stringify(r.body)}`);
   await call(settings, { method: 'PATCH', token, body: { timezone: 'Asia/Seoul' } });
+}
+
+/* ── "우리" 탭 (api/together.js, 10/27) ──
+   오늘의 질문은 둘 다 답해야 상대 답이 열리고, 위치는 둘 다 켜야 보이며, 다른 커플에겐 아무것도 안 보입니다. */
+{
+  const { default: together } = await import('./api/together.js');
+  const t = (tok, opts) => call(together, { token: tok, ...opts });
+  let r = await t(token);
+  ok('together: empty to start', r.status === 200 && Array.isArray(r.body.items) && r.body.question.text && r.body.nudgesLeft === 3);
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'bucket', title: '제주 여행' } });
+  ok('together: a bucket item is added', r.status === 201 && r.body.items.some((i) => i.kind === 'bucket' && i.title === '제주 여행' && !i.done));
+  const id = r.body.items.find((i) => i.title === '제주 여행').id;
+  r = await t(tokenB, { method: 'PATCH', body: { action: 'item', id, done: true } });
+  ok('together: the partner can tick it off', r.body.items.find((i) => i.id === id).done === true);
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'ledger', title: '저녁', amount: '32000', day: '2026-10-27' } });
+  ok('together: ledger keeps the amount', r.body.items.some((i) => i.kind === 'ledger' && i.amount === 32000));
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'place', title: '첫 데이트', lat: 37.5665, lng: 126.978 } });
+  ok('together: a place has coordinates', r.body.items.some((i) => i.kind === 'place' && Math.abs(i.lat - 37.5665) < 1e-6));
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'place', title: 'x', lat: 120, lng: 0 } });
+  ok('together: an impossible place is refused', r.status === 400);
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'weird', title: 'x' } });
+  ok('together: an unknown kind is refused', r.status === 400);
+
+  r = await t(token, { method: 'POST', body: { action: 'answer', text: '웃는 게 예뻤어' } });
+  ok('question: my answer is kept, theirs not yet', r.body.question.mine === '웃는 게 예뻤어' && r.body.question.theirs === null && !r.body.question.theyAnswered);
+  r = await t(tokenB);
+  ok('question: the partner cannot read it before answering', r.body.question.theyAnswered === true && r.body.question.theirs === null);
+  r = await t(tokenB, { method: 'POST', body: { action: 'answer', text: '차분해 보였어' } });
+  ok('question: after both answer, both are open', r.body.question.theirs === '웃는 게 예뻤어');
+
+  for (let i = 0; i < 3; i++) r = await t(token, { method: 'POST', body: { action: 'nudge' } });
+  ok('nudge: three a day', r.status === 200 && r.body.nudgesLeft === 0);
+  r = await t(token, { method: 'POST', body: { action: 'nudge' } });
+  ok('nudge: the fourth is refused', r.status === 429);
+
+  r = await t(token, { method: 'POST', body: { action: 'location', on: true, lat: 37.5, lng: 127 } });
+  ok('location: on, but theirs is hidden until they turn it on', r.body.location.on && r.body.location.them === null);
+  r = await t(tokenB, { method: 'POST', body: { action: 'location', on: true, lat: 37.6, lng: 127.1 } });
+  ok('location: both on, both see each other', r.body.location.them && Math.abs(r.body.location.them.lat - 37.5) < 1e-6);
+  r = await t(token, { method: 'POST', body: { action: 'location', on: false } });
+  r = await t(tokenB);
+  ok('location: turning it off removes it at once', r.body.location.them === null && r.body.location.theyOn === false);
+
+  const outsider = await join('outsider');
+  r = await t(outsider);
+  ok('together: another couple sees none of it', r.body.items.length === 0 && r.body.question.mine === null && r.body.location.theyOn === false);
+  r = await t(outsider, { method: 'PATCH', body: { action: 'item', id, done: false } });
+  ok('together: nor can it change it', r.status === 404);
+  await t(outsider, { method: 'DELETE', query: { id } });
+  r = await t(token);
+  ok('together: nor delete it', r.body.items.some((i) => i.id === id));
+  r = await t(token, { method: 'DELETE', query: { id } });
+  ok('together: the couple can delete it', !r.body.items.some((i) => i.id === id));
 }
 
 /* ── 커플끼리는 서로 안 보입니다 ──
