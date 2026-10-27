@@ -1191,6 +1191,11 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   const ours = () => pushed.filter((p) => p.endpoint === LAPTOP || p.endpoint === PHONE);
   const { questionFor } = await import('./lib/questions.js');
   const { localNow: nowIn, yearAgo } = await import('./lib/remind.js');
+  const month = Array.from({ length: 30 }, (_, i) => new Date(Date.UTC(2026, 0, 1 + i)).toISOString().slice(0, 10));
+  const short = ['ko', 'en', 'ja', 'zh-CN', 'es', 'fr', 'de', 'pt-BR', 'ru']
+    .filter((l) => new Set(month.map((d) => questionFor(d, l))).size !== 30 || month.some((d) => !questionFor(d, l)));
+  ok('question: every language has the same 30 questions, one a day', short.length === 0, short.join());
+  ok('question: an unknown language reads English', questionFor('2026-01-01', 'xx') === questionFor('2026-01-01', 'en'));
   pushed.length = 0;
   r = await knock('2026-09-01T20:00');
   ok('question: at 8pm both get the question when neither answered',

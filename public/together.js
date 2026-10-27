@@ -1,28 +1,11 @@
 /* "우리" 탭 (10/27) — api/together.js 의 화면. app.js 와 따로 둡니다 (app.js 가 3,000줄이 넘어서).
    오늘의 질문 · 콕 찌르기 · 1년 전 오늘 · 사진 일기/앨범 · 버킷리스트 · 가계부 · 맛집/문화 · 지도(장소·서로 위치).
-   지도는 열 때만 Leaflet 과 OpenStreetMap 타일을 불러옵니다 (키·비용 없음). 문구는 한국어·영어. */
+   지도는 열 때만 Leaflet 과 OpenStreetMap 타일을 불러옵니다 (키·비용 없음). 문구는 언어팩 9개의 together.* */
 (() => {
   if (!document.body || !document.body.appendChild) return;  // screen-test.mjs 의 가짜 DOM 에는 body 가 없다
-  const KO =(document.documentElement.lang || navigator.language || '').startsWith('ko');
-  const T = KO ? {
-    title: '우리', today: '오늘', diary: '일기', bucket: '버킷', ledger: '가계부', log: '기록', map: '지도',
-    question: '오늘의 질문', answer: '답하기', yours: '내 답', theirs: '상대 답', waiting: '상대가 아직 답하지 않았어요',
-    locked: '내가 답하면 상대 답이 열려요', theyDone: '상대는 답했어요 — 내가 답하면 볼 수 있어요',
-    nudge: '콕 찌르기 💗', nudgesLeft: (n) => `오늘 ${n}번 남음`, nudgeSent: '보냈어요', memory: '1년 전 오늘',
-    add: '추가', title_: '제목', memo: '메모', amount: '금액', day: '날짜', photo: '사진', save: '저장', del: '삭제',
-    food: '맛집', culture: '문화', total: '합계', empty: '아직 없어요', close: '닫기',
-    share: '내 위치 공유', shareOff: '공유 끄기', shareNote: '둘 다 켜야 서로 보여요. 마지막 위치 하나만 우리 DB에 남고, 끄면 지워져요.',
-    tapMap: '지도를 눌러 장소를 추가하세요', placeName: '장소 이름', me: '나', them: '상대', theyOff: '상대는 위치 공유를 꺼 두었어요',
-  } : {
-    title: 'Us', today: 'Today', diary: 'Diary', bucket: 'Bucket', ledger: 'Money', log: 'Log', map: 'Map',
-    question: 'Question of the day', answer: 'Answer', yours: 'You', theirs: 'Them', waiting: 'They haven’t answered yet',
-    locked: 'Answer to see theirs', theyDone: 'They answered — answer to see it',
-    nudge: 'Nudge 💗', nudgesLeft: (n) => `${n} left today`, nudgeSent: 'Sent', memory: 'A year ago today',
-    add: 'Add', title_: 'Title', memo: 'Note', amount: 'Amount', day: 'Date', photo: 'Photo', save: 'Save', del: 'Delete',
-    food: 'Food', culture: 'Culture', total: 'Total', empty: 'Nothing yet', close: 'Close',
-    share: 'Share my location', shareOff: 'Stop sharing', shareNote: 'You see each other only when both share. Only the last spot is kept in your own database, and turning it off deletes it.',
-    tapMap: 'Tap the map to add a place', placeName: 'Place name', me: 'Me', them: 'Them', theyOff: 'They are not sharing their location',
-  };
+  /* 문구는 언어팩의 together.* — 그릴 때마다 읽어서, 서버가 정한 언어로 바뀌어도 따라갑니다 */
+  const tr = (k, vars) => (window.t ? window.t('together.' + k, vars) : k);
+  const T = new Proxy({}, { get: (_, k) => tr(k) });
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let data = null, tab = 'today', map = null, layer = null, watch = null, lastSent = 0;
@@ -71,7 +54,9 @@
   /* ── 탭마다 ── */
   function render() {
     if (!data || root.hidden) return;
-    root.querySelectorAll('.tg-tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+    $('.tg-head h2', root).textContent = T.title;
+    $('.tg-close', root).setAttribute('aria-label', T.close);
+    root.querySelectorAll('.tg-tabs button').forEach((b) => { b.textContent = T[b.dataset.tab]; b.classList.toggle('on', b.dataset.tab === tab); });
     const body = $('.tg-body', root);
     const items = (k) => data.items.filter((i) => i.kind === k);
     if (tab === 'today') body.innerHTML = todayView();
@@ -87,7 +72,7 @@
   function todayView() {
     const q = data.question;
     const answered = q.mine !== null;
-    const yearAgo = new Date(Date.parse(q.day) - 365 * 864e5).toISOString().slice(0, 10);
+    const yearAgo = `${Number(q.day.slice(0, 4)) - 1}${q.day.slice(4)}`; // 아침 알림(lib/remind.js yearAgo)과 같은 날
     const memories = data.items.filter((i) => i.kind === 'diary' && i.day === yearAgo);
     return `
       <div class="tg-card"><h3>${T.question}</h3><p class="tg-q">${esc(q.text)}</p>
@@ -97,7 +82,7 @@
           <form data-form="answer"><textarea name="text" rows="3" required maxlength="1000"></textarea><button class="btn primary">${T.answer}</button></form>`}
       </div>
       <div class="tg-card"><button class="btn primary" data-act="nudge" ${data.nudgesLeft ? '' : 'disabled'}>${T.nudge}</button>
-        <span class="muted">${T.nudgesLeft(data.nudgesLeft)}</span></div>
+        <span class="muted">${tr('nudgesLeft', { n: data.nudgesLeft })}</span></div>
       ${memories.length ? `<div class="tg-card"><h3>${T.memory}</h3>${memories.map(diaryEntry).join('')}</div>` : ''}`;
   }
 
