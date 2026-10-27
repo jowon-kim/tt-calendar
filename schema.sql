@@ -174,6 +174,8 @@ alter table settings alter column locale set default '';
 
 -- 오늘 일정 알림이 쓰는 시간대. "오늘"과 "아침 8시"가 어디 기준인지 정합니다.
 alter table settings add column if not exists timezone text not null default 'UTC';
+-- 홈 화면 아이콘 (10/27): 두 사람이 고른 그림 — photos 의 purpose='icon' 줄 id. 비면 기본 TT 아이콘
+alter table settings add column if not exists icon uuid;
 
 -- 예전 판은 테마를 한국어 이름으로 담았습니다. 쓰던 색을 잃지 않게 id로 옮깁니다.
 update settings set theme = case theme

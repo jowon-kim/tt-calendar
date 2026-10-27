@@ -19,7 +19,7 @@
 | **데모** | ![Mina가 넣은 일정이 Leo 폰에 바로 보임](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25초, 실서비스의 데모 커플 |
 | **상태** | 오픈소스(MIT). 웹(PWA)으로 돌아가고, Capacitor 스토어 앱은 CI에서 빌드되지만 스토어에 올리지는 않았습니다. 직접 띄우기: [코드 없이 설치하기](docs/GUIDE.md) · [코딩 에이전트용](AGENTS.md) · [오래 굴리기](docs/RUNNING.md) |
 | **기술** | 순수 JS · Vercel 서버리스(함수 12개 이하, 테스트로 지킴) · Neon Postgres · Vercel Blob · 웹 푸시 / FCM / APNs · Capacitor |
-| **테스트** | 716개, `npm test` (메모리 Postgres에 대고 도는 실제 핸들러, 화면, 다국어, 공휴일, 서비스 워커, 공개 페이지) |
+| **테스트** | 733개, `npm test` (메모리 Postgres에 대고 도는 실제 핸들러, 화면, 다국어, 공휴일, 서비스 워커, 공개 페이지) |
 | **비용** | 월 0원 (무료 플랜) |
 | **더 읽기** | [어떻게 돌아가나](#어떻게-돌아가나) · [왜 이렇게 만들었나](#왜-이렇게-만들었나) |
 
@@ -49,7 +49,7 @@
   FAQ 구조화 데이터·hreflang·sitemap·`llms.txt`까지 만듭니다
 
 `api/`·`lib/`·`public/`에 약 15,000줄(언어팩 9개 포함). 실제 핸들러를 메모리 Postgres에 붙여 돌리는
-통합 테스트 422개, 화면을 직접 돌리는 테스트 220개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
+통합 테스트 435개, 화면을 직접 돌리는 테스트 224개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
 
 ## 우리 데이터는 우리 DB에
 
@@ -93,7 +93,7 @@ flowchart LR
 | **Vercel Blob** | 달력 사진(비공개). DB에는 사진이 어디 있는지만 적힙니다 | `lib/blob.js` |
 | **바깥 시계** | 30분마다 `/api/cron`을 두드려 "곧 시작" 알림, 아침 8시 요약, 저녁 8시 오늘의 질문을 보냅니다. 달력마다 그 사람들의 시간대로 | `api/cron.js`, `lib/remind.js` |
 | **암호화 백업** | GitHub Actions가 매일 밤 DB를 떠서 GPG로 잠근 뒤 30일 보관합니다. 레포가 공개라 암호 없이는 열 수 없어야 해서요 | `.github/workflows/backup.yml` |
-| **PWA** | 매니페스트, 신호 없이도 열리게 하는 서비스 워커, 크롬·엣지 설치 버튼과 아이폰 그림 안내 | `public/sw.js`, `public/manifest.json` |
+| **PWA** | 매니페스트, 신호 없이도 열리게 하는 서비스 워커, 크롬·엣지 설치 버튼과 아이폰 그림 안내 | `public/sw.js`, `api/manifest.js` |
 | **스토어 앱** | 같은 사이트를 감싼 Capacitor 껍데기에 OS 알림. 안드로이드 `.aab`와 iOS TestFlight 빌드를 Mac 없이 CI에서 만듭니다 | `android/`, `ios/`, `.github/workflows/` |
 
 ## 왜 이렇게 만들었나
@@ -193,7 +193,9 @@ npx vercel deploy --prod
 - **테마 추가** — `style.css`의 `[data-theme="..."]` 블록을 복사해 값만 갈고,
   `app.js`의 `THEMES` 배열에 id를 넣고, 언어팩에 `theme.<id>` 키를 더합니다.
   고르는 칸의 미리보기는 저절로 생깁니다
-- **홈 화면 아이콘 밑 글씨** — `public/manifest.json`. 설정을 따라가지 않습니다
+- **홈 화면 기본 이름·아이콘** — `public/manifest.default.json`, `public/icon-512.png`. 커플마다 앱 안에서
+  자기 이름과 아이콘을 고를 수 있습니다(처음 들어올 때 한 번, 그 뒤엔 설정 → 홈 화면 아이콘).
+  `/manifest.json`은 `api/manifest.js`가 그 선택대로 내줍니다
 
 ## 언어
 
@@ -264,8 +266,8 @@ android/ ios/        스토어 앱 껍데기 (Capacitor)
 fastlane/ .github/   Mac 없이 CI에서 스토어 빌드
 schema.sql  표 열여덟 개 — 앱이 처음 켜질 때 스스로 돌립니다
 landing.mjs 공개 페이지 생성 (글은 landing-content.mjs)
-test.mjs    핸들러 통합 테스트 422개
-screen-test.mjs  public/app.js를 직접 돌리는 테스트 220개 — 로그인, 일정 창, 설정, 앱 알림, 설치
+test.mjs    핸들러 통합 테스트 435개
+screen-test.mjs  public/app.js를 직접 돌리는 테스트 224개 — 로그인, 일정 창, 설정, 앱 알림, 설치
 ```
 
 ```bash

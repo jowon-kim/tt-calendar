@@ -3,18 +3,29 @@
   "outputDirectory": "public",
   "installCommand": "npm install --omit=dev",
   "functions": {
-    "api/**/*.js": { "includeFiles": "schema.sql" }
+    "api/**/*.js": {
+      "includeFiles": "{schema.sql,public/manifest.default.json}"
+    }
   },
   "rewrites": [
     {
       "source": "/api/:op(signup|login|logout|invite|account|google)",
       "destination": "/api/auth?op=:op"
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/api/manifest"
     }
   ],
   "headers": [
     {
       "source": "/api/:path((?!photos/).*)",
-      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }

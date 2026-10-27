@@ -522,13 +522,13 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   run('showInstallButtons()');
   ok('a desktop browser with nothing to install shows no install button', $('s-install-field').hidden);
 
-  /* ── 처음 들어올 때: 이름 → 홈 화면 추가 한 번 → 사용법 ──
+  /* ── 처음 들어올 때: 이름 → 우리 앱 꾸미기(이름·아이콘) → 홈 화면 추가 한 번 → 사용법 ──
      구글이 준 토큰처럼 생긴 것을 만듭니다. 서명은 서버가 보니, 화면은 이름만 읽어요 */
   const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
   const credential = `${b64({ alg: 'RS256' })}.${b64({ sub: '1', given_name: '미나', name: '김미나' })}.sig`;
   const reset = () => {
     run('installGuideFirstRun = false'); // 닫으면서 사용법이 따라 뜨지 않게
-    ['name-ask', 'install-offer', 'install-guide', 'guide'].forEach((id) => $(id).close());
+    ['name-ask', 'look-ask', 'install-offer', 'install-guide', 'guide'].forEach((id) => $(id).close());
     ['diary_install_offered', 'diary_guide'].forEach((k) => store.delete(k));
   };
   const guideShown = async () => { await sleep(500); return $('guide').open; };
@@ -536,6 +536,7 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const fakeShare = async (data) => { shared.push(data); };
 
   reset();
+  store.delete('tt_look_done');
   navigator.userAgent = iphone;
   navigator.share = fakeShare;
   globalThis.__settings = { ...run('state.settings'), names: { a: '레오', b: '' } }; // 초대로 들어온 b — 이름이 비었습니다
@@ -551,7 +552,27 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const named = fetches.find((f) => f.url === '/api/settings' && f.method === 'PATCH');
   ok('"OK" saves only my own seat', named && JSON.stringify(JSON.parse(named.body).names) === JSON.stringify({ b: '미나' }), named?.body);
   ok('keeps the partner\'s name as it was', run('state.settings.names.a') === '레오' && run('state.settings.names.b') === '미나');
-  ok('then, on iphone, goes straight to the three picture steps', !$('name-ask').open && $('install-guide').open && !$('install-guide-ios').hidden);
+  ok('then, before installing, they make the app theirs: name and icon', !$('name-ask').open && $('look-ask').open && !$('install-guide').open);
+  ok('seven icons to pick from, the default one picked', $('look-icons').children.length === 7
+    && $('look-icons').children[0].getAttribute('aria-checked') === 'true', $('look-icons').children.length);
+  $('look-later').click();
+  await sleep(20);
+  ok('"later" moves on, and on iphone goes straight to the three picture steps', !$('look-ask').open && $('install-guide').open && !$('install-guide-ios').hidden);
+  ok('and is not asked again on this device', run(`localStorage.getItem('tt_look_done')`) === '1');
+  {
+    // 상대가 이미 이름이나 아이콘을 정해 뒀으면 묻지 않습니다 — 한 커플에 하나라서. 다음 단계는 잠깐 바꿔 끼워 셉니다
+    const seen = run(`(() => {
+      const seen = [], keepLook = openLook, keepInstall = offerInstall;
+      openLook = () => seen.push('look'); offerInstall = () => seen.push('install');
+      localStorage.removeItem('tt_look_done');
+      state.settings.icon = 'x'; offerLookThenInstall();
+      state.settings.icon = null; state.settings.title = '미레'; offerLookThenInstall();
+      state.settings.title = ''; offerLookThenInstall();
+      openLook = keepLook; offerInstall = keepInstall; localStorage.setItem('tt_look_done', '1');
+      return seen;
+    })()`);
+    ok('if the partner already picked an icon or a name, nobody is asked again', JSON.stringify(seen) === '["install","install","look"]', seen);
+  }
   ok('with no "keep it on your home screen?" box before it', !$('install-offer').open);
   ok('and no share sheet', shared.length === 0, shared);
   ok('the steps say iOS 26: share (or ··· first), view more, open as web app',
