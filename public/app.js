@@ -278,6 +278,7 @@ const state = {
     names: { a: '', b: '' },
     since: null,
     showMilestones: true,
+    icon: null,       // 홈 화면 아이콘 사진 id — 비면 기본 TT 아이콘 (우리 앱 꾸미기)
   },
   cursor: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   picked: null,
@@ -308,6 +309,7 @@ function renderTitle() {
   document.querySelectorAll('.app-name').forEach((el) => { el.textContent = title; });
   $('guide-title').textContent = t('guide.titleFor', { name: title });
   document.querySelectorAll('.app-sub').forEach((el) => { el.textContent = sub; });
+  applyLook();
 }
 
 /* 이름을 아직 안 적었으면 "나"와 "너"로 부릅니다. 누가 "나"인지는 보는 사람 기준이라,
@@ -2792,6 +2794,7 @@ function hideInstall() {
 let installGuideFirstRun = false;
 
 function openInstallGuide(mode, { firstRun = false } = {}) {
+  nameInstallTexts();
   const away = mode === 'away';
   installGuideFirstRun = firstRun;
   $('install-guide-later').hidden = !firstRun;
@@ -2876,7 +2879,14 @@ function givenName(credential) {
 function firstSteps() {
   if (!state.me) return;
   if (!state.settings.names?.[state.me]) return askName();
-  offerInstall();
+  offerLookThenInstall();
+}
+
+/** ② 우리 앱 꾸미기 → ③ 홈 화면에. 둘 중 누가 이미 이름·아이콘을 정했거나 이 기기에서 한 번 봤으면 바로 ③ */
+function offerLookThenInstall() {
+  const decided = state.settings.icon || state.settings.title || localStorage.getItem(LOOK_DONE) === '1';
+  if (decided || inApp() || installed()) return offerInstall();
+  openLook(offerInstall);
 }
 
 /** ① 뭐라고 불러 드릴까요? — 비어 있을 때만. 가입한 사람도, 초대로 들어온 상대도 */
@@ -2898,7 +2908,7 @@ async function saveMyName(e) {
       rememberState();
       render();
       $('name-ask').close();
-      offerInstall();
+      offerLookThenInstall();
     } catch (err) {
       toast(err.message || t('error.saveFailed'));
     }
@@ -2923,6 +2933,7 @@ async function offerInstall() {
   if (!installPrompt && !ios) return maybeGuide(); // 설치할 길이 없는 브라우저 — 바로 사용법
   localStorage.setItem(INSTALL_OFFERED, 'skipped'); // 창을 그냥 닫고 떠나도 다시 묻지 않게
   if (ios) return openInstallGuide('ios', { firstRun: true });
+  nameInstallTexts();
   if (!$('install-offer').open) $('install-offer').showModal();
 }
 
@@ -2944,6 +2955,191 @@ function skipInstall() {
   $('install-offer').close();
   maybeGuide();
 }
+
+/* ── 우리 앱 꾸미기: 홈 화면 이름과 아이콘 (10/27) ──────────────
+   처음 들어올 때 이름 다음, 홈 화면에 깔기 전에 한 번 — 깔고 나서 바꾸면 폰마다 다시 깔아야 하는 일이 생겨서요.
+   둘 중 한 사람이 이미 정했으면 묻지 않습니다. 설정의 "이름·아이콘 바꾸기"도 이 창입니다.
+   그림은 이 화면이 512px 로 그려서 /api/photos 에 아이콘으로 올리고(purpose=icon), 설정에 그 id 를 겁니다.
+   홈 화면은 /manifest.json(api/manifest.js)과 apple-touch-icon 이 그 그림·이름을 가리켜서 따라옵니다. */
+const LOOK_DONE = 'tt_look_done';
+const HEART = 'M12 21s-7.5-4.6-7.5-10.4A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7.5 2.6C19.5 16.4 12 21 12 21z';
+const LOOKS = [
+  { id: 'default' },
+  { id: 'peach', bg: ['#F6A9B1', '#E67F8C'], fg: '#FFFFFF', mark: 'heart' },
+  { id: 'plum', bg: ['#D9B8E3', '#A06CB0'], fg: '#FFFFFF', mark: 'heart' },
+  { id: 'sky', bg: ['#B5D6EE', '#6A9FCB'], fg: '#FFFFFF', mark: 'heart' },
+  { id: 'night', bg: ['#3B2F4D', '#1E1828'], fg: '#F6D99A', mark: 'heart' },
+  { id: 'initials', bg: ['#FBD5DA', '#F09AA3'], fg: '#FFFFFF', mark: 'initials' },
+  { id: 'photo' },
+];
+let look = { pick: 'default', photo: null, after: null };
+
+/** 고른 그림을 512px 캔버스에 — 미리보기와 올릴 파일이 같은 그림입니다 */
+function drawLook(id) {
+  const preset = LOOKS.find((l) => l.id === id);
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d');
+  if (id === 'photo' && look.photo) {
+    const { width: w, height: h } = look.photo;
+    const side = Math.min(w, h); // 가운데를 정사각형으로
+    g.drawImage(look.photo, (w - side) / 2, (h - side) / 2, side, side, 0, 0, 512, 512);
+    return c;
+  }
+  const grad = g.createLinearGradient(0, 0, 512, 512);
+  grad.addColorStop(0, preset.bg[0]);
+  grad.addColorStop(1, preset.bg[1]);
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 512, 512);
+  g.fillStyle = preset.fg;
+  if (preset.mark === 'heart') {
+    g.translate(256 - 12 * 13, 256 - 14.5 * 13);
+    g.scale(13, 13);
+    g.fill(new Path2D(HEART));
+  } else {
+    // 두 사람 이름 첫 글자 — "미♥레"
+    const first = (slot) => [...nameOf(slot)][0] || '';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = `700 150px ${getComputedStyle(document.body).fontFamily || 'sans-serif'}`;
+    g.fillText(`${first('a')}♥${first('b')}`, 256, 270, 460);
+  }
+  return c;
+}
+
+function lookThumb(id) {
+  if (id === 'default') return '/apple-touch-icon.png';
+  if (id === 'keep') return state.settings.icon ? `/api/photos/${state.settings.icon}` : '/apple-touch-icon.png'; // 지금 걸린 그림 그대로
+  if (id === 'photo' && !look.photo) return null;
+  try {
+    return drawLook(id).toDataURL('image/png');
+  } catch {
+    return null; // 그림을 못 그리는 환경 — 칸만 비어 보이고 고르기는 됩니다
+  }
+}
+
+function renderLookPicker() {
+  const box = $('look-icons');
+  box.replaceChildren();
+  for (const { id } of LOOKS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'look-icon';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(look.pick === id));
+    b.setAttribute('aria-label', t(id === 'default' ? 'look.default' : id === 'photo' ? 'look.photo' : 'look.icon'));
+    const src = lookThumb(id);
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      b.append(img);
+    } else {
+      b.classList.add('look-icon-photo');
+      b.textContent = t('look.photo');
+    }
+    b.addEventListener('click', () => {
+      if (id === 'photo') return $('look-file').click();
+      look.pick = id;
+      renderLookPicker();
+    });
+    box.append(b);
+  }
+  $('look-preview-img').src = lookThumb(look.pick) || '/apple-touch-icon.png';
+  $('look-preview-name').textContent = $('look-name').value.trim() || t('default.title');
+}
+
+/** after: 다 정하고(또는 나중에) 할 일 — 처음 들어올 때는 홈 화면 설치로 이어집니다 */
+function openLook(after = null) {
+  // 이미 걸린 아이콘이 있으면 'keep' — 이름만 고치고 저장해도 그림은 그대로
+  look = { pick: state.settings.icon ? 'keep' : 'default', photo: null, after };
+  $('look-name').value = state.settings.title || '';
+  // 처음 들어올 때는 "나중에"(다음 단계로), 설정에서 열면 "취소"
+  $('look-later').textContent = t(after ? 'install.later' : 'common.cancel');
+  renderLookPicker();
+  if (!$('look-ask').open) $('look-ask').showModal();
+}
+
+async function pickLookPhoto() {
+  const file = $('look-file').files[0];
+  $('look-file').value = '';
+  if (!file) return;
+  try {
+    look.photo = await createImageBitmap(file);
+    look.pick = 'photo';
+    renderLookPicker();
+  } catch {
+    toast(t('error.photoRead'));
+  }
+}
+
+async function saveLook(e) {
+  e?.preventDefault();
+  await once($('look-go'), async () => {
+    try {
+      const patch = { title: $('look-name').value.trim().slice(0, 12) };
+      if (look.pick === 'default') patch.icon = null;
+      else if (look.pick !== 'keep') {
+        const photo = look.pick === 'photo';
+        const url = drawLook(look.pick).toDataURL(photo ? 'image/jpeg' : 'image/png', 0.9);
+        const { id } = await api.call('POST', '/api/photos', { mime: photo ? 'image/jpeg' : 'image/png', data: url.split(',')[1], purpose: 'icon' });
+        patch.icon = id;
+      }
+      const saved = await api.call('PATCH', '/api/settings', patch);
+      state.settings = { ...state.settings, title: saved.title, icon: saved.icon ?? null };
+      localStorage.setItem(LOOK_DONE, '1');
+      rememberState();
+      renderTitle();
+      fillSettings();
+      $('look-ask').close();
+      toast(t('look.saved'));
+      look.after?.();
+    } catch (err) {
+      toast(err.message || t('error.saveFailed'));
+    }
+  });
+}
+
+function skipLook() {
+  localStorage.setItem(LOOK_DONE, '1');
+  $('look-ask').close();
+  look.after?.();
+}
+
+/** 설치 창·아이폰 3단계 그림에 들어가는 앱 이름 — 정한 이름으로 ("홈 화면에 TT를…"이 아니라) */
+function nameInstallTexts() {
+  const name = (state.settings.title || t('default.title')).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const title = $('install-offer-title');
+  if (title) title.innerHTML = t('install.offerTitle', { name });
+  document.querySelectorAll('[data-i18n-html="install.step3"]').forEach((el) => { el.innerHTML = t('install.step3', { name }); });
+}
+
+/** 홈 화면 아이콘·이름을 지금 설정대로 — 아이폰은 apple-touch-icon·제목, 안드로이드·크롬은 manifest 를 봅니다 */
+function applyLook() {
+  const icon = state.settings.icon ? `/api/photos/${state.settings.icon}` : null;
+  const title = state.settings.title || t('default.title');
+  document.querySelectorAll('link[rel="apple-touch-icon"]').forEach((el) => el.setAttribute('href', icon || '/apple-touch-icon.png'));
+  document.querySelectorAll('link[rel="icon"]').forEach((el) => el.setAttribute('href', icon || '/favicon.png'));
+  document.querySelectorAll('meta[name="apple-mobile-web-app-title"]').forEach((el) => el.setAttribute('content', title));
+  // 크롬은 manifest 주소가 바뀌어야 새로 읽습니다 — 이름·아이콘을 꼬리표로
+  const manifest = document.querySelector('link[rel="manifest"]');
+  if (manifest) manifest.setAttribute('href', `/manifest.json?v=${encodeURIComponent(`${state.settings.icon || ''}.${title}`)}`);
+  document.querySelectorAll('.step-icon, img.install-step-icon, #s-look-img').forEach((el) => { el.src = icon || '/apple-touch-icon.png'; });
+  nameInstallTexts();
+  const brand = $('brand-icon');
+  if (brand) {
+    brand.hidden = !icon;
+    if (icon) brand.src = icon;
+    brand.previousElementSibling?.toggleAttribute('hidden', !!icon); // 기본 체리 그림은 아이콘이 있으면 숨김
+  }
+}
+
+$('look-form').addEventListener('submit', saveLook);
+$('look-later').addEventListener('click', skipLook);
+$('look-ask').addEventListener('cancel', (e) => { e.preventDefault(); skipLook(); });
+$('look-file').addEventListener('change', pickLookPhoto);
+$('look-name').addEventListener('input', () => { $('look-preview-name').textContent = $('look-name').value.trim() || t('default.title'); });
+$('s-look').addEventListener('click', () => openLook());
 
 $('name-ask-form').addEventListener('submit', saveMyName);
 $('name-ask').addEventListener('cancel', (e) => e.preventDefault()); // 이름은 건너뛰지 않습니다 — 상대 화면에 뜰 이름이라

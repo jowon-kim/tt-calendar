@@ -1,5 +1,6 @@
-import { requireSession, body, guard, methodNotAllowed, normalizeSettings } from '../lib/http.js';
-import { patchSettings, getSettings } from '../lib/store.js';
+import { requireSession, body, guard, methodNotAllowed, normalizeSettings, ValidationError } from '../lib/http.js';
+import { patchSettings, getSettings, ownsIcon, dropOtherIcons } from '../lib/store.js';
+import { deletePhotos } from '../lib/blob.js';
 import { notifyJoined } from '../lib/push.js';
 
 /**
@@ -15,10 +16,16 @@ export default guard(async (req, res) => {
   if (!session) return;
 
   const patch = normalizeSettings(body(req));
+  // 홈 화면 아이콘은 이 커플이 아이콘으로 올린 사진만 — 남의 사진 id 를 걸 수 없게
+  if (patch.icon && !(await ownsIcon(session.coupleId, patch.icon))) throw new ValidationError('error.noSuchPhoto');
   // 내 이름이 비어 있다가 처음 생기는 때 = 초대로 막 들어와 "뭐라고 불러 드릴까요?"에 답한 때
   const naming = !!patch.names?.[session.slot];
   const before = naming ? await getSettings(session.coupleId) : null;
   const saved = await patchSettings(session.coupleId, patch);
   if (naming && !before.names?.[session.slot]) await notifyJoined(session.coupleId, session.slot, saved);
+  if ('icon' in patch) {
+    const gone = await dropOtherIcons(session.coupleId, patch.icon);
+    if (gone.length) await deletePhotos(gone).catch((e) => console.error('could not delete old icon files', e.message));
+  }
   res.status(200).json(saved);
 });

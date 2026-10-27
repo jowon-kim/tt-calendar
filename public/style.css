@@ -2151,3 +2151,27 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-lightbox img { max-width: 100%; max-height: 100%; border-radius: 12px; }
 
 @media (prefers-reduced-motion: reduce) { .tg-face::before { animation: none; } }
+
+/* ═══════════════ 우리 앱 꾸미기: 홈 화면 이름·아이콘 (10/27) ═══════════════ */
+.mark-img { width: 30px; height: 30px; border-radius: 9px; object-fit: cover; box-shadow: var(--shadow-sm); }
+.look-preview { display: grid; justify-items: center; gap: 6px; margin: 4px 0 2px; }
+.look-preview img { width: 88px; height: 88px; border-radius: 22px; object-fit: cover; box-shadow: var(--shadow-pop); }
+.look-preview span { font-size: 13px; font-weight: 600; color: var(--ink-soft); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.look-icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 4px; }
+.look-icon {
+  aspect-ratio: 1; width: 100%; padding: 0; border: 0; border-radius: 16px; cursor: pointer; overflow: hidden;
+  background: var(--surface-sink); box-shadow: 0 0 0 2px transparent;
+  transition: transform .16s var(--tap), box-shadow .2s;
+}
+.look-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.look-icon[aria-checked="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5.5px var(--cherry-ink); transform: scale(1.04); }
+.look-icon:active { transform: scale(.92); }
+.look-icon-photo { display: grid; place-items: center; font-size: 12px; font-weight: 800; color: var(--ink-soft); border: 1.5px dashed var(--line-2); }
+.look-row {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px 10px 10px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm);
+  background: var(--paper-2); color: var(--ink); cursor: pointer; text-align: left;
+}
+.look-row img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex: none; }
+.look-row .app-name { flex: 1; font-weight: 700; }
+.look-row-go { font-size: 12.5px; font-weight: 800; color: var(--cherry-ink); }

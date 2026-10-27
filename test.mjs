@@ -1282,6 +1282,43 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   ok('together: the couple can delete it', !r.body.items.some((i) => i.id === id));
 }
 
+/* ── 홈 화면 앱 이름·아이콘 (10/27) ──
+   두 사람이 고른 이름·그림으로 깔리게 /manifest.json 이 커플마다 다르게 나옵니다.
+   아이콘 사진만 로그인 없이 읽히고, 남의 사진을 아이콘으로 걸 수는 없습니다. */
+{
+  const { default: manifest } = await import('./api/manifest.js');
+  const read = (r) => JSON.parse(String(r.body));
+  r = await call(manifest, {});
+  ok('manifest: without signing in it is the default one', r.status === 200 && read(r).name === 'TT' && read(r).icons[0].src === '/favicon.png', String(r.body).slice(0, 80));
+
+  r = await call(photosCreate, { method: 'POST', token, body: { mime: 'image/png', data: TINY, purpose: 'icon' } });
+  const iconId = r.body.id;
+  ok('icon: a picture is uploaded as an icon', r.status === 201 && !!iconId);
+  ok('icon: it does not show among the calendar photos', !(await call(state, { token })).body.photos.includes(iconId));
+  r = await call(settings, { method: 'PATCH', token, body: { title: '미레', icon: iconId } });
+  ok('icon: the couple sets it with an app name', r.status === 200 && r.body.icon === iconId && r.body.title === '미레', JSON.stringify(r.body));
+  r = await call(manifest, { token });
+  ok('manifest: signed in, it carries their name and icon', read(r).name === '미레' && read(r).short_name === '미레' && read(r).icons.every((i) => i.src === `/api/photos/${iconId}`), String(r.body).slice(0, 120));
+  ok('manifest: the partner gets the same', read(await call(manifest, { token: tokenB })).name === '미레');
+  r = await call(photoById, { method: 'GET', query: { id: iconId } });
+  ok('icon: the picture opens without signing in (phones fetch it while installing)', r.status === 200);
+
+  const outsider = await join('icon-outsider');
+  r = await call(settings, { method: 'PATCH', token: outsider, body: { icon: iconId } });
+  ok('icon: another couple cannot hang our picture as theirs', r.status === 400);
+  const theirPhoto = (await call(photosCreate, { method: 'POST', token: outsider, body: { mime: 'image/webp', data: TINY } })).body.id;
+  ok('icon: an ordinary photo still needs signing in', (await call(photoById, { method: 'GET', query: { id: theirPhoto } })).status === 401);
+  r = await call(settings, { method: 'PATCH', token: outsider, body: { icon: theirPhoto } });
+  ok('icon: nor can a calendar photo become an icon', r.status === 400);
+
+  const second = (await call(photosCreate, { method: 'POST', token, body: { mime: 'image/png', data: TINY, purpose: 'icon' } })).body.id;
+  await call(settings, { method: 'PATCH', token, body: { icon: second } });
+  ok('icon: changing it removes the old picture', (await call(photoById, { method: 'GET', query: { id: iconId } })).status === 401);
+  r = await call(settings, { method: 'PATCH', token, body: { icon: null, title: '' } });
+  ok('icon: going back to the default clears it', r.body.icon === null && (await call(photoById, { method: 'GET', query: { id: second } })).status === 401);
+  ok('manifest: and the default comes back', read(await call(manifest, { token })).name === 'TT');
+}
+
 /* ── 커플끼리는 서로 안 보입니다 ──
    한 곳이라도 couple_id 거르기를 빠뜨리면 남의 일정이 보입니다. 모든 창구를 두드려 봅니다. */
 {

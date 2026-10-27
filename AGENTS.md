@@ -22,6 +22,11 @@ day itself.
   only when opened; no key). Location sharing shows only while **both** have it on,
   keeps only the last spot, and is deleted when turned off. The screen is drawn
   phone-width only (`--frame` in `style.css`), on desktop too
+- **Each couple names the app and picks its icon** (asked once on first sign-in,
+  then Settings → Home-screen icon). `/manifest.json` is served by `api/manifest.js`
+  from `public/manifest.default.json` plus their choice — keep the default under
+  that other name, or Vercel serves the static file instead of the rewrite. Icon
+  pictures (`purpose='icon'`) are the only photos readable without signing in
 - Store apps for iOS and Android are thin Capacitor shells around the same site
   (`android/`, `ios/`, see [docs/APPS.md](docs/APPS.md))
 - Ships in nine languages (English is the reference pack) and holidays for nine

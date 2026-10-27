@@ -1,5 +1,5 @@
 import { requireSession, guard, methodNotAllowed } from '../../lib/http.js';
-import { findPhoto, removePhoto } from '../../lib/store.js';
+import { findPhoto, removePhoto, findIcon } from '../../lib/store.js';
 import { getPhoto, deletePhotos } from '../../lib/blob.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -7,12 +7,27 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default guard(async (req, res) => {
   if (!['GET', 'DELETE'].includes(req.method)) return methodNotAllowed(res, ['GET', 'DELETE']);
 
+  const { id } = req.query;
+
+  /* 홈 화면 아이콘만은 로그인 없이 — 폰이 홈 화면에 깔 때 쿠키 없이 받아 가기도 해서요.
+     purpose='icon' 줄만 이 길로 나옵니다. 달력·일기 사진은 아래처럼 그 달력 사람만 봅니다 */
+  if (req.method === 'GET' && UUID.test(String(id || ''))) {
+    const icon = await findIcon(id);
+    if (icon) {
+      const bytes = icon.blobPath ? await getPhoto(icon.blobPath) : Buffer.from(icon.data, 'base64');
+      if (bytes) {
+        res.setHeader('Content-Type', icon.mime);
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return res.status(200).end(bytes);
+      }
+    }
+  }
+
   /* <img src>로 불러가는 자리지만 로그인 쿠키가 같이 실립니다. 예전엔 헤더를 못 실어서
      주소만 알면 누구나 볼 수 있었어요. 이제 그 달력 사람만 봅니다. */
   const session = await requireSession(req, res);
   if (!session) return;
 
-  const { id } = req.query;
   if (!UUID.test(String(id || ''))) return res.status(404).json({ error: 'error.noSuchPhoto' });
 
   if (req.method === 'DELETE') {

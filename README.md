@@ -20,7 +20,7 @@ push itself.
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
-| **Tests** | 716, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
+| **Tests** | 733, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
 | **Cost** | $0 a month (free tiers) |
 | **Read next** | [How it works](#how-it-works) · [Why it is built this way](#why-it-is-built-this-way) |
 
@@ -65,8 +65,8 @@ push itself.
   with FAQ structured data, hreflang, a sitemap and `llms.txt`
 
 About 15,000 lines across `api/`, `lib/` and `public/` (nine language packs
-included), with 422 integration tests that run the real handlers against an
-in-memory Postgres, 220 that run the screen itself, 58 for i18n and holidays,
+included), with 435 integration tests that run the real handlers against an
+in-memory Postgres, 224 that run the screen itself, 58 for i18n and holidays,
 and 16 for the service worker.
 
 ## Your data stays with you
@@ -122,7 +122,7 @@ flowchart LR
 | **Vercel Blob** | Calendar photos, private; the database keeps only where each one is | `lib/blob.js` |
 | **Outside clock** | Knocks on `/api/cron` every 30 minutes for "starting soon", the 8am summary and the 8pm question of the day, read in each calendar's own time zone | `api/cron.js`, `lib/remind.js` |
 | **Encrypted backup** | GitHub Actions dumps the database every night and encrypts it with GPG before keeping it for 30 days — the repo is public, so the artifact has to be useless without the passphrase | `.github/workflows/backup.yml` |
-| **PWA** | Manifest, a service worker that opens the app with no signal, an install button on Chrome/Edge and picture steps on iPhone | `public/sw.js`, `public/manifest.json` |
+| **PWA** | Manifest, a service worker that opens the app with no signal, an install button on Chrome/Edge and picture steps on iPhone | `public/sw.js`, `api/manifest.js` |
 | **Store apps** | Capacitor shells around the same site with native notifications. The Android `.aab` and the iOS TestFlight build come out of CI, no Mac | `android/`, `ios/`, `.github/workflows/` |
 
 ## Why it is built this way
@@ -250,8 +250,10 @@ white on transparent.
 - **A new theme** — copy a `[data-theme="..."]` block in `style.css`, change the
   values, add the id to the `THEMES` array in `app.js`, and add a `theme.<id>`
   key to the language packs. The swatch in the picker builds itself
-- **The label under the home-screen icon** — `public/manifest.json`. It does not
-  follow the setting
+- **The default home-screen name and icon** — `public/manifest.default.json` and
+  `public/icon-512.png`. Each couple can pick their own name and icon in the app
+  (asked once on first sign-in, then Settings → Home-screen icon); `api/manifest.js`
+  serves `/manifest.json` with their choice
 
 ## Language
 
@@ -331,8 +333,8 @@ android/ ios/       Capacitor shells for the store apps
 fastlane/ .github/  store builds in CI, no Mac needed
 schema.sql          eighteen tables — the app runs it itself on first start
 landing.mjs         builds the public pages (words in landing-content.mjs)
-test.mjs            422 integration tests against the real handlers
-screen-test.mjs     220 tests that drive public/app.js: sign-in, editor, settings, app push, install
+test.mjs            435 integration tests against the real handlers
+screen-test.mjs     224 tests that drive public/app.js: sign-in, editor, settings, app push, install
 ```
 
 ```bash

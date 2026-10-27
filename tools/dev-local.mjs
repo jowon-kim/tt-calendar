@@ -51,10 +51,12 @@ const routes = [
   [/^\/api\/photos$/, () => H('/api/photos/index.js')],
   [/^\/api\/photos\/([^/]+)$/, async (m, q) => { q.id = m[1]; return H('/api/photos/[id].js'); }],
   [/^\/api\/push$/, () => H('/api/push/index.js')],
+  [/^\/api\/manifest$/, () => H('/api/manifest.js')],
 ];
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.json': 'application/json', '.webp': 'image/webp', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
+  if (u.pathname === '/manifest.json') u.pathname = '/api/manifest'; // vercel.json rewrites 와 같이
   if (u.pathname === '/__dev/token') { res.end(token(u.searchParams.get('sub'), u.searchParams.get('name') || '')); return; }
   if (u.pathname.startsWith('/api/')) {
     const query = Object.fromEntries(u.searchParams);

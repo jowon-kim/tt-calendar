@@ -15,8 +15,9 @@ export default guard(async (req, res) => {
 
   const { mime, data, purpose: asked } = body(req);
   // "우리" 탭 일기 사진은 달력 사진 목록에 안 섞이고 한도도 따로입니다
-  const purpose = asked === 'diary' ? 'diary' : 'calendar';
-  const [MAX_PHOTOS, MAX_BYTES] = purpose === 'diary' ? [diaryPhotos, diaryPhotoBytes] : [photos, photoBytes];
+  // 홈 화면 아이콘(10/27)은 512px 한 장 — 새로 걸면 예전 것은 api/settings.js 가 치웁니다
+  const purpose = ['diary', 'icon'].includes(asked) ? asked : 'calendar';
+  const [MAX_PHOTOS, MAX_BYTES] = purpose === 'diary' ? [diaryPhotos, diaryPhotoBytes] : purpose === 'icon' ? [5, photoBytes] : [photos, photoBytes];
   if (!ALLOWED.includes(mime)) throw new ValidationError('error.imageOnly');
   if (typeof data !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(data)) {
     throw new ValidationError('error.photoRead');
