@@ -113,10 +113,13 @@ export default guard(async (req, res) => {
   const { coupleId, slot } = session;
   const settings = await getSettings(coupleId);
   const day = today(settings.timezone);
+  // 질문 글은 이 화면의 언어로 (?lang=) — 설정의 언어는 저장이 늦게 닿을 수 있고, 같은 커플도 기기마다 언어가 다를 수 있어서
+  const asked = req.query?.lang || new URL(req.url, 'http://x').searchParams.get('lang');
+  const lang = /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(asked || '') ? asked : settings.locale;
   const state = async () => ({
     items: await listItems(coupleId),
-    question: await question(coupleId, slot, day, settings.locale),
-    history: await history(coupleId, slot, day, settings.locale),
+    question: await question(coupleId, slot, day, lang),
+    history: await history(coupleId, slot, day, lang),
     location: await location(coupleId, slot),
     nudgesLeft: await nudgesLeft(coupleId, slot),
   });
@@ -167,7 +170,7 @@ export default guard(async (req, res) => {
     const s = await state();
     if (!s.question.theyAnswered) {
       const name = settings.names?.[slot] || '';
-      await notifyAll(coupleId, { title: '💬', body: `${name} ✓ ${s.question.text}` }, `answer-${day}`, { except: slot });
+      await notifyAll(coupleId, { title: '💬', body: `${name} ✓ ${questionFor(day, settings.locale)}` }, `answer-${day}`, { except: slot });
     }
     return res.status(200).json(s);
   }

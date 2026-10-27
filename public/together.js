@@ -44,7 +44,8 @@
 
   /* ── 서버 ── */
   async function call(method, body, query = '') {
-    const r = await fetch('/api/together' + query, {
+    // 질문 글을 지금 화면 언어로 받게 언어를 같이 보냅니다
+    const r = await fetch('/api/together' + (query ? query + '&' : '?') + 'lang=' + encodeURIComponent(locale()), {
       method, credentials: 'same-origin',
       headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined,
     });
@@ -293,6 +294,11 @@
   // 로그아웃하면(#app 이 숨으면) 우리 탭도 닫습니다
   if (appMain) new MutationObserver(() => (appMain.hidden ? close() : refresh())).observe(appMain, { attributes: true, attributeFilter: ['hidden'] });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+  // 언어를 바꾸면(i18n.setLocale 이 <html lang> 을 바꿉니다) 질문 글도 그 언어로 바로 다시 받습니다
+  new MutationObserver(() => {
+    if (!data) return;
+    if (!root.hidden) open(); else refresh(true);
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   refresh();
 
   /** to = 열 칸, focus = 열자마자 쓸 수 있게 할 곳 ('answer' · 'compose' · 'add' · 'amount') */

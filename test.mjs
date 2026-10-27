@@ -1153,6 +1153,16 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   const t = (tok, opts) => call(together, { token: tok, ...opts });
   let r = await t(token);
   ok('together: empty to start', r.status === 200 && Array.isArray(r.body.items) && r.body.question.text && r.body.nudgesLeft === 3);
+  {
+    const { questionFor } = await import('./lib/questions.js');
+    const day = r.body.question.day;
+    const en = await t(token, { query: { lang: 'en' } });
+    const ja = await t(token, { query: { lang: 'ja' } });
+    ok('question: comes in the language the screen asks for, whatever the saved one',
+      en.body.question.text === questionFor(day, 'en') && ja.body.question.text === questionFor(day, 'ja'));
+    const junk = await t(token, { query: { lang: '<x>' } });
+    ok('question: a nonsense language falls back to the saved one', junk.body.question.text === r.body.question.text);
+  }
   r = await t(token, { method: 'POST', body: { action: 'item', kind: 'bucket', title: '제주 여행' } });
   ok('together: a bucket item is added', r.status === 201 && r.body.items.some((i) => i.kind === 'bucket' && i.title === '제주 여행' && !i.done));
   const id = r.body.items.find((i) => i.title === '제주 여행').id;
