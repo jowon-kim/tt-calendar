@@ -241,6 +241,8 @@ globalThis.I18N.ru = {
   'push.today.few': 'Сегодня {count} события',
   'push.today': 'Сегодня {count} событий',
   'push.allDay': 'Весь день',
+  'push.question': 'Вопрос дня',
+  'push.yearAgo': 'Год назад в этот день',
   'push.turnedOn': 'Уведомления включены',
   'push.turnedOff': 'Уведомления выключены',
 

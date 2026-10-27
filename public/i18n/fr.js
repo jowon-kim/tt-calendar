@@ -233,6 +233,8 @@ globalThis.I18N.fr = {
   'push.today.one': '{count} événement aujourd\'hui',
   'push.today': '{count} événements aujourd\'hui',
   'push.allDay': 'Toute la journée',
+  'push.question': 'La question du jour',
+  'push.yearAgo': 'Il y a un an, jour pour jour',
   'push.turnedOn': 'Notifications activées',
   'push.turnedOff': 'Notifications désactivées',
 

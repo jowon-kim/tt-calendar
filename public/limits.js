@@ -5,6 +5,8 @@
 globalThis.DIARY_LIMITS = {
   photos: 30,              // 달력 하나에 올릴 수 있는 사진 수
   photoBytes: 300 * 1024,  // 한 장의 크기. 화면에서 256px로 줄여 보내니 넉넉합니다
+  diaryPhotos: 300,        // "우리" 탭 일기 사진 수 — 달력 사진과 따로 셉니다
+  diaryPhotoBytes: 900 * 1024, // 일기 사진은 긴 변 1280px webp 라 더 큽니다
   // 일정에 고를 수 있는 색. 고르지 않으면(null) 누구 일정인지의 색을 씁니다. 실제 색은 style.css [data-color]
   eventColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'gray'],
 };

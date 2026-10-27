@@ -243,6 +243,8 @@ globalThis.I18N.en = {
   'push.today.one': '{count} event today',
   'push.today.other': '{count} events today',
   'push.allDay': 'All day',
+  'push.question': 'Today’s question',
+  'push.yearAgo': 'One year ago today',
   'push.turnedOn': 'Notifications are on',
   'push.turnedOff': 'Notifications are off',
 

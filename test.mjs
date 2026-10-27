@@ -1187,6 +1187,61 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
   r = await t(tokenB);
   ok('location: turning it off removes it at once', r.body.location.them === null && r.body.location.theyOn === false);
 
+  /* 바깥 시계가 "우리" 탭 몫도 두드립니다 — 저녁 8시 질문, 아침 8시 1년 전 오늘 */
+  const ours = () => pushed.filter((p) => p.endpoint === LAPTOP || p.endpoint === PHONE);
+  const { questionFor } = await import('./lib/questions.js');
+  const { localNow: nowIn, yearAgo } = await import('./lib/remind.js');
+  pushed.length = 0;
+  r = await knock('2026-09-01T20:00');
+  ok('question: at 8pm both get the question when neither answered',
+    ours().length === 2 && ours()[0].title === 'Today’s question' && ours()[0].body === questionFor('2026-09-01', 'en'),
+    JSON.stringify(ours()));
+  ok('question: the clock log never carries the question', !JSON.stringify(r.body).includes(questionFor('2026-09-01', 'en')));
+  pushed.length = 0;
+  await knock('2026-09-01T20:30');
+  await knock('2026-09-02T19:30');
+  ok('question: once an evening, and not before 8', ours().length === 0, JSON.stringify(ours()));
+
+  const qday = nowIn('Asia/Seoul').date; // 위에서 둘 다 오늘 질문에 답했습니다
+  await pg.query(`delete from answers where qday = $1 and member = 'b'`, [qday]);
+  pushed.length = 0;
+  await knock(`${qday}T20:00`);
+  ok('question: only the one who has not answered is called', ours().length === 1 && ours()[0].endpoint === PHONE, JSON.stringify(ours()));
+  await t(tokenB, { method: 'POST', body: { action: 'answer', text: '차분해 보였어' } });
+  await pg.query(`delete from reminders_sent where key like $1`, [`%:${qday}:question`]);
+  pushed.length = 0;
+  await knock(`${qday}T20:00`);
+  ok('question: once both answered the evening stays quiet', ours().length === 0, JSON.stringify(ours()));
+
+  await t(token, { method: 'POST', body: { action: 'item', kind: 'diary', title: '바다', day: '2025-09-03' } });
+  pushed.length = 0;
+  r = await knock('2026-09-03T08:00');
+  ok('memory: a diary from a year ago comes on its own on a quiet morning',
+    ours().length === 2 && ours()[0].title === 'One year ago today' && ours()[0].body === '바다', JSON.stringify(ours()));
+  ok('memory: the clock log never carries the diary', !JSON.stringify(r.body).includes('바다'), JSON.stringify(r.body));
+  pushed.length = 0;
+  await knock('2026-09-03T08:30');
+  ok('memory: once a morning', ours().length === 0);
+
+  await t(token, { method: 'POST', body: { action: 'item', kind: 'diary', title: '', memo: '첫 줄\n둘째 줄', day: '2025-09-04' } });
+  await plant({ title: 'lunch', date: '2026-09-04', time: '12:00' });
+  pushed.length = 0;
+  await knock('2026-09-04T08:00');
+  ok('memory: on a busy morning it joins the digest, untitled diaries by their first line',
+    ours().length === 2 && ours()[0].body === '12:00 lunch\nOne year ago today · 첫 줄', JSON.stringify(ours()));
+  ok('memory: 29 February has no year-ago day', yearAgo('2028-02-29') === null && yearAgo('2026-10-27') === '2025-10-27');
+
+  /* 일기 사진은 설정의 달력 사진 목록·한도에 안 섞이고, 일기를 지우면 같이 지워집니다 */
+  const before = (await call(state, { token })).body.photos.length;
+  const diaryPhoto = (await call(photosCreate, { method: 'POST', token, body: { mime: 'image/webp', data: TINY, purpose: 'diary' } })).body.id;
+  ok('diary photo: it does not show among the calendar photos', (await call(state, { token })).body.photos.length === before && !!diaryPhoto);
+  r = await t(token, { method: 'POST', body: { action: 'item', kind: 'diary', title: '사진 일기', photoId: diaryPhoto } });
+  const diaryId = r.body.items.find((i) => i.photoId === diaryPhoto)?.id;
+  ok('diary photo: the partner can open it', (await call(photoById, { method: 'GET', token: tokenB, query: { id: diaryPhoto } })).status === 200);
+  await t(token, { method: 'DELETE', query: { id: diaryId } });
+  ok('diary photo: deleting the diary deletes its photo',
+    (await call(photoById, { method: 'GET', token, query: { id: diaryPhoto } })).status === 404);
+
   const outsider = await join('outsider');
   r = await t(outsider);
   ok('together: another couple sees none of it', r.body.items.length === 0 && r.body.question.mine === null && r.body.location.theyOn === false);

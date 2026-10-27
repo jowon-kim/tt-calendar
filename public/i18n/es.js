@@ -233,6 +233,8 @@ globalThis.I18N.es = {
   'push.today.one': '{count} plan hoy',
   'push.today': '{count} planes hoy',
   'push.allDay': 'Todo el día',
+  'push.question': 'La pregunta de hoy',
+  'push.yearAgo': 'Hace un año, hoy',
   'push.turnedOn': 'Notificaciones activadas',
   'push.turnedOff': 'Notificaciones desactivadas',
 

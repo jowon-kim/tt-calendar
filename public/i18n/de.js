@@ -232,6 +232,8 @@ globalThis.I18N.de = {
   'push.today.one': '{count} Termin heute',
   'push.today': '{count} Termine heute',
   'push.allDay': 'Ganztägig',
+  'push.question': 'Frage des Tages',
+  'push.yearAgo': 'Heute vor einem Jahr',
   'push.turnedOn': 'Benachrichtigungen sind an',
   'push.turnedOff': 'Benachrichtigungen sind aus',
 

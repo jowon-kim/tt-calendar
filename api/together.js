@@ -1,6 +1,7 @@
 import { requireSession, body, guard, methodNotAllowed, ValidationError } from '../lib/http.js';
 import { sql } from '../lib/db.js';
-import { getSettings } from '../lib/store.js';
+import { getSettings, removePhoto } from '../lib/store.js';
+import { deletePhotos } from '../lib/blob.js';
 import { notifyAll } from '../lib/push.js';
 import { questionFor } from '../lib/questions.js';
 
@@ -103,7 +104,11 @@ export default guard(async (req, res) => {
 
   if (req.method === 'DELETE') {
     const id = req.query?.id || new URL(req.url, 'http://x').searchParams.get('id');
-    await sql`delete from items where couple_id = ${coupleId} and id = ${id}`;
+    const gone = await sql`delete from items where couple_id = ${coupleId} and id = ${id} returning photo_id as "photoId"`;
+    // 일기에 붙은 사진도 같이 — 남겨 두면 어디서도 안 보이는 사진이 한도만 먹습니다
+    const photoId = gone[0]?.photoId;
+    const blobPath = photoId ? await removePhoto(coupleId, photoId) : false;
+    if (blobPath) await deletePhotos([blobPath]).catch((e) => console.error('could not delete the photo file', e.message));
     return res.status(200).json(await state());
   }
 

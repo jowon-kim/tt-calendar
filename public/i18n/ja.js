@@ -224,6 +224,8 @@ globalThis.I18N.ja = {
   'push.joined': '{name}さんが入りました',
   'push.today': '今日の予定{count}件',
   'push.allDay': '終日',
+  'push.question': '今日の質問',
+  'push.yearAgo': '1年前の今日',
   'push.turnedOn': '通知をオンにしました',
   'push.turnedOff': '通知をオフにしました',
 

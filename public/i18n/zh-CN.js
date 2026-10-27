@@ -225,6 +225,8 @@ globalThis.I18N['zh-CN'] = {
   'push.joined': '{name}加入了',
   'push.today': '今天有 {count} 个日程',
   'push.allDay': '全天',
+  'push.question': '今日问题',
+  'push.yearAgo': '一年前的今天',
   'push.turnedOn': '通知已开启',
   'push.turnedOff': '通知已关闭',
 

@@ -202,6 +202,9 @@ create index if not exists photos_couple_idx on photos (couple_id, created_at);
 alter table photos add column if not exists blob_path text;
 alter table photos alter column data drop not null;
 
+-- "우리" 탭 일기 사진도 같은 표에 둡니다. 설정의 달력 사진 목록·30장 한도는 calendar 만 셉니다.
+alter table photos add column if not exists purpose text not null default 'calendar';
+
 -- 휴대폰 알림(웹푸시). 기기마다 한 줄씩 생깁니다 — 폰과 노트북을 둘 다 켜두면 두 줄.
 -- endpoint가 곧 그 기기의 주소라서, 같은 기기가 다시 켜면 덮어씁니다.
 create table if not exists push_subs (
