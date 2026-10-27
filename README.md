@@ -15,9 +15,9 @@ push itself, to the browser or to the iOS and Android apps.
 | | |
 |---|---|
 | **In one line** | A shared calendar for couples, run as one multi-tenant service — plain JavaScript, no framework, no build step |
-| **Live** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) · [what it is](https://tt-calendar.vercel.app/en/) · [days-together calculator](https://tt-calendar.vercel.app/en/days-together/) — free beta |
+| **Live** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) · [what it is](https://tt-calendar.vercel.app/en/) · [days-together calculator](https://tt-calendar.vercel.app/en/days-together/) |
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
-| **Status** | Running on the web as a PWA. Store apps are built in CI and wait on a D-U-N-S number for the Play organisation account |
+| **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
 | **Tests** | 589, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
 | **Cost** | $0 a month (free tiers) |
@@ -310,4 +310,4 @@ npm run i18n    # how complete each language pack is
 
 ## License
 
-All rights reserved. See [LICENSE](LICENSE).
+MIT — use it, fork it, run it for the two of you. See [LICENSE](LICENSE).

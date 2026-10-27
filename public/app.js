@@ -2756,7 +2756,7 @@ $('s-push').addEventListener('click', togglePush);
    공유 시트를 열어 주거나 "공유 → 홈 화면에 추가"를 그림으로 안내해요. 홈 화면에서 연 앱과 스토어 앱은 건너뜁니다.
    권하는 건 처음 들어올 때 한 번(아래 "처음 들어올 때")과 설정의 설치 버튼뿐입니다.
    (공유 시트를 대신 여는 navigator.share는 쓰지 않습니다 — 웹이 연 공유 시트에는 "홈 화면에 추가"가 없어요.
-   실기기 확인, docs/IOS_INSTALL_RESEARCH.md) */
+   아이폰 실기기로 확인함) */
 let installPrompt = null;
 let promptWaiters = []; // 설치 신호를 잠깐 기다리는 쪽 (offerInstall)
 
