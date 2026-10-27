@@ -250,3 +250,47 @@ create table if not exists app_meta (
   name  text primary key,
   value text not null
 );
+
+-- 10/27 "우리" 탭 (api/together.js): 버킷리스트·가계부·맛집·문화·일기(사진)·장소(지도)가 한 표에 kind 로.
+create table if not exists items (
+  id         uuid primary key default gen_random_uuid(),
+  couple_id  uuid not null references couples (id) on delete cascade,
+  kind       text not null check (kind in ('bucket', 'ledger', 'food', 'culture', 'diary', 'place')),
+  title      text not null default '',
+  memo       text not null default '',
+  done       boolean not null default false,
+  amount     integer,
+  day        date,
+  lat        double precision,
+  lng        double precision,
+  photo_id   uuid,
+  member     text not null default 'a' check (member in ('a', 'b')),
+  created_at timestamptz not null default now()
+);
+create index if not exists items_couple on items (couple_id, kind, day);
+
+-- 오늘의 질문: 둘 다 답해야 상대 답이 열립니다 (서버가 막습니다)
+create table if not exists answers (
+  couple_id uuid not null references couples (id) on delete cascade,
+  qday      date not null,
+  member    text not null check (member in ('a', 'b')),
+  text      text not null,
+  primary key (couple_id, qday, member)
+);
+
+-- 위치 공유: 둘 다 켰을 때만 서로 보입니다. 마지막 위치 하나만, 끄면 줄을 지웁니다 (기록을 쌓지 않음)
+create table if not exists locations (
+  couple_id uuid not null references couples (id) on delete cascade,
+  member    text not null check (member in ('a', 'b')),
+  lat       double precision,
+  lng       double precision,
+  at        timestamptz not null default now(),
+  primary key (couple_id, member)
+);
+
+-- 콕 찌르기: 하루(24시간) 3번까지
+create table if not exists nudges (
+  couple_id uuid not null references couples (id) on delete cascade,
+  member    text not null,
+  at        timestamptz not null default now()
+);
