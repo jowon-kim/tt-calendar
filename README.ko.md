@@ -47,7 +47,7 @@
   FAQ 구조화 데이터·hreflang·sitemap·`llms.txt`까지 만듭니다
 
 `api/`·`lib/`·`public/`에 약 13,000줄(언어팩 9개 포함). 실제 핸들러를 메모리 Postgres에 붙여 돌리는
-통합 테스트 413개, 화면을 직접 돌리는 테스트 221개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
+통합 테스트 415개, 화면을 직접 돌리는 테스트 221개, 언어·공휴일 테스트 58개, 서비스 워커 테스트 16개.
 
 ## 우리 데이터는 우리 DB에
 
@@ -262,7 +262,7 @@ android/ ios/        스토어 앱 껍데기 (Capacitor)
 fastlane/ .github/   Mac 없이 CI에서 스토어 빌드
 schema.sql  표 열여덟 개 — 앱이 처음 켜질 때 스스로 돌립니다
 landing.mjs 공개 페이지 생성 (글은 landing-content.mjs)
-test.mjs    핸들러 통합 테스트 413개
+test.mjs    핸들러 통합 테스트 415개
 screen-test.mjs  public/app.js를 직접 돌리는 테스트 221개 — 로그인, 일정 창, 설정, 앱 알림, 설치
 ```
 
