@@ -1800,25 +1800,67 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .app-coach-x { flex: none; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .14); color: #fff; font-size: 17px; line-height: 1; cursor: pointer; }
 @keyframes tg-bob { 50% { transform: translateY(-4px); } }
 
-/* ── 달력 화면의 "오늘의 질문" 카드 ── */
-.home-us {
-  display: grid; gap: 6px; width: 100%; text-align: left;
-  margin: 0 0 18px; padding: 16px 18px;
-  border: 0; border-radius: var(--r-lg); cursor: pointer;
-  background: linear-gradient(150deg, var(--wash-a) 0%, var(--wash-b) 100%);
-  color: var(--ink);
+/* ── 달력 바로 위 "우리" 카드 줄: 옆으로 넘겨 보는 여섯 장 ── */
+.home-us { margin: 2px -16px 14px; }
+.home-us[hidden] { display: none; }
+.home-us-track {
+  position: relative; /* 카드 offsetLeft 를 이 줄 기준으로 */
+  display: flex; gap: 10px;
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 4px 16px 8px; scroll-padding: 0 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.home-us-track::-webkit-scrollbar { display: none; }
+.home-card {
+  position: relative; overflow: hidden;
+  flex: none; width: 80%; min-height: 150px;
+  scroll-snap-align: start;
+  display: flex; flex-direction: column; gap: 6px; text-align: left;
+  padding: 14px 16px; border: 0; border-radius: var(--r-lg); cursor: pointer;
+  background: var(--surface); color: var(--ink);
   box-shadow: var(--shadow-sm);
   transition: transform .16s var(--tap);
 }
-.home-us[hidden] { display: none; }
-.home-us:active { transform: scale(.98); }
-.home-us.waiting { background: linear-gradient(150deg, var(--accent-hi) 0%, var(--accent-lo) 100%); color: var(--on-accent); }
-.home-us.waiting .tg-kicker { color: inherit; opacity: .9; }
-.home-us-top { display: flex; align-items: center; gap: 6px; }
-.home-us-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: tg-bob 1.6s ease-in-out infinite; }
-.home-us-q { font-family: var(--serif); font-size: 17px; line-height: 1.45; word-break: keep-all; }
-.home-us-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12.5px; opacity: .85; }
-.home-us-go { flex: none; font-weight: 800; }
+.home-card:active { transform: scale(.97); }
+.home-card-top { display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+.home-card-top svg { width: 16px; height: 16px; fill: none; stroke: var(--cherry-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home-card-go { font-size: 12px; font-weight: 800; color: var(--cherry-ink); white-space: nowrap; }
+.home-card-q { font-family: var(--serif); font-size: 16.5px; line-height: 1.45; word-break: keep-all; }
+.home-card-big { font-size: 15.5px; font-weight: 700; line-height: 1.4; position: relative; z-index: 1; word-break: break-word;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.home-card-money { font-family: var(--serif); font-size: 26px; font-weight: 700; line-height: 1.1; }
+.home-card-line { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+.home-card .tg-bar, .home-card .tg-split { height: 8px; }
+.home-card .tg-stars { font-size: 12px; }
+/* 질문 카드: 늘 연분홍, 상대가 답해 두고 기다리면 진한 분홍 */
+.home-card.question { background: linear-gradient(150deg, var(--wash-a) 0%, var(--wash-b) 100%); }
+.home-card.hot { background: linear-gradient(150deg, var(--accent-hi) 0%, var(--accent-lo) 100%); color: var(--on-accent); }
+.home-card.hot .tg-kicker, .home-card.hot .home-card-go, .home-card.hot .home-card-line { color: inherit; }
+.home-card.hot .home-card-top svg { stroke: currentColor; fill: rgba(255, 255, 255, .3); }
+/* 일기 카드: 사진이 있으면 바탕에 깔고 글씨는 흰색 */
+.home-card.photo { color: #fff; }
+.home-card-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.home-card.photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .55)); }
+.home-card.photo .tg-kicker, .home-card.photo .home-card-go, .home-card.photo .home-card-line { color: #fff; }
+.home-card.photo .home-card-top svg { stroke: #fff; }
+.home-card.photo .home-card-big { margin-top: auto; }
+.home-card-acts { display: flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 4px; position: relative; z-index: 1; }
+.home-quick {
+  border: 0; border-radius: 999px; padding: 8px 13px; cursor: pointer;
+  background: var(--surface-sink); color: var(--ink); font-size: 12.5px; font-weight: 800; white-space: nowrap;
+  transition: transform .16s var(--tap);
+}
+.home-quick.solid { background: linear-gradient(135deg, var(--accent-hi), var(--accent-lo)); color: var(--on-accent); }
+.home-quick:active { transform: scale(.92); }
+.home-card.hot .home-quick.solid, .home-card.photo .home-quick.solid { background: #fff; color: var(--cherry-ink); }
+.home-card.hot .home-quick:not(.solid) { background: rgba(255, 255, 255, .22); color: #fff; }
+.tg-switch.small { width: 42px; height: 26px; }
+.tg-switch.small i { width: 20px; height: 20px; }
+.tg-switch.small.on i { transform: translateX(16px); }
+.home-us-dots { display: flex; justify-content: center; gap: 5px; }
+.home-us-dots i { width: 6px; height: 6px; border-radius: 999px; background: var(--line-2); transition: width .2s, background .2s; cursor: pointer; }
+.home-us-dots { padding: 4px 0; }
+.home-us-dots i.on { width: 16px; background: var(--cherry); }
 
 /* 공통 조각 */
 .tg-card {
@@ -1997,7 +2039,9 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .tg-text b { font-size: 14.5px; font-weight: 600; word-break: break-word; }
 .tg-text small { font-size: 12.5px; color: var(--muted); word-break: break-word; }
-.tg-check label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.tg-tick { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -4px -8px -8px; cursor: pointer; } /* 손가락이 닿는 자리를 동그라미보다 넓게 */
+.tg-text[data-edit], [data-edit].tg-amount, small[data-edit] { cursor: text; }
+.tg-text[data-edit]:focus-visible { outline: 2px solid var(--cherry); outline-offset: 2px; border-radius: 6px; }
 .tg-check input { position: absolute; opacity: 0; pointer-events: none; }
 .tg-box {
   flex: none; width: 24px; height: 24px; border-radius: 50%;
@@ -2023,6 +2067,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-legend { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); }
 .tg-legend span { display: flex; align-items: center; gap: 6px; }
 .tg-ledger-add { gap: 8px; }
+.together input.tg-amount-in { font-family: var(--serif); font-size: 22px !important; font-weight: 700; padding: 12px 14px; }
 .tg-money .tg-amount { font-family: var(--serif); font-size: 15.5px; white-space: nowrap; }
 
 /* 기록 */
@@ -2036,6 +2081,10 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-stars.input { font-size: 26px; gap: 2px; }
 .tg-stars.input label { cursor: pointer; }
 .tg-stars.input input { position: absolute; opacity: 0; pointer-events: none; }
+.tg-stars.tap { font-size: 18px; gap: 0; }
+.tg-stars.tap button { border: 0; background: none; padding: 2px 3px; cursor: pointer; color: var(--line-2); font-size: inherit; line-height: 1; transition: transform .16s var(--tap); }
+.tg-stars.tap button.on { color: var(--gold-ink); }
+.tg-stars.tap button:active { transform: scale(1.3); }
 .tg-stars.input input:focus-visible + i { outline: 2px solid var(--cherry); border-radius: 4px; }
 
 /* 지도: 판 가득, 아래에 떠 있는 카드 */
