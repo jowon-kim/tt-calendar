@@ -1685,3 +1685,32 @@ img.install-step-icon { padding: 0; }
 /* 판 맨 위 한 줄 안내 */
 .pane-lead { margin: -6px 0 16px; }
 .note a { color: inherit; text-underline-offset: 3px; }
+
+/* ── "우리" 탭 (public/together.js, 10/27) ── */
+.together { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg, #fff7f5); color: var(--ink); padding: 0 16px 40px; }
+.together[hidden] { display: none; }
+.tg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 6px; }
+.tg-head h2 { margin: 0; font-size: 1.3rem; }
+.tg-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0 12px; }
+.tg-tabs button { border: 1px solid var(--accent-line, #f5d0d4); background: transparent; color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; white-space: nowrap; }
+.tg-tabs button.on { background: rgb(var(--accent-rgb, 217, 101, 112)); border-color: transparent; color: #fff; }
+.tg-card { background: rgba(255, 255, 255, .7); border-radius: 16px; padding: 14px; margin-bottom: 12px; display: grid; gap: 8px; }
+.tg-card h3 { margin: 0; font-size: 1rem; }
+.tg-q { font-size: 1.1rem; font-weight: 600; margin: 0; }
+.tg-card textarea, .tg-card input, .tg-row input { width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--accent-line, #f5d0d4); }
+.tg-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; margin-bottom: 10px; }
+.tg-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 6px; }
+.tg-list li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(255, 255, 255, .6); border-radius: 10px; }
+.tg-list li > span { flex: 1; }
+.tg-list li.done span b { text-decoration: line-through; opacity: .6; }
+.tg-total { text-align: right; }
+.tg-album { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 12px; }
+.tg-album img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+.tg-entry { background: rgba(255, 255, 255, .7); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+.tg-entry img { width: 100%; border-radius: 10px; margin: 6px 0; }
+.tg-entry h4 { margin: 4px 0; }
+.tg-date { font-size: .85rem; opacity: .7; }
+.tg-map { height: 340px; border-radius: 16px; overflow: hidden; margin: 8px 0; }
+.together .link { background: none; border: 0; color: var(--ink-soft, #6e5b63); font: inherit; font-size: .85rem; text-decoration: underline; }
+.tg-row[data-kind="ledger"] { grid-template-columns: 1fr 1fr; }
+.tg-row[data-kind="ledger"] button { grid-column: 1 / -1; }

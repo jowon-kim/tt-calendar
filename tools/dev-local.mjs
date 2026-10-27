@@ -45,6 +45,7 @@ const routes = [
   [/^\/api\/(signup|login|logout|invite|account|google|devices)$/, async (m, q) => { q.op = m[1]; return H('/api/auth.js'); }],
   [/^\/api\/state$/, () => H('/api/state.js')],
   [/^\/api\/settings$/, () => H('/api/settings.js')],
+  [/^\/api\/together$/, () => H('/api/together.js')],
   [/^\/api\/events$/, () => H('/api/events/index.js')],
   [/^\/api\/events\/([^/]+)$/, async (m, q) => { q.id = m[1]; return H('/api/events/[id].js'); }],
   [/^\/api\/photos$/, () => H('/api/photos/index.js')],
