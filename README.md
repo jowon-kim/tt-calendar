@@ -50,7 +50,7 @@ push itself.
 - **The "Us" tab** (bottom tab, next to the calendar) — a question of the day (your partner's answer opens once you
   have answered too; at 8pm whoever hasn't answered gets a nudge), a photo diary
   and album with "one year ago today" in the morning summary, a bucket list, a
-  date ledger, food and culture logs, a map of your places, a "poke" (three a day)
+  date ledger, food and culture logs, a map of your places (with a nearest-first list, "save where I am" and directions), an at-a-glance panel from the calendar, a "poke" (three a day)
   and location sharing (only while *both* of you have it on, only the last spot,
   deleted the moment you turn it off). One extra serverless function: `api/together.js`
 - **Nine languages** — English, Korean, Japanese, Simplified Chinese, Spanish,
