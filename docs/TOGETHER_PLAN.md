@@ -13,7 +13,7 @@
 ## 단계
 1. [x] DB: `items` (kind: bucket·ledger·food·culture·diary·place, title, memo, done, amount, day, lat, lng, photo_id, by) · `answers` (qday, member, text) · `locations` (member, lat, lng, at) · `nudges` (member, at)
 2. [x] API `api/together.js`: items CRUD · 오늘의 질문(둘 다 답해야 상대 답 공개) · 콕 찌르기(하루 3번, 푸시) · 위치 켜기/끄기/올리기
-3. [ ] 화면: 하단/설정 옆 "우리" 탭 — 오늘의 질문 · 일기(사진) · 앨범 · 버킷리스트 · 가계부 · 맛집 · 문화 · 지도(장소 핀 + 서로 위치) · 콕 찌르기
+3. [x] 화면: 하단/설정 옆 "우리" 탭 — 오늘의 질문 · 일기(사진) · 앨범 · 버킷리스트 · 가계부 · 맛집 · 문화 · 지도(장소 핀 + 서로 위치) · 콕 찌르기
 4. [ ] cron: 저녁 질문 알림, 아침 요약에 "1년 전 오늘"(일기)
-5. [ ] 지도: Leaflet + OpenStreetMap 타일 (키·비용 없음) — README '외부 요청'에 타일 서버 추가
+5. [x] 지도: Leaflet + OpenStreetMap 타일 (키·비용 없음) — README '외부 요청'에 타일 서버 추가
 6. [ ] 테스트(통합·화면·격리) · README 기능 목록·개인정보 절 · privacy.html(위치 항목) 갱신
