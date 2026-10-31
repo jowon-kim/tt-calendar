@@ -1727,7 +1727,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 
 /* 칸 고르기: 여섯 칸이 한 줄에 다 보이게 — 아이콘 아래 이름 (가장 좁은 폰에서도 넘치지 않음) */
 .tg-nav {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; /* 칸 수 = together.js TABS */
   margin: 8px 12px 10px; padding: 4px;
   background: var(--surface-sink); border-radius: 18px;
 }
@@ -2269,13 +2269,12 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .glance-head h2 { margin: 0; font-family: var(--display); font-size: 24px; font-weight: 400; }
 .glance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 14px 16px; }
 .glance-grid .home-card { width: auto; min-height: 138px; scroll-snap-align: none; }
-/* 질문은 한 줄 가득, 그다음 일기·지도, 가계부·버킷, 기록 */
+/* 질문은 한 줄 가득, 그다음 일기·지도, 가계부·버킷 */
 .glance-grid [data-open="today"] { grid-column: 1 / -1; order: 0; min-height: 0; }
 .glance-grid [data-open="diary"] { order: 1; }
 .glance-grid [data-open="map"] { order: 2; }
 .glance-grid [data-open="ledger"] { order: 3; }
 .glance-grid [data-open="bucket"] { order: 4; }
-.glance-grid [data-open="log"] { order: 5; grid-column: 1 / -1; min-height: 0; }
 .glance-grid .home-card-money { font-size: 22px; }
 
 /* 설정 → 휴대폰 알림: 전체 끄기 아래 질문 알림만 따로 (10/27) */

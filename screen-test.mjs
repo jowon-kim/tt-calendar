@@ -1147,5 +1147,11 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   ok('the app bridge matches the installed @capacitor/core', installed === null || installed === shipped);
 }
 
+// 칸을 더하거나 뺄 때 탭 줄이 한쪽으로 쏠리지 않게 — 칸 수와 줄 수가 같아야 합니다
+{
+  const tabs = /const TABS = \[([^\]]+)\]/.exec(readFileSync('public/together.js', 'utf8'))[1].split(',').length;
+  const cols = /\.tg-nav \{\s*display: grid; grid-template-columns: repeat\((\d+), 1fr\)/.exec(readFileSync('public/style.css', 'utf8'))[1];
+  ok('the Us tab bar has one column per tab', tabs === Number(cols), `${tabs} tabs, ${cols} columns`);
+}
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
