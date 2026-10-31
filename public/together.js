@@ -1,5 +1,5 @@
 /* "우리" 탭 (10/27) — api/together.js 의 화면. app.js 와 따로 둡니다 (app.js 가 3,000줄이 넘어서).
-   오늘(질문·콕·1년 전 오늘·지난 질문) · 일기(사진·앨범) · 버킷 · 가계부(월별) · 기록(맛집·문화, 별점) · 지도(장소·서로 위치).
+   오늘(질문·콕·1년 전 오늘·지난 질문) · 일기(사진·앨범) · 버킷 · 가계부(월별) · 지도(장소·맛집·문화와 별점, 장소·서로 위치).
    폰 화면 한 장 크기로만 그립니다 — 데스크탑에서도 가운데 폰 폭 기둥 하나 (style.css --frame).
    지도는 열 때만 MapLibre(unpkg) 와 OpenFreeMap 벡터 지도를 불러옵니다 (키·비용 없음).
    문구는 언어팩 9개의 together.* — 그릴 때마다 읽어서, 서버가 정한 언어로 바뀌어도 따라갑니다.
@@ -33,13 +33,20 @@
     locate: '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>',
     pen: '<path d="M4.5 19.5l1-4L16 5a2 2 0 0 1 3 3L8.5 18.5z"/>',
     trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',
+    food: '<path d="M7 3v8M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 21V3c-2 1-3 3.6-3 7v3h3"/>',
+    culture: '<path d="M4 8a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 8v2a2 2 0 0 0 0 4v2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16v-2a2 2 0 0 0 0-4z"/><path d="M14 7v10"/>',
+    close: '<path d="M6 6l12 12M18 6L6 18"/>',
   };
   const icon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${P[k]}</svg>`;
-  const TABS = ['today', 'diary', 'bucket', 'ledger', 'log', 'map'];
+  const TABS = ['today', 'diary', 'bucket', 'ledger', 'map'];
+  /* 지도에 모이는 것들 (10/31) — 옛 '기록' 칸의 맛집·문화도 여기로. 위치 없이 적은 것은 목록에만 있다가 꽂을 수 있습니다 */
+  const SPOTS = ['place', 'food', 'culture'];
+  const SPOT_ICON = { place: 'today', food: 'food', culture: 'culture' };
+  const pinOf = (kind, cls = '') => `<span class="tg-pin ${kind} ${cls}"><svg viewBox="0 0 24 24" aria-hidden="true">${P[SPOT_ICON[kind]]}</svg></span>`;
 
   let data = null, tab = 'today', busy = false;
   let composing = false, editing = null, armed = null, armTimer = 0, preview = null;
-  let month = null, logKind = 'food', pending = null;
+  let month = null, spotKind = 'place', pending = null, filter = 'all', selected = null, pinning = null;
   let map = null, watch = null, lastSent = 0, fitted = false, mapMode = 'map';
 
   /* ── 서버 ── */
@@ -88,19 +95,36 @@
         <span class="tg-dday"></span>
       </header>
       <nav class="tg-nav">${TABS.map((k) => `<button type="button" data-tab="${k}">${icon(k)}<span></span></button>`).join('')}</nav>
-      <div class="tg-body"></div>
+      <div class="tg-body">${TABS.map((k) => `<div class="tg-pane" data-pane="${k}"></div>`).join('')}</div>
       <div class="tg-lightbox" hidden><img alt=""></div>
     </div>`;
   document.body.appendChild(root);
-  const body = $('.tg-body', root);
+  /* 칸은 옆으로 나란히 — 손가락으로 밀면 옆 칸으로 (10/31). 브라우저 스크롤이라 손을 그대로 따라옵니다.
+     지도 판 위에서는 지도가 움직이고, 옆 칸으로는 위쪽 줄이나 아래 카드를 밀거나 탭을 눌러 갑니다 */
+  const slider = $('.tg-body', root);
+  const pane = (k) => $(`[data-pane="${k}"]`, root);
+  const current = () => pane(tab);
+  const at = (k) => TABS.indexOf(k);
+  const slideTo = (k, smooth) => slider.scrollTo({ left: at(k) * slider.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+  function settle(k) {
+    tab = k; composing = false; editing = null; pending = null; pinning = null; selected = null;
+    render();
+  }
   root.querySelectorAll('.tg-nav button').forEach((b) => {
     b.onclick = () => {
-      if (tab === b.dataset.tab) return;
-      tab = b.dataset.tab; composing = false; editing = null; pending = null;
-      render();
-      body.scrollTop = 0;
+      const k = b.dataset.tab;
+      if (tab === k) return;
+      const near = Math.abs(at(k) - at(tab)) === 1;
+      settle(k);
+      slideTo(k, near);
+      current().scrollTop = 0;
     };
   });
+  slider.addEventListener('scroll', () => {
+    const k = TABS[Math.round(slider.scrollLeft / (slider.clientWidth || 1))];
+    if (k && k !== tab) settle(k);
+  }, { passive: true });
+  addEventListener('resize', () => { if (!root.hidden) slideTo(tab, false); });
   const box = $('.tg-lightbox', root);
   box.onclick = () => { box.hidden = true; };
   document.addEventListener('keydown', (e) => {
@@ -179,7 +203,7 @@
 
     const diary = items('diary')[0];
     out.push(card('diary', diary?.photoId ? 'photo' : '', diary
-      ? `${diary.photoId ? `<img class="home-card-bg" src="${photoUrl(diary.photoId)}" alt="" loading="lazy">` : ''}
+      ? `${diary.photoId ? `<img class="home-card-bg" src="${photoUrl(diary.photoId)}" alt="" loading="lazy" decoding="async">` : ''}
          <b class="home-card-big">${esc(diary.title || diary.memo.split('\n')[0])}</b><span class="home-card-line">${who(diary.member)} ${fmtDay(diary.day)}</span>`
       : `<span class="home-card-line">${T.diaryEmpty}</span>`, quick('write', `＋ ${T.writeDiary}`, 'solid')));
 
@@ -202,17 +226,13 @@
       ${sum ? `<span class="tg-split"><i class="a" style="width:${pa}%"></i><i class="b" style="width:${100 - pa}%"></i></span>` : ''}`,
       quick('spend', `＋ ${T.actSpend}`, 'solid')));
 
-    const food = items('food'), culture = items('culture');
-    const latest = [...food, ...culture].sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)))[0];
-    out.push(card('log', '', latest
-      ? `<b class="home-card-big">${esc(latest.title)}</b>${stars(latest.rating)}<span class="home-card-line">${T.food} ${food.length} · ${T.culture} ${culture.length}</span>`
-      : `<span class="home-card-line">${T.logEmpty}</span>`, quick('addLog', `＋ ${T.add}`, 'solid')));
-
     const loc = data.location;
     const where = loc.on && loc.them
       ? (() => { const d = km(loc.me, loc.them); return tr('distance', { km: dist(d) }); })()
       : loc.on ? T.theyOff : T.shareOffShort;
-    out.push(card('map', '', `<b class="home-card-big">${tr('placesCount', { n: items('place').length })}</b><span class="home-card-line">${esc(where)}</span>`,
+    const all = spots();
+    const latest = [...all].sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)))[0];
+    out.push(card('map', '', `<b class="home-card-big">${tr('placesCount', { n: all.length })}</b>${latest ? `<span class="home-card-line">${esc(latest.title)}</span>${stars(latest.rating)}` : ''}<span class="home-card-line">${esc(where)}</span>`,
       `<button type="button" class="tg-switch small ${loc.on ? 'on' : ''}" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-quick="share"><i></i></button><span class="home-card-line">${loc.on ? T.sharing : T.share}</span>`));
     return { html: out.join(''), waiting };
   }
@@ -224,7 +244,6 @@
     if (act === 'write') return open('diary', 'compose');
     if (act === 'addBucket') return open('bucket', 'add');
     if (act === 'spend') return open('ledger', 'amount');
-    if (act === 'addLog') return open('log', 'add');
     if (act === 'share') return toggleShare();
     if (act.startsWith('done:')) {
       const id = act.slice(5);
@@ -252,10 +271,14 @@
     if (!data) { strip.hidden = true; if (glanceBtn) glanceBtn.hidden = true; return; }
     const { html, waiting } = cards();
     goUs.querySelector('.app-nav-dot').hidden = !waiting;
-    const keep = track.scrollLeft;
-    track.innerHTML = html;
-    track.scrollLeft = keep;
-    wireCards(track);
+    // 같은 내용이면 건드리지 않습니다 — 사진이 다시 그려지고 넘기던 자리가 튀지 않게
+    if (html !== track.dataset.html) {
+      const keep = track.scrollLeft;
+      track.innerHTML = html;
+      track.dataset.html = html;
+      track.scrollLeft = keep;
+      wireCards(track);
+    }
     if (glanceBtn) {
       glanceBtn.hidden = false;
       glanceBtn.classList.toggle('hot', waiting);
@@ -284,11 +307,16 @@
 
   /* 달력이 보일 때 한 번, 다시 앞으로 왔을 때 1분에 한 번까지만 읽습니다 (Neon 깨우는 횟수 아끼기) */
   let lastLoad = 0;
+  const KEPT = 'diary_together';
   async function refresh(force = false) {
     if (!appMain || appMain.hidden) return;
     if (!force && Date.now() - lastLoad < 60000) return paintEntry();
     lastLoad = Date.now();
-    try { await call('GET'); } catch { /* 첫 화면 카드만 못 그릴 뿐 */ }
+    if (!data) { try { data = JSON.parse(localStorage.getItem(KEPT)); paintEntry(); } catch { /* 처음이거나 깨졌으면 기다립니다 */ } }
+    try {
+      await call('GET');
+      try { localStorage.setItem(KEPT, JSON.stringify(data)); } catch { /* 꽉 찼으면 그만둡니다 */ }
+    } catch { /* 첫 화면 카드만 못 그릴 뿐 */ }
     paintEntry();
   }
   // 로그아웃하면(#app 이 숨으면) 우리 탭도 닫습니다
@@ -299,13 +327,13 @@
     if (!data) return;
     if (!root.hidden) open(); else refresh(true);
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-  refresh();
 
   /** to = 열 칸, focus = 열자마자 쓸 수 있게 할 곳 ('answer' · 'compose' · 'add' · 'amount') */
   async function open(to, focus) {
     if (to) { tab = to; composing = focus === 'compose'; editing = null; pending = null; }
     glance.hidden = true;
     root.hidden = false;
+    slideTo(tab, false); // 숨었다 나오면 옆 스크롤 자리가 처음으로 돌아갑니다
     document.documentElement.classList.add('tg-open');
     goCal.classList.remove('on');
     goUs.classList.add('on');
@@ -319,7 +347,7 @@
     render();
     if (focus) {
       const target = { answer: '.tg-answer textarea', compose: '.tg-compose textarea', add: 'form[data-form="item"] input[name="title"]', amount: '.tg-ledger-add input[name="amount"]' }[focus];
-      const el = target && $(target, body);
+      const el = target && $(target, current());
       if (el) { el.scrollIntoView({ block: 'center' }); el.focus({ preventScroll: true }); }
     }
   }
@@ -330,6 +358,8 @@
     goUs.classList.remove('on');
     goCal.classList.add('on');
     stopWatch();
+    if (map) { map.remove(); map = null; }
+    pane('map').innerHTML = '';
     paintEntry();
   }
 
@@ -345,11 +375,23 @@
     paintEntry();
     root.dataset.tab = tab;
     if (!data || root.hidden) return;
-    if (tab === 'map') return renderMap();
-    if (map) { map.remove(); map = null; }
-    const views = { today: todayView, diary: diaryView, bucket: bucketView, ledger: ledgerView, log: logView };
-    body.innerHTML = `<p class="tg-lead">${T['lead' + tab[0].toUpperCase() + tab.slice(1)]}</p>` + views[tab]();
-    wire();
+    paintPane(tab);
+    // 옆 칸은 한가할 때 미리 — 밀 때 빈 칸이 보이지 않게
+    clearIdle(); idleJob = idle(() => [at(tab) - 1, at(tab) + 1].forEach((i) => { if (TABS[i] && !root.hidden) paintPane(TABS[i]); }));
+  }
+  const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 400 }) : setTimeout(fn, 80));
+  const clearIdle = () => (window.cancelIdleCallback ? cancelIdleCallback(idleJob) : clearTimeout(idleJob));
+  let idleJob = 0;
+  /** 칸 하나 — 내용이 그대로면 손대지 않습니다 (쓰던 글·사진·스크롤이 그대로 남게) */
+  function paintPane(k) {
+    if (k === 'map') return renderMap();
+    const views = { today: todayView, diary: diaryView, bucket: bucketView, ledger: ledgerView };
+    const html = `<p class="tg-lead">${T['lead' + k[0].toUpperCase() + k.slice(1)]}</p>` + views[k]();
+    const el = pane(k);
+    if (el.dataset.html === html) return;
+    el.dataset.html = html;
+    el.innerHTML = html;
+    wire(el);
   }
 
   /** 처음 만난 날부터 — 설정에 적어 뒀을 때만 */
@@ -362,12 +404,19 @@
 
   const items = (k) => (data ? data.items.filter((i) => i.kind === k) : []);
   const who = (slot) => `<i class="tg-who ${slot === 'b' ? 'b' : 'a'}" title="${esc(nameFor(slot))}"></i>`;
+  /* Intl 은 만들 때가 비쌉니다 — 가계부 한 칸에 수십 번 부르므로 한 번 만들어 씁니다 */
+  const fmts = new Map();
+  const fmt = (Kind, opts) => {
+    const key = `${Kind.name}|${locale()}|${JSON.stringify(opts)}`;
+    if (!fmts.has(key)) fmts.set(key, new Kind(locale(), opts));
+    return fmts.get(key);
+  };
   const fmtDay = (d, opts = { month: 'short', day: 'numeric' }) => {
     if (!d) return '';
     const [y, m, n] = d.split('-').map(Number);
-    return new Intl.DateTimeFormat(locale(), { ...opts, timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, n)));
+    return fmt(Intl.DateTimeFormat, { ...opts, timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, n)));
   };
-  const money = (n) => new Intl.NumberFormat(locale()).format(n || 0);
+  const money = (n) => fmt(Intl.NumberFormat, undefined).format(n || 0);
   /* 지우기는 한 번에 — 실수면 토스트의 "되돌리기". 사진 붙은 일기만은 사진을 되살릴 수 없어서 한 번 더 묻습니다 */
   const delBtn = (id, confirm = false) => `<button class="tg-icon-btn ${armed === id ? 'armed' : ''}" type="button" data-del="${id}" ${confirm ? 'data-confirm' : ''} aria-label="${armed === id ? T.confirmDel : T.del}">${armed === id ? `<span>${T.confirmDel}</span>` : icon('trash')}</button>`;
   /** 줄 글씨를 누르면 그 자리에서 고치기 */
@@ -434,7 +483,7 @@
     const album = list.filter((i) => i.photoId);
     const feed = list.map((i) => editing === i.id ? diaryForm(i) : `
       <article class="tg-entry">
-        ${i.photoId ? `<img class="tg-entry-photo" src="${photoUrl(i.photoId)}" alt="" loading="lazy" data-zoom>` : ''}
+        ${i.photoId ? `<img class="tg-entry-photo" src="${photoUrl(i.photoId)}" alt="" loading="lazy" decoding="async" data-zoom>` : ''}
         <div class="tg-entry-body">
           <div class="tg-entry-meta">${who(i.member)}<span>${fmtDay(i.day, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })}</span>
             <span class="tg-grow"></span>${editBtn(i.id)}${delBtn(i.id, !!i.photoId)}</div>
@@ -443,7 +492,7 @@
       </article>`).join('');
     return `${composing ? diaryForm() : `<button class="tg-cta" type="button" data-act="compose">${icon('plus')}<span>${T.writeDiary}</span></button>`}
       ${album.length ? `<section class="tg-section"><h3>${T.album} <span class="tg-count">${album.length}</span></h3>
-        <div class="tg-album">${album.map((i) => `<img src="${photoUrl(i.photoId)}" alt="" loading="lazy" data-zoom>`).join('')}</div></section>` : ''}
+        <div class="tg-album">${album.map((i) => `<img src="${photoUrl(i.photoId)}" alt="" loading="lazy" decoding="async" data-zoom>`).join('')}</div></section>` : ''}
       ${list.length ? `<section class="tg-section">${feed}</section>` : composing ? '' : empty('diary', T.diaryEmpty)}`;
   }
 
@@ -474,7 +523,7 @@
         ${i.kind === 'ledger' ? `<input name="amount" type="number" inputmode="numeric" value="${i.amount ?? ''}" required aria-label="${T.amount}">
           <input name="day" type="date" value="${i.day || ''}" aria-label="${T.day}">` : ''}
         <input name="memo" value="${esc(i.memo)}" maxlength="2000" placeholder="${T.memo}">
-        ${i.kind === 'food' || i.kind === 'culture' ? stars(i.rating, true) : ''}
+        ${SPOTS.includes(i.kind) ? stars(i.rating, true) : ''}
         <div class="tg-actions"><button class="btn btn-ghost" type="button" data-act="cancel">${T.cancel}</button><button class="btn btn-solid">${T.save}</button></div>
       </form></li>`;
   }
@@ -489,7 +538,7 @@
     list.forEach((i) => { by[i.member === 'b' ? 'b' : 'a'] += i.amount || 0; });
     const pa = sum ? Math.round((by.a / sum) * 100) : 50;
     const [y, m] = month.split('-').map(Number);
-    const title = new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, 1)));
+    const title = fmt(Intl.DateTimeFormat, { year: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, 1)));
     // 지난달과 견주기 — 두 달 다 적은 게 있을 때만
     const before = new Date(Date.UTC(y, m - 2, 1)).toISOString().slice(0, 7);
     const prev = all.filter((i) => (i.day || String(i.createdAt).slice(0, 10)).startsWith(before)).reduce((s, i) => s + (i.amount || 0), 0);
@@ -516,27 +565,14 @@
           <b class="tg-amount" data-edit="${i.id}">${money(i.amount)}</b>${delBtn(i.id)}</li>`).join('')}</ul></section>`).join('') : empty('ledger', T.ledgerEmpty)}`;
   }
 
-  /* 기록: 맛집 · 문화 */
+  /* 별점 */
   /** 별: input = 입력 칸 안, id = 목록에서 바로 눌러 바꾸기, 둘 다 없으면 보기만 */
   const stars = (n, input = false, id = null) => `<span class="tg-stars ${input ? 'input' : id ? 'tap' : ''}" ${input ? `role="radiogroup" aria-label="${T.rate}"` : `aria-label="${n || 0}/5"`}>${[1, 2, 3, 4, 5].map((s) => input
     ? `<label><input type="radio" name="rating" value="${s}" ${n === s ? 'checked' : ''}><i class="${s <= (n || 0) ? 'on' : ''}">★</i></label>`
     : id ? `<button type="button" class="${s <= (n || 0) ? 'on' : ''}" data-rate="${id}" data-v="${s}" aria-label="${s}/5">★</button>`
       : `<i class="${s <= (n || 0) ? 'on' : ''}">★</i>`).join('')}</span>`;
-  function logView() {
-    const list = items(logKind);
-    return `<div class="tg-seg">${['food', 'culture'].map((k) => `<button type="button" data-kind="${k}" class="${logKind === k ? 'on' : ''}">${T[k]} <span class="tg-count">${items(k).length}</span></button>`).join('')}</div>
-      <form class="tg-card tg-log-add" data-form="item" data-kind="${logKind}">
-        <input name="title" placeholder="${logKind === 'food' ? T.foodPlaceholder : T.culturePlaceholder}" required maxlength="120" aria-label="${T.title_}">
-        <input name="memo" placeholder="${T.memo}" maxlength="2000" aria-label="${T.memo}">
-        <div class="tg-two">${stars(0, true)}<button class="btn btn-solid">${T.add}</button></div>
-      </form>
-      ${list.length ? `<ul class="tg-list">${list.map((i) => editing === i.id ? editRow(i) : `<li class="tg-log">
-        <span class="tg-text">${editable(i, `<b>${esc(i.title)}</b>`)}${stars(i.rating, false, i.id)}${i.memo ? `<small data-edit="${i.id}">${esc(i.memo)}</small>` : ''}</span>
-        ${who(i.member)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('log', T.logEmpty)}`;
-  }
-
   /* ── 동작 ── */
-  function wire() {
+  function wire(body) {
     body.querySelectorAll('[data-del]').forEach((b) => {
       b.onclick = async () => {
         const id = b.dataset.del;
@@ -549,7 +585,7 @@
       };
     });
     body.querySelectorAll('[data-edit]').forEach((b) => {
-      const go = () => { editing = b.dataset.edit; composing = false; preview = null; render(); $('.tg-edit input', body)?.focus(); };
+      const go = () => { editing = b.dataset.edit; composing = false; preview = null; render(); $('.tg-edit input', current())?.focus(); };
       b.onclick = go;
       b.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } };
     });
@@ -564,13 +600,21 @@
         render();
       };
     });
-    body.querySelectorAll('.tg-seg button').forEach((b) => { b.onclick = () => { logKind = b.dataset.kind; editing = null; render(); }; });
+    body.querySelectorAll('[data-spot]').forEach((b) => {
+      b.onclick = () => {
+        spotKind = b.dataset.spot;
+        const form = b.closest('form');
+        form.dataset.kind = spotKind;
+        form.querySelectorAll('[data-spot]').forEach((x) => x.classList.toggle('on', x === b));
+        $('input[name="title"]', form).placeholder = spotHint(spotKind);
+      };
+    });
     body.querySelectorAll('.tg-stars.input input').forEach((r) => {
       r.onchange = () => r.closest('.tg-stars').querySelectorAll('i').forEach((i, n) => i.classList.toggle('on', n < Number(r.value)));
     });
     const act = (name, fn) => body.querySelectorAll(`[data-act="${name}"]`).forEach((b) => { b.onclick = fn; });
-    act('compose', () => { composing = true; editing = null; preview = null; render(); $('textarea', body)?.focus(); });
-    act('cancel', () => { composing = false; editing = null; preview = null; pending = null; render(); });
+    act('compose', () => { composing = true; editing = null; preview = null; render(); $('textarea', current())?.focus(); });
+    act('cancel', () => { composing = false; editing = null; preview = null; pending = null; pinning = null; render(); });
     act('nudge', (ev) => {
       const heart = ev.currentTarget;
       heart.classList.add('beat');
@@ -690,20 +734,34 @@
 
   /** positron 을 지금 테마 색으로 — 바탕은 종이색, 물은 옅은 하늘, 공원은 잎빛, 길은 흰색 */
   function paint() {
-    if (document.documentElement.dataset.theme === 'night') return;
     const set = (id, prop, value) => { if (map.getLayer(id)) map.setPaintProperty(id, prop, value); };
-    set('background', 'background-color', cssVar('--paper') || '#FBF3F4');
-    set('water', 'fill-color', '#CFE3EE');
-    set('waterway', 'line-color', '#BFD8E6');
-    set('park', 'fill-color', cssVar('--wash-both') || '#E9F2E6');
-    set('landcover_wood', 'fill-color', '#DDEBD6');
+    const hide = (id) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none'); };
+    // 도로 번호판·국경선·작은 동네 이름처럼 핀과 눈길을 다투는 것은 뺍니다
+    for (const id of ['highway-shield-non-us', 'highway-shield-us-interstate', 'road_shield_us', 'boundary_3', 'label_other', 'aeroway-taxiway', 'railway_service', 'railway_service_dashline']) hide(id);
+    if (document.documentElement.dataset.theme === 'night') return;
+    const ink = cssVar('--ink') || '#40323A';
+    const paper = cssVar('--paper') || '#FBF3F4';
+    set('background', 'background-color', paper);
+    set('water', 'fill-color', '#BFE0EC');
+    set('waterway', 'line-color', '#BFE0EC');
+    set('park', 'fill-color', '#D5EBC8');
+    set('park', 'fill-opacity', 1);
+    set('landcover_wood', 'fill-color', '#CDE6BF');
+    set('landcover_wood', 'fill-opacity', 0.75);
     set('landuse_residential', 'fill-color', cssVar('--paper-2') || '#FDF7F7');
-    set('building', 'fill-color', cssVar('--surface-sink') || '#FBF1F1');
-    for (const id of ['highway_minor', 'highway_path']) set(id, 'line-color', '#FFFFFF');
-    for (const id of ['highway_major_inner', 'highway_motorway_inner']) set(id, 'line-color', '#FFFDF8');
-    for (const id of ['highway_major_casing', 'highway_motorway_casing']) set(id, 'line-color', cssVar('--line-2') || '#EBD9DC');
-    // 철도 점선은 흐리게 — 장소 핀보다 눈에 띄지 않게
-    for (const id of ['railway', 'railway_dashline', 'railway_transit', 'railway_transit_dashline', 'railway_service', 'railway_service_dashline']) set(id, 'line-opacity', 0.35);
+    set('building', 'fill-color', cssVar('--surface-sink') || '#F6E9E9');
+    set('building', 'fill-opacity', 0.75);
+    for (const id of ['highway_minor', 'highway_path', 'highway_major_inner', 'highway_major_subtle']) set(id, 'line-color', '#FFFFFF');
+    for (const id of ['highway_motorway_inner', 'highway_motorway_subtle', 'highway_motorway_bridge_inner']) set(id, 'line-color', '#FFE9C7');
+    for (const id of ['highway_major_casing', 'highway_motorway_casing', 'highway_motorway_bridge_casing']) set(id, 'line-color', cssVar('--line-2') || '#EBD9DC');
+    for (const id of ['railway', 'railway_dashline', 'railway_transit', 'railway_transit_dashline']) set(id, 'line-opacity', 0.3);
+    for (const l of map.getStyle().layers) {
+      if (l.type !== 'symbol' || !l.layout?.['text-field']) continue;
+      set(l.id, 'text-color', /^water/.test(l.id) ? '#5C93A8' : ink);
+      set(l.id, 'text-halo-color', /^water/.test(l.id) ? '#DDF0F6' : paper);
+      set(l.id, 'text-halo-width', 1.6);
+      if (/^label_city/.test(l.id)) set(l.id, 'text-opacity', 0.45); // 큰 도시 이름이 핀을 누르지 않게
+    }
   }
   /** 지명은 화면 언어로 — 없으면 원래 이름 */
   function relabel() {
@@ -716,6 +774,22 @@
     }
   }
 
+  const spots = () => (data ? data.items.filter((i) => SPOTS.includes(i.kind)) : []);
+  const shown = () => spots().filter((i) => filter === 'all' || i.kind === filter);
+  const spotHint = (k) => ({ place: T.placeName, food: T.foodPlaceholder, culture: T.culturePlaceholder }[k]);
+  const kindName = (k) => T[k === 'place' ? 'placeKind' : k];
+  const kindPick = () => `<div class="tg-chips in-form">${SPOTS.map((k) => `<button type="button" class="tg-chip ${k === spotKind ? 'on' : ''}" data-spot="${k}">${kindName(k)}</button>`).join('')}</div>`;
+  /** 고른 핀 한 장 — 별점은 그 자리에서, 고치기는 목록에서 */
+  function spotCard(i) {
+    const d = data.location?.me && i.lat != null ? km(data.location.me, i) : null;
+    return `<div class="tg-sheet tg-spot">
+        <div class="tg-spot-top">${pinOf(i.kind, 'mini')}<div class="tg-spot-name"><b>${esc(i.title)}</b><small>${kindName(i.kind)}${d != null ? ` · ${dist(d)}` : ''}</small></div>
+          ${who(i.member)}<button class="tg-icon-btn" type="button" data-act="unselect" aria-label="${T.close}">${icon('close')}</button></div>
+        ${stars(i.rating, false, i.id)}${i.memo ? `<p class="tg-spot-memo">${esc(i.memo)}</p>` : ''}
+        <div class="tg-spot-acts"><a class="btn btn-solid" href="${esc(route(i))}" target="_blank" rel="noopener">${T.directions}</a>
+          <button class="btn btn-ghost" type="button" data-editspot="${i.id}">${T.edit}</button>${delBtn(i.id)}</div>
+      </div>`;
+  }
   function mapCard() {
     const loc = data.location;
     let status = T.shareNote;
@@ -723,38 +797,57 @@
       const d = km(loc.me, loc.them);
       status = tr('distance', { km: dist(d) }) + ' · ' + tr('updated', { time: ago(loc.them.at) });
     } else if (loc.on) status = T.theyOff;
-    return `
-      ${pending ? `<form class="tg-sheet" data-form="place">
-          <b>${T.addPlace}</b>
-          <input name="title" placeholder="${T.placeName}" required maxlength="120" aria-label="${T.placeName}">
-          <input name="memo" placeholder="${T.memo}" maxlength="2000" aria-label="${T.memo}">
-          <div class="tg-actions"><button class="btn btn-ghost" type="button" data-act="cancel">${T.cancel}</button><button class="btn btn-solid">${T.save}</button></div>
-        </form>` : `<div class="tg-sheet">
+    const picked = selected && spots().find((i) => i.id === selected);
+    if (selected && !picked) selected = null;
+    if (pinning) return `<div class="tg-sheet"><p class="tg-hint tg-tap">📍 ${T.pinTap}</p>
+        <div class="tg-actions"><button class="btn btn-ghost" type="button" data-act="cancel">${T.cancel}</button></div></div>`;
+    if (pending) return `<form class="tg-sheet" data-form="place" data-kind="${spotKind}">
+        ${kindPick()}
+        <input name="title" placeholder="${spotHint(spotKind)}" required maxlength="120" aria-label="${T.placeName}">
+        <input name="memo" placeholder="${T.memo}" maxlength="2000" aria-label="${T.memo}">
+        ${stars(0, true)}
+        <div class="tg-actions"><button class="btn btn-ghost" type="button" data-act="cancel">${T.cancel}</button><button class="btn btn-solid">${T.save}</button></div>
+      </form>`;
+    if (picked) return spotCard(picked);
+    return `<div class="tg-sheet">
           <div class="tg-share">
             <div><b>${loc.on ? T.sharing : T.share}</b><p class="tg-hint">${esc(status)}</p></div>
             <button class="tg-switch ${loc.on ? 'on' : ''}" type="button" role="switch" aria-checked="${loc.on}" aria-label="${T.share}" data-act="share"><i></i></button>
           </div>
           <p class="tg-hint tg-tap">📍 ${T.tapMap}</p>
-        </div>`}`;
+        </div>`;
   }
-  /** 저장한 장소 목록 — 내 위치를 알면 가까운 순, 모르면 최근 순. 줄을 누르면 지도에서 그 장소로 */
+  /** 목록 — 위치를 알면 가까운 순, 위치 없이 적은 것은 뒤로. 줄을 누르면 지도에서 그 핀으로 */
   function placesList() {
-    const mine = data.location.me;
-    const list = items('place').filter((i) => i.lat != null)
-      .map((i) => ({ i, d: mine ? km(mine, i) : null }))
-      .sort((x, y) => (mine ? x.d - y.d : String(y.i.createdAt).localeCompare(String(x.i.createdAt))));
-    return `<button class="tg-cta" type="button" data-act="here">${icon('locate')}<span>${T.saveHere}</span></button>
+    const mine = data.location?.me;
+    const list = shown().map((i) => ({ i, d: mine && i.lat != null ? km(mine, i) : null }))
+      .sort((x, y) => (x.i.lat == null) - (y.i.lat == null) || (mine ? (x.d ?? 0) - (y.d ?? 0) : String(y.i.createdAt).localeCompare(String(x.i.createdAt))));
+    return `<form class="tg-card tg-log-add" data-form="item" data-kind="${spotKind}">${kindPick()}
+        <input name="title" placeholder="${spotHint(spotKind)}" required maxlength="120" aria-label="${T.title_}">
+        <input name="memo" placeholder="${T.memo}" maxlength="2000" aria-label="${T.memo}">
+        <div class="tg-two">${stars(0, true)}<button class="btn btn-solid">${T.add}</button></div>
+      </form>
+      <button class="tg-cta" type="button" data-act="here">${icon('locate')}<span>${T.saveHere}</span></button>
       ${list.length ? `<h3 class="tg-sub">${mine ? T.nearFirst : T.newFirst}</h3>
         <ul class="tg-list">${list.map(({ i, d }) => editing === i.id ? editRow(i) : `<li class="tg-place">
-          <span class="tg-pin mini ${i.member === 'b' ? 'b' : 'a'}"><svg viewBox="0 0 24 24">${P.today}</svg></span>
-          <span class="tg-text" role="button" tabindex="0" data-fly="${i.id}" aria-label="${T.showOnMap}"><b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}
-            <small class="tg-place-meta">${d != null ? `${dist(d)} · ` : ''}${fmtDay(String(i.createdAt).slice(0, 10))}</small></span>
-          ${editBtn(i.id)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('map', T.placesEmpty)}`;
+          ${pinOf(i.kind, 'mini')}
+          <span class="tg-text" role="button" tabindex="0" ${i.lat != null ? `data-fly="${i.id}"` : `data-edit="${i.id}"`} aria-label="${T.showOnMap}"><b>${esc(i.title)}</b>${i.memo ? `<small>${esc(i.memo)}</small>` : ''}
+            <small class="tg-place-meta">${d != null ? `${dist(d)} · ` : ''}${fmtDay(String(i.createdAt).slice(0, 10))}</small>${stars(i.rating, false, i.id)}</span>
+          ${i.lat == null ? `<button class="tg-icon-btn" type="button" data-pin="${i.id}" aria-label="${T.pinIt}">${icon('map')}</button>` : editBtn(i.id)}${delBtn(i.id)}</li>`).join('')}</ul>` : empty('map', T.placesEmpty)}`;
   }
   let markers = [];
+  const mp = pane('map');
+  function paintCard() {
+    const card = $('.tg-mapcard', mp);
+    if (!card) return;
+    card.innerHTML = mapCard();
+    wire(card);
+    wireMap();
+  }
   async function renderMap() {
-    if (!$('#tg-map', body)) {
-      body.innerHTML = `<div class="tg-seg tg-mapseg"><button type="button" data-mode="map"></button><button type="button" data-mode="list"></button></div>
+    if (!$('#tg-map', mp)) {
+      mp.innerHTML = `<div class="tg-seg tg-mapseg"><button type="button" data-mode="map"></button><button type="button" data-mode="list"></button></div>
+        <div class="tg-chips"></div>
         <div class="tg-mapwrap"><div id="tg-map" class="tg-map"></div>
         <button class="tg-fab" type="button" data-act="locate" aria-label="${T.locate}">${icon('locate')}</button>
         <div class="tg-mapcard"></div></div>
@@ -762,20 +855,25 @@
       fitted = false;
     }
     // [지도 | 목록 n] — 지도는 숨겨만 두고 살려 둡니다 (다시 볼 때 새로 불러오지 않게)
-    body.querySelectorAll('[data-mode]').forEach((b) => {
+    mp.querySelectorAll('[data-mode]').forEach((b) => {
       b.classList.toggle('on', b.dataset.mode === mapMode);
-      b.innerHTML = b.dataset.mode === 'map' ? T.map : `${T.viewList} <span class="tg-count">${items('place').length}</span>`;
+      b.innerHTML = b.dataset.mode === 'map' ? T.map : `${T.viewList} <span class="tg-count">${spots().length}</span>`;
     });
-    $('.tg-mapwrap', body).hidden = mapMode !== 'map';
-    $('.tg-places', body).hidden = mapMode !== 'list';
-    $('.tg-places', body).innerHTML = mapMode === 'list' ? placesList() : '';
-    $('.tg-mapcard', body).innerHTML = mapCard();
-    wire();
-    wireMap();
+    // 전체·장소·맛집·문화 — 지도와 목록이 같이 걸러집니다
+    $('.tg-chips', mp).innerHTML = ['all', ...SPOTS].map((k) => {
+      const n = k === 'all' ? spots().length : items(k).length;
+      return `<button type="button" class="tg-chip ${filter === k ? 'on' : ''}" data-filter="${k}">${k === 'all' ? T.all : `${icon(SPOT_ICON[k])}${kindName(k)}`} <span class="tg-count">${n}</span></button>`;
+    }).join('');
+    $('.tg-mapwrap', mp).hidden = mapMode !== 'map';
+    const list = $('.tg-places', mp);
+    list.hidden = mapMode !== 'list';
+    const html = mapMode === 'list' ? placesList() : '';
+    if (list.dataset.html !== html) { list.dataset.html = html; list.innerHTML = html; wire(list); }
+    paintCard();
     if (mapMode === 'list') return;
     try { await loadMap(); } catch { say(T.error); return; }
-    const el = $('#tg-map', body);
-    if (!el || root.hidden || tab !== 'map' || mapMode !== 'map') return;
+    const el = $('#tg-map', mp);
+    if (!el || root.hidden || mapMode !== 'map') return;
     if (!map || map.getContainer() !== el) {
       if (map) map.remove();
       const night = document.documentElement.dataset.theme === 'night';
@@ -785,6 +883,7 @@
         center: [126.978, 37.5665], zoom: 11,
         attributionControl: false,
         dragRotate: false, pitchWithRotate: false,
+        localIdeographFontFamily: "'Pretendard Variable', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif", // 한글은 앱 글꼴로
       });
       map.touchZoomRotate.disableRotation();
       // 출처 표기는 왼쪽 위에 접힌 (i) 로 — 오른쪽 위 '내 위치로' 단추를 가리지 않게
@@ -793,11 +892,13 @@
       map.on('style.load', () => { paint(); relabel(); });
       map.on('click', (e) => {
         if (e.originalEvent.target.closest('.tg-marker')) return;
-        pending = { lat: e.lngLat.lat, lng: e.lngLat.lng };
+        const spot = { lat: e.lngLat.lat, lng: e.lngLat.lng };
+        if (pinning) { const id = pinning; patch(id, spot, () => { pinning = null; selected = id; }); return; }
+        if (selected) { selected = null; drawMarkers(); paintCard(); return; } // 빈 곳을 누르면 카드만 닫습니다
+        pending = spot;
         drawMarkers();
-        $('.tg-mapcard', body).innerHTML = mapCard();
-        wireMap();
-        $('.tg-sheet input', body)?.focus();
+        paintCard();
+        $('.tg-sheet input[name="title"]', mp)?.focus();
       });
     }
     drawMarkers();
@@ -810,18 +911,14 @@
       } else if (pts.length === 1) map.jumpTo({ center: pts[0], zoom: 14 });
     }
     map.resize();
-    setTimeout(() => map && map.resize(), 60);
   }
-  /** 목록에서 고른 장소를 지도에서 — 핀의 말풍선까지 열어 둡니다 */
+  /** 목록에서 고른 장소를 지도에서 — 그 핀의 카드까지 열어 둡니다 */
   async function showPlace(id) {
     const p = data.items.find((i) => i.id === id);
     if (p?.lat == null) return;
-    mapMode = 'map'; editing = null; fitted = true;
+    mapMode = 'map'; editing = null; fitted = true; selected = id;
     await renderMap();
-    if (!map) return;
-    map.jumpTo({ center: [p.lng, p.lat], zoom: 16 });
-    const m = markers.find((k) => { const l = k.getLngLat(); return Math.abs(l.lat - p.lat) < 1e-9 && Math.abs(l.lng - p.lng) < 1e-9; });
-    if (m && !m.getPopup()?.isOpen()) m.togglePopup();
+    map?.jumpTo({ center: [p.lng, p.lat], zoom: 16 });
   }
   /** 길찾기 — 한국어 화면은 카카오맵, 그 밖은 구글 지도 (앱이 깔려 있으면 앱으로 열립니다) */
   const route = (p) => (locale().startsWith('ko')
@@ -839,30 +936,49 @@
       if (popup) m.setPopup(new maplibregl.Popup({ offset: anchor === 'bottom' ? 38 : 26, closeButton: false, className: 'tg-popup' }).setHTML(popup));
       m.addTo(map);
       markers.push(m);
+      return el;
     };
-    items('place').filter((i) => i.lat != null).forEach((i) => {
-      add(`<span class="tg-pin ${i.member === 'b' ? 'b' : 'a'}"><svg viewBox="0 0 24 24">${P.today}</svg></span>`, i.lat, i.lng, 'bottom',
-        `<b>${esc(i.title)}</b>${i.memo ? `<br>${esc(i.memo)}` : ''}<br><a class="tg-route" href="${esc(route(i))}" target="_blank" rel="noopener">${T.directions} ›</a>`);
+    shown().filter((i) => i.lat != null).forEach((i) => {
+      const el = add(pinOf(i.kind, selected === i.id ? 'on' : ''), i.lat, i.lng, 'bottom');
+      el.onclick = () => {
+        selected = i.id; pending = null;
+        drawMarkers();
+        paintCard();
+        map.easeTo({ center: [i.lng, i.lat], offset: [0, -70], duration: 350 });
+      };
     });
-    if (pending) add(`<span class="tg-pin new"><svg viewBox="0 0 24 24">${P.plus}</svg></span>`, pending.lat, pending.lng, 'bottom');
+    if (pending) add(`<span class="tg-pin fresh"><svg viewBox="0 0 24 24">${P.plus}</svg></span>`, pending.lat, pending.lng, 'bottom');
     const loc = data.location;
     const face = (slot) => `<span class="tg-face ${slot}"><b>${initial(slot)}</b></span>`;
     if (loc.them) add(face(other()), loc.them.lat, loc.them.lng, 'center', `<b>${esc(nameFor(other()))}</b><br>${esc(ago(loc.them.at))}`);
     if (loc.me) add(face(me()), loc.me.lat, loc.me.lng, 'center', `<b>${esc(nameFor(me()))}</b>`);
   }
   function wireMap() {
-    const card = $('.tg-mapcard', body);
+    const card = $('.tg-mapcard', mp);
     const share = $('[data-act="share"]', card);
     if (share) share.onclick = () => toggleShare(share);
-    body.querySelectorAll('[data-mode]').forEach((b) => {
-      b.onclick = () => { if (mapMode === b.dataset.mode) return; mapMode = b.dataset.mode; editing = null; pending = null; renderMap(); };
+    const repaint = () => { editing = null; pending = null; selected = null; pinning = null; renderMap(); };
+    mp.querySelectorAll('[data-mode]').forEach((b) => {
+      b.onclick = () => { if (mapMode === b.dataset.mode) return; mapMode = b.dataset.mode; repaint(); };
     });
-    body.querySelectorAll('[data-fly]').forEach((c) => {
+    mp.querySelectorAll('[data-filter]').forEach((b) => {
+      b.onclick = () => { filter = b.dataset.filter; repaint(); };
+    });
+    mp.querySelectorAll('[data-fly]').forEach((c) => {
       c.onclick = () => showPlace(c.dataset.fly);
       c.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); showPlace(c.dataset.fly); } };
     });
+    // 위치 없이 적어 둔 것: 지도로 가서 누른 자리에 꽂습니다
+    mp.querySelectorAll('[data-pin]').forEach((b) => {
+      b.onclick = () => { pinning = b.dataset.pin; pending = null; selected = null; mapMode = 'map'; renderMap(); };
+    });
+    mp.querySelectorAll('[data-editspot]').forEach((b) => {
+      b.onclick = () => { editing = b.dataset.editspot; selected = null; mapMode = 'list'; filter = 'all'; renderMap().then(() => $('.tg-edit input', mp)?.focus()); };
+    });
+    const unselect = $('[data-act="unselect"]', card);
+    if (unselect) unselect.onclick = () => { selected = null; drawMarkers(); paintCard(); };
     // 지금 있는 곳 저장: 내 자리에 새 핀을 꽂고 이름 칸을 엽니다
-    const here = $('[data-act="here"]', body);
+    const here = $('[data-act="here"]', mp);
     if (here) {
       here.onclick = () => {
         if (!navigator.geolocation) return say(T.denied);
@@ -871,22 +987,22 @@
           mapMode = 'map'; fitted = true;
           await renderMap();
           map?.jumpTo({ center: [pending.lng, pending.lat], zoom: 16 });
-          $('.tg-sheet input', body)?.focus();
+          $('.tg-sheet input[name="title"]', mp)?.focus();
         }, () => say(T.denied), { timeout: 20000, maximumAge: 60000 });
       };
     }
     const cancel = $('[data-act="cancel"]', card);
-    if (cancel) cancel.onclick = () => { pending = null; drawMarkers(); card.innerHTML = mapCard(); wireMap(); };
+    if (cancel) cancel.onclick = () => { pending = null; pinning = null; drawMarkers(); paintCard(); };
     const form = $('form[data-form="place"]', card);
     if (form) {
       form.onsubmit = (ev) => {
         ev.preventDefault();
         if (busy) return;
         const v = Object.fromEntries(new FormData(form));
-        item({ kind: 'place', title: v.title, memo: v.memo || '', lat: pending.lat, lng: pending.lng }, () => { pending = null; });
+        item({ kind: form.dataset.kind, title: v.title, memo: v.memo || '', rating: v.rating ? Number(v.rating) : undefined, lat: pending.lat, lng: pending.lng }, () => { pending = null; });
       };
     }
-    const locate = $('[data-act="locate"]', body);
+    const locate = $('[data-act="locate"]', mp);
     if (locate) {
       locate.onclick = () => {
         const mine = data.location.me;
@@ -897,4 +1013,5 @@
       };
     }
   }
+  refresh(); // 맨 끝에서 — 인트로 없이 들어오면 앱이 이미 보이는 채로 이 파일이 돕니다
 })();

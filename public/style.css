@@ -307,13 +307,16 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-html, body {
-  margin: 0;
+/* 은은한 바탕은 고정된 한 장으로 — background-attachment: fixed 는 스크롤마다 화면 전체를 다시 칠합니다 */
+html { background: var(--paper); }
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(120% 80% at 15% -10%, var(--bg-1) 0%, transparent 55%),
-    radial-gradient(90% 70% at 100% 0%, var(--bg-2) 0%, transparent 50%),
-    var(--paper);
-  background-attachment: fixed;
+    radial-gradient(90% 70% at 100% 0%, var(--bg-2) 0%, transparent 50%);
+}
+html, body {
+  margin: 0;
   color: var(--ink);
   font-family: var(--body);
   -webkit-font-smoothing: antialiased;
@@ -1741,18 +1744,29 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-nav button:active { transform: scale(.92); }
 
 /* 내용 */
+/* 칸들을 옆으로 나란히 — 밀면 옆 칸으로 (스크롤 스냅) */
 .tg-body {
-  flex: 1; overflow-y: auto; overscroll-behavior: contain;
-  padding: 2px 16px 24px;
-  display: flex; flex-direction: column; gap: 12px;
+  flex: 1; min-height: 0; display: flex;
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior: contain;
+  scroll-snap-type: x mandatory; touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* 폰처럼 — 데스크탑에서도 스크롤 막대 없이 */
 }
 .tg-body::-webkit-scrollbar { display: none; }
+.tg-pane {
+  flex: 0 0 100%; min-width: 0; box-sizing: border-box;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; touch-action: pan-x pan-y;
+  padding: 2px 16px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: none;
+}
+.tg-pane::-webkit-scrollbar { display: none; }
 /* 세로로 쌓는 판이라 카드들이 높이를 양보해 잘리지 않게 — 넘치면 판이 스크롤합니다 */
-.tg-body > * { flex-shrink: 0; }
-.together[data-tab="map"] .tg-body { padding: 0; overflow: hidden; }
-.together.busy .tg-body { cursor: progress; }
+.tg-pane > * { flex-shrink: 0; }
+.tg-pane[data-pane="map"] { padding: 0; overflow: hidden; }
+.tg-entry { content-visibility: auto; contain-intrinsic-size: auto 260px; }
+.together.busy .tg-pane { cursor: progress; }
 .together.busy .btn-solid, .together.busy .tg-add-btn { opacity: .6; pointer-events: none; }
 /* 칸마다 맨 위 한 줄 — 여기가 무엇을 하는 곳인지 */
 .tg-lead { margin: 0 4px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
@@ -2092,10 +2106,10 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 /* 지도: 판 가득, 아래에 떠 있는 카드 */
 .tg-mapwrap { position: relative; flex: 1; height: 100%; min-height: 0; }
 /* 지도 칸: 위에 [지도 | 목록 n], 그 아래 지도 또는 저장한 장소 목록 */
-.tg-body > .tg-mapseg { margin: 2px 12px 10px; }
-.tg-body > .tg-mapwrap { flex: 1 1 0; height: auto; }
+.tg-pane > .tg-mapseg { margin: 2px 12px 8px; }
+.tg-pane > .tg-mapwrap { flex: 1 1 0; height: auto; }
 .tg-mapwrap[hidden], .tg-places[hidden] { display: none; }
-.tg-body > .tg-places {
+.tg-pane > .tg-places {
   flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
   padding: 0 16px 24px; display: flex; flex-direction: column; gap: 12px;
 }
@@ -2103,13 +2117,39 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-places > * { flex-shrink: 0; }
 .tg-place .tg-text { cursor: pointer; }
 .tg-place-meta { color: var(--faint) !important; font-size: 11.5px !important; }
-.tg-pin.mini { flex: none; width: 26px; height: 26px; border-width: 2px; margin: 0 4px 0 2px; box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .4); }
-.tg-pin.mini svg { width: 12px; height: 12px; }
+.tg-pin.mini { flex: none; width: 28px; height: 28px; border-width: 2px; margin: 0 4px 0 2px; box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .4); }
+.tg-pin.mini svg { width: 14px; height: 14px; }
+/* 걸러 보기: 전체·장소·맛집·문화 */
+.tg-chips { display: flex; gap: 6px; padding: 0 12px 8px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+.tg-chips::-webkit-scrollbar { display: none; }
+.tg-chips.in-form { padding: 0; }
+.tg-chip {
+  flex: none; display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 11px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--surface); color: var(--ink-soft); box-shadow: var(--shadow-sm);
+  font: inherit; font-size: 12.5px; font-weight: 700;
+}
+.tg-chip svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tg-chip .tg-count { font-size: 11px; opacity: .7; }
+.tg-chip.on { background: var(--cherry-ink); color: #fff; }
+.tg-chips.in-form .tg-chip { box-shadow: none; background: var(--surface-sink); }
+.tg-chips.in-form .tg-chip.on { background: var(--cherry-ink); }
+/* 고른 핀 카드 */
+.tg-spot-top { display: flex; align-items: center; gap: 8px; }
+.tg-spot-name { flex: 1; min-width: 0; display: grid; }
+.tg-spot-name b { font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-spot-name small { color: var(--faint); font-size: 12px; }
+.tg-spot-memo { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
+.tg-spot-acts { display: flex; align-items: center; gap: 8px; }
+.tg-spot-acts .btn { flex: 1; text-align: center; text-decoration: none; }
 .tg-route { display: inline-block; margin-top: 4px; font-weight: 800; color: var(--cherry-ink); text-decoration: none; }
 /* maplibre-gl.css 가 .maplibregl-map 에 position: relative 를 걸어 높이가 0 이 됩니다 — 이겨야 합니다 */
 .tg-mapwrap .tg-map { position: absolute; inset: 0; background: var(--surface-sink); }
+/* 지도 위아래를 판 색으로 살짝 녹입니다 — 네모난 그림이 붙어 있는 느낌이 나지 않게 */
+.tg-mapwrap::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 26px; z-index: 2; pointer-events: none; background: linear-gradient(var(--paper), transparent); }
 .tg-map .maplibregl-ctrl-attrib { font-size: 10px; }
 .tg-marker { cursor: pointer; }
+.tg-marker:has(.tg-pin.on) { z-index: 3; }
 .tg-popup .maplibregl-popup-content { border-radius: 14px; padding: 9px 14px; box-shadow: var(--shadow); font-family: var(--body); font-size: 13px; line-height: 1.5; background: var(--surface); color: var(--ink); }
 .tg-popup .maplibregl-popup-tip { border-top-color: var(--surface) !important; border-bottom-color: var(--surface) !important; }
 .tg-fab {
@@ -2143,9 +2183,13 @@ html.tg-open, html.tg-open body { overflow: hidden; }
   background: var(--cherry-ink); border: 2.5px solid #fff;
   box-shadow: 0 6px 14px -4px rgba(0, 0, 0, .45);
 }
-.tg-pin.b { background: var(--plum-ink); }
-.tg-pin.new { background: var(--leaf-ink); animation: tg-drop .4s var(--tap); }
-.tg-pin svg { width: 16px; height: 16px; transform: rotate(45deg); fill: #fff; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; }
+.tg-pin.place { background: var(--leaf-ink); }
+.tg-pin.food { background: var(--cherry-ink); }
+.tg-pin.culture { background: var(--plum-ink); }
+.tg-pin.fresh { background: var(--ink); animation: tg-drop .4s var(--tap); }
+.tg-pin.on { scale: 1.28; transform-origin: 50% 100%; }
+.tg-pin svg { width: 17px; height: 17px; transform: rotate(45deg); fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tg-pin.place svg { fill: #fff; }
 @keyframes tg-drop { from { translate: 0 -24px; opacity: 0; } }
 .tg-face {
   position: relative; display: grid; place-items: center;
@@ -2237,3 +2281,13 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 /* 설정 → 휴대폰 알림: 전체 끄기 아래 질문 알림만 따로 (10/27) */
 .push-q { margin-top: 8px; }
 .push-q[hidden] { display: none; }
+
+/* 폰을 눕혔을 때 (app.js) — 화면을 반대로 돌려 세로 모습 그대로. 대화상자는 맨 위층이라 따로 돌립니다 */
+html.turned { overflow: hidden; }
+html.turned body {
+  position: fixed; left: 50%; top: 50%; margin: 0;
+  width: 100vh; width: 100dvh; height: 100vw; height: 100dvw;
+  transform: translate(-50%, -50%) rotate(var(--turn));
+  overflow-x: hidden; overflow-y: auto;
+}
+html.turned dialog[open] { rotate: var(--turn); max-width: calc(100vh - 24px); max-height: calc(100vw - 24px); }
