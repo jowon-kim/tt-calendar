@@ -1199,6 +1199,34 @@ await call(settings, { method: 'PATCH', token, body: { locale: 'en' } });
     ok('history: the partner sees the day they answered alone, without mine', theirs.some((h) => h.day === back(2) && h.mine === '나만 한 날' && h.theirs === null));
   }
 
+
+/* 지도 검색 — 바깥 서비스는 가짜로 (lib/search.js) */
+{
+  const realFetch = globalThis.fetch;
+  const asked = [];
+  let kakaoAnswers = [];
+  globalThis.fetch = async (url) => {
+    const u = String(url);
+    asked.push(u);
+    if (u.startsWith('https://dapi.kakao.com')) return { ok: true, json: async () => ({ documents: kakaoAnswers }) };
+    return { ok: true, json: async () => ({ features: [{ properties: { name: '우래옥', city: '서울', osm_value: 'restaurant' }, geometry: { coordinates: [126.99, 37.56] } }] }) };
+  };
+  let found = await ((query) => t(token, { method: 'GET', query }))({ search: '우래옥', near: '37.5,126.9' });
+  ok('map search: without a Kakao key it asks Photon', found.body.places?.[0]?.name === '우래옥' && found.body.places[0].kind === 'food' && found.body.places[0].lat === 37.56, JSON.stringify(found.body));
+  ok('map search: only the words and map centre leave', asked.length === 1 && asked[0].includes('lat=37.5') && !asked[0].includes('cookie'), asked[0]);
+  process.env.KAKAO_REST_KEY = 'test';
+  kakaoAnswers = [{ place_name: '을지면옥', road_address_name: '서울 중구', x: '126.99', y: '37.56', category_group_code: 'FD6' }];
+  found = await ((query) => t(token, { method: 'GET', query }))({ search: '을지로 냉면' });
+  ok('map search: with a key Kakao answers first', found.body.places?.[0]?.name === '을지면옥' && found.body.places[0].lat === 37.56 && found.body.places[0].kind === 'food', JSON.stringify(found.body));
+  kakaoAnswers = [];
+  found = await ((query) => t(token, { method: 'GET', query }))({ search: '우래옥' });
+  ok('map search: when Kakao finds nothing it falls back to Photon', found.body.places?.[0]?.name === '우래옥', JSON.stringify(found.body));
+  delete process.env.KAKAO_REST_KEY;
+  globalThis.fetch = async () => ({ ok: false, status: 503 });
+  found = await ((query) => t(token, { method: 'GET', query }))({ search: '어디' });
+  ok('map search: a broken search service is an error, not a crash', found.status === 502, found.status);
+  globalThis.fetch = realFetch;
+}
   r = await t(token, { method: 'POST', body: { action: 'item', kind: 'food', title: '을지로 냉면', rating: 4 } });
   ok('rating: a food place keeps its stars', r.body.items.some((i) => i.title === '을지로 냉면' && i.rating === 4));
   const foodId = r.body.items.find((i) => i.title === '을지로 냉면').id;
