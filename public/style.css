@@ -2152,8 +2152,30 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-marker:has(.tg-pin.on) { z-index: 3; }
 .tg-popup .maplibregl-popup-content { border-radius: 14px; padding: 9px 14px; box-shadow: var(--shadow); font-family: var(--body); font-size: 13px; line-height: 1.5; background: var(--surface); color: var(--ink); }
 .tg-popup .maplibregl-popup-tip { border-top-color: var(--surface) !important; border-bottom-color: var(--surface) !important; }
+/* 지도 검색: 위에 뜨는 입력 줄과 그 아래 결과 */
+.tg-search {
+  position: absolute; left: 12px; right: 68px; top: 12px; z-index: 510; height: 44px;
+  display: flex; align-items: center; border-radius: 14px;
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.together .tg-search input { flex: 1; min-width: 0; height: 100%; padding: 0 4px 0 14px !important; border: 0 !important; border-radius: 14px; background: none !important; box-shadow: none !important; }
+.together .tg-search input::-webkit-search-cancel-button { display: none; }
+.tg-search button { flex: none; width: 42px; height: 44px; border: 0; background: none; color: var(--cherry-ink); cursor: pointer; display: grid; place-items: center; }
+.tg-search svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; }
+.tg-results {
+  position: absolute; left: 12px; right: 12px; top: 62px; z-index: 520; max-height: 58%; overflow-y: auto; overscroll-behavior: contain;
+  padding: 6px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-pop);
+}
+.tg-results[hidden] { display: none; }
+.tg-result { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px; border: 0; border-radius: 12px; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.tg-result:active { background: var(--surface-sink); }
+.tg-result span:last-child { min-width: 0; display: grid; gap: 1px; }
+.tg-result b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-result small { font-size: 12px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-result-none { padding: 10px; margin: 0; }
+.tg-map .maplibregl-ctrl-top-left { top: 56px; }
 .tg-fab {
-  position: absolute; right: 14px; top: 14px; z-index: 500;
+  position: absolute; right: 12px; top: 12px; z-index: 500;
   width: 44px; height: 44px; border-radius: 14px; border: 0; cursor: pointer;
   display: grid; place-items: center;
   background: var(--surface); color: var(--ink-soft); box-shadow: var(--shadow);

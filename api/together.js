@@ -4,6 +4,7 @@ import { getSettings, removePhoto } from '../lib/store.js';
 import { deletePhotos } from '../lib/blob.js';
 import { notifyAll } from '../lib/push.js';
 import { questionFor } from '../lib/questions.js';
+import { searchPlaces } from '../lib/search.js';
 
 /**
  * "우리" 탭 (10/27) — 버킷리스트·가계부·맛집·문화·일기·장소, 오늘의 질문, 콕 찌르기, 위치 공유를 함수 하나로.
@@ -125,6 +126,19 @@ export default guard(async (req, res) => {
     return { items, question: q, history: past, location: where, nudgesLeft: left };
   };
 
+  if (req.method === 'GET' && req.query?.search !== undefined) {
+    // 지도 검색 — 검색어와 지도 중심만 바깥으로 나갑니다 (lib/search.js)
+    const q = String(req.query.search).trim().slice(0, 80);
+    const [lat, lng] = String(req.query.near || '').split(',').map(Number);
+    const near = Number.isFinite(lat) && Number.isFinite(lng) && req.query.near ? { lat, lng } : null;
+    if (!q) return res.status(200).json({ places: [] });
+    try {
+      return res.status(200).json({ places: await searchPlaces(q, near) });
+    } catch (e) {
+      console.error('map search', e.message);
+      return res.status(502).json({ error: 'error.searchFailed' });
+    }
+  }
   if (req.method === 'GET') return res.status(200).json(await state());
 
   if (req.method === 'DELETE') {

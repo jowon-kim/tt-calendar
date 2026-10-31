@@ -80,6 +80,7 @@ Environment variables (all optional, but a real service wants all of them):
 npx vercel env add GOOGLE_CLIENT_IDS production # the web client ID; app client IDs follow, comma-separated
 npx vercel env add DIARY_URL production        # the address people open; push services are told it
 npx vercel env add CRON_SECRET production      # a long random string; only the clock should know it
+npx vercel env add KAKAO_REST_KEY production   # optional: Kakao REST key for Korean place search; without it map search uses Photon
 ```
 
 Do **not** set `DATABASE_URL` — the Neon integration provides it. Do not make

@@ -46,6 +46,7 @@
 
   let data = null, tab = 'today', busy = false;
   let composing = false, editing = null, armed = null, armTimer = 0, preview = null;
+  let found = null; // 지도 검색 결과 — null 이면 결과 칸을 닫습니다
   let month = null, spotKind = 'place', pending = null, filter = 'all', selected = null, pinning = null;
   let map = null, watch = null, lastSent = 0, fitted = false, mapMode = 'map';
 
@@ -837,6 +838,49 @@
   }
   let markers = [];
   const mp = pane('map');
+  /** 저장한 곳은 위에, 찾은 곳은 아래에. 찾은 곳을 누르면 그 자리에 새 핀과 이름까지 채운 칸이 열립니다 */
+  function paintResults() {
+    const box = $('.tg-results', mp);
+    if (!box) return;
+    box.hidden = !found;
+    if (!found) { box.innerHTML = ''; return; }
+    const { saved, places } = found;
+    const row = (attr, kind, name, sub) => `<button type="button" class="tg-result" ${attr}>${pinOf(kind, 'mini')}<span><b>${esc(name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span></button>`;
+    box.innerHTML = saved.map((i) => row(`data-fly="${i.id}"`, i.kind, i.title, kindName(i.kind))).join('')
+      + places.map((p, n) => row(`data-found="${n}"`, p.kind, p.name, p.address)).join('')
+      + (saved.length || places.length ? '' : `<p class="tg-hint tg-result-none">${T.searchEmpty}</p>`);
+    box.querySelectorAll('[data-fly]').forEach((b) => { b.onclick = () => { found = null; paintResults(); showPlace(b.dataset.fly); }; });
+    box.querySelectorAll('[data-found]').forEach((b) => {
+      b.onclick = () => {
+        const p = places[Number(b.dataset.found)];
+        found = null; selected = null; pinning = null;
+        pending = { lat: p.lat, lng: p.lng };
+        spotKind = p.kind;
+        paintResults();
+        map?.jumpTo({ center: [p.lng, p.lat], zoom: 16, offset: [0, -60] });
+        drawMarkers();
+        paintCard();
+        $('input[name="title"]', mp).value = p.name;
+        $('input[name="memo"]', mp).value = p.address;
+      };
+    });
+  }
+  async function findPlaces(q) {
+    const word = q.trim().toLowerCase();
+    if (!word) { found = null; return paintResults(); }
+    const saved = spots().filter((i) => i.title.toLowerCase().includes(word) && i.lat != null).slice(0, 3);
+    const center = map?.getCenter();
+    const query = `?search=${encodeURIComponent(q.trim())}${center ? `&near=${center.lat},${center.lng}` : ''}`;
+    try {
+      const r = await fetch('/api/together' + query, { credentials: 'same-origin' });
+      if (!r.ok) throw new Error(r.status);
+      found = { saved, places: (await r.json()).places };
+    } catch {
+      say(T.searchFailed);
+      found = { saved, places: [] };
+    }
+    paintResults();
+  }
   function paintCard() {
     const card = $('.tg-mapcard', mp);
     if (!card) return;
@@ -849,6 +893,8 @@
       mp.innerHTML = `<div class="tg-seg tg-mapseg"><button type="button" data-mode="map"></button><button type="button" data-mode="list"></button></div>
         <div class="tg-chips"></div>
         <div class="tg-mapwrap"><div id="tg-map" class="tg-map"></div>
+        <form class="tg-search" role="search"><input name="q" type="search" enterkeyhint="search" maxlength="80" autocomplete="off" placeholder="${T.searchPlace}" aria-label="${T.searchPlace}"><button aria-label="${T.searchPlace}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button></form>
+        <div class="tg-results" hidden></div>
         <button class="tg-fab" type="button" data-act="locate" aria-label="${T.locate}">${icon('locate')}</button>
         <div class="tg-mapcard"></div></div>
         <div class="tg-places"></div>`;
@@ -957,6 +1003,11 @@
     const card = $('.tg-mapcard', mp);
     const share = $('[data-act="share"]', card);
     if (share) share.onclick = () => toggleShare(share);
+    const search = $('.tg-search', mp);
+    if (search) {
+      search.onsubmit = (ev) => { ev.preventDefault(); const input = $('input', search); input.blur(); findPlaces(input.value); };
+      $('input', search).oninput = (ev) => { if (!ev.target.value) { found = null; paintResults(); } };
+    }
     const repaint = () => { editing = null; pending = null; selected = null; pinning = null; renderMap(); };
     mp.querySelectorAll('[data-mode]').forEach((b) => {
       b.onclick = () => { if (mapMode === b.dataset.mode) return; mapMode = b.dataset.mode; repaint(); };
