@@ -123,7 +123,12 @@ function setLocale(tag, options) {
 const getLocale = () => locale;
 
 /* Dates go through Intl so a new language pack gets formatting for free. */
-const dateFmt = (opts) => new Intl.DateTimeFormat(locale, opts);
+const fmts = new Map(); // Intl objects are slow to build and the calendar asks for hundreds
+const dateFmt = (opts) => {
+  const key = locale + JSON.stringify(opts);
+  if (!fmts.has(key)) fmts.set(key, new Intl.DateTimeFormat(locale, opts));
+  return fmts.get(key);
+};
 
 window.i18n = { t, applyI18n, setLocale, getLocale, locales, preferred, dateFmt, LOCALE_NAMES };
 window.t = t;

@@ -18,7 +18,7 @@ day itself.
 - Vercel serverless functions + Neon Postgres + Vercel Blob for photos
 - The **"Us" tab** ("Us" tab at the bottom of the screen; `public/together.js` + one function,
   `api/together.js`): question of the day, poke, photo diary, bucket list, money
-  ledger, food/culture log with stars, and a map (MapLibre + OpenFreeMap, loaded
+  ledger, and a map of places, food and culture with stars (MapLibre + OpenFreeMap, loaded
   only when opened; no key). Location sharing shows only while **both** have it on,
   keeps only the last spot, and is deleted when turned off. The screen is drawn
   phone-width only (`--frame` in `style.css`), on desktop too

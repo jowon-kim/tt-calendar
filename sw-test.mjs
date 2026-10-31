@@ -1,13 +1,13 @@
 /**
  * Tests for the service worker (public/sw.js) — the part that lets the home
- * screen app open with no signal.
+ * screen app open fast, and open at all with no signal.
  *
  *   npm test
  *
  * The worker is loaded for real, with a stub for the three things it touches:
  * `self`, `caches` and `fetch`. What matters most is what it must never do:
- * hand out an old screen while the network is fine, or keep anything from
- * /api/ (that is other people's calendar).
+ * leave anyone stuck on an old screen for more than one opening, or keep anything
+ * from /api/ (that is other people's calendar).
  */
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -67,20 +67,27 @@ const ok = (what, cond, saw) => {
 /** Sends a request through the worker. `null` means the worker left it to the browser. */
 async function through(req) {
   let answer = null;
-  listeners.fetch?.({ request: req, respondWith: (promise) => { answer = promise; } });
+  const behind = [];
+  listeners.fetch?.({ request: req, respondWith: (promise) => { answer = promise; }, waitUntil: (work) => behind.push(work) });
   if (!answer) return null;
-  try { return await answer; } catch (err) { return err; }
+  try {
+    const got = await answer;
+    await Promise.all(behind); // 뒤에서 새로 받는 일까지 끝난 뒤
+    return got;
+  } catch (err) { return err; }
 }
 
-/* 인터넷이 될 때 — 늘 새 파일 */
+/* 처음 보는 파일은 네트워크에서 */
 let got = await through(request('/app.js'));
-ok('with a network, a screen file comes from the network', got?.body === 'fresh /app.js', got);
+ok('a file never seen comes from the network', got?.body === 'fresh /app.js', got);
 ok('and a copy is kept', shelf.get(`${ORIGIN}/app.js`)?.body === 'fresh /app.js', [...shelf.keys()]);
 
 served.set('/app.js', response('newer /app.js'));
 got = await through(request('/app.js'));
-ok('a newer file replaces the kept one — nobody is stuck on an old screen',
-  got?.body === 'newer /app.js' && shelf.get(`${ORIGIN}/app.js`)?.body === 'newer /app.js', got);
+ok('a kept file is handed out at once, without waiting for the network', got?.body === 'fresh /app.js', got);
+ok('and the newer one replaces it behind the scenes', shelf.get(`${ORIGIN}/app.js`)?.body === 'newer /app.js', shelf.get(`${ORIGIN}/app.js`));
+got = await through(request('/app.js'));
+ok('so the next opening has it — nobody is stuck on an old screen', got?.body === 'newer /app.js', got);
 
 /* 손대지 않는 것들 */
 ok('the calendar itself (/api/) is left alone', await through(request('/api/state')) === null);
@@ -124,8 +131,9 @@ ok('only the ones not kept yet are fetched, and never /api/ or other sites',
 /* 저장소를 못 여는 브라우저 — 화면은 평소대로 */
 const realOpen = context.caches.open;
 context.caches.open = async () => { throw new Error('SecurityError'); };
+served.set('/app.js', response('newest /app.js'));
 got = await through(request('/app.js'));
-ok('when the browser refuses storage, files still come from the network', got?.body === 'newer /app.js', got);
+ok('when the browser refuses storage, files still come from the network', got?.body === 'newest /app.js', got);
 context.caches.open = realOpen;
 
 console.log(`\n${passed} passed, ${failed} failed`);

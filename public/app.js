@@ -2297,6 +2297,7 @@ function rememberState() {
 function signOut() {
   localStorage.removeItem(SIGNED_IN);
   localStorage.removeItem(STATE_KEY);
+  localStorage.removeItem('diary_together');
   localStorage.removeItem('diary_title');
   localStorage.removeItem('diary_sub');
   localStorage.removeItem(SINCE_SKIPPED); // 다른 커플이 이 폰으로 들어오면 그 카드는 다시 보여야 해서
@@ -3285,6 +3286,9 @@ let pendingState = null;
   }
   renderTitle();
 
+  // 로그인된 기기는 지난번 달력이 있으니 바로 — 열 때마다 1초씩 기다리던 인트로는 처음 들어올 때만 (10/31)
+  if (goingIn && !pendingInvite && localStorage.getItem(STATE_KEY)) { await enter(); return; }
+
   show('intro');
   const intro = $('intro');
   // 열 때마다 기다리지 않게 — 짧게 보여주고, 톡 누르면 바로 넘어갑니다
@@ -3315,4 +3319,22 @@ let pendingState = null;
     showGateNote();
   }
   await enter();
+})();
+
+/* ── 폰을 눕혀도 세로 그대로 (10/31) ─────────────────
+   홈 화면에 깐 안드로이드 앱은 manifest 의 orientation 으로 고정되지만, 아이폰과 브라우저(바로가기)는
+   고정할 방법이 없습니다. 그래서 눕혔을 때 화면을 반대로 돌려 세로 모습을 유지합니다 (style.css html.turned).
+   키보드가 올라와도 잘못 켜지지 않게 창 크기가 아니라 기기 방향을 봅니다. */
+(() => {
+  const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
+  if (!phone) return;
+  const hold = () => {
+    const angle = screen.orientation?.angle ?? window.orientation ?? 0;
+    const norm = ((angle % 360) + 360) % 360;
+    document.documentElement.classList.toggle('turned', norm === 90 || norm === 270);
+    document.documentElement.style.setProperty('--turn', norm === 90 ? '-90deg' : '90deg');
+  };
+  screen.orientation?.lock?.('portrait').catch?.(() => { /* 전체 화면이 아니면 거절합니다 — 아래 돌리기로 */ });
+  (screen.orientation || window).addEventListener(screen.orientation ? 'change' : 'orientationchange', hold);
+  hold();
 })();
