@@ -25,6 +25,7 @@
     ledger: '<rect x="3.5" y="6" width="17" height="13" rx="3"/><path d="M3.5 10h17M15.5 14.5h2"/>',
     log: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
     map: '<path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+    date: '<rect x="4" y="5.5" width="16" height="14.5" rx="3"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
     back: '<path d="M15 5l-7 7 7 7"/>',
     next: '<path d="M9 5l7 7-7 7"/>',
     camera: '<path d="M4 8.5h3l1.6-2.5h6.8L17 8.5h3V19H4z"/><circle cx="12" cy="13.2" r="3.3"/>',
@@ -418,6 +419,11 @@
     return fmt(Intl.DateTimeFormat, { ...opts, timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, n)));
   };
   const money = (n) => fmt(Intl.NumberFormat, undefined).format(n || 0);
+  /* 날짜 칸: 폰의 네이티브 날짜 입력은 폭을 줄이지 않아 칸 밖으로 튀어나옵니다 — 칸과 글자는 우리가 그리고,
+     네이티브 입력은 투명하게 덮어 달력을 여는 일만 합니다 */
+  const dateText = (d) => (d ? fmtDay(d, { year: 'numeric', month: 'numeric', day: 'numeric' }) : T.day);
+  const dateField = (value, required = false) => `<label class="tg-date"><span>${dateText(value)}</span>${icon('date')}
+      <input name="day" type="date" value="${value}" ${required ? 'required' : ''} aria-label="${T.day}"></label>`;
   /* 지우기는 한 번에 — 실수면 토스트의 "되돌리기". 사진 붙은 일기만은 사진을 되살릴 수 없어서 한 번 더 묻습니다 */
   const delBtn = (id, confirm = false) => `<button class="tg-icon-btn ${armed === id ? 'armed' : ''}" type="button" data-del="${id}" ${confirm ? 'data-confirm' : ''} aria-label="${armed === id ? T.confirmDel : T.del}">${armed === id ? `<span>${T.confirmDel}</span>` : icon('trash')}</button>`;
   /** 줄 글씨를 누르면 그 자리에서 고치기 */
@@ -471,7 +477,7 @@
   function diaryForm(i = null) {
     const day = i?.day || data.question.day;
     return `<form class="tg-card tg-compose" data-form="diary" ${i ? `data-id="${i.id}"` : ''}>
-        <input name="day" type="date" value="${day}" required aria-label="${T.day}">
+        ${dateField(day, true)}
         <input name="title" placeholder="${T.title_}" maxlength="120" value="${esc(i?.title || '')}">
         <textarea name="memo" rows="5" placeholder="${T.diaryPlaceholder}" maxlength="2000">${esc(i?.memo || '')}</textarea>
         <label class="tg-photo-pick">${preview || i?.photoId ? `<img src="${preview || photoUrl(i.photoId)}" alt="">` : `${icon('camera')}<span>${T.photo}</span>`}
@@ -522,7 +528,7 @@
     return `<li class="tg-editing"><form class="tg-edit" data-form="edit" data-id="${i.id}">
         <input name="title" value="${esc(i.title)}" required maxlength="120" aria-label="${T.title_}">
         ${i.kind === 'ledger' ? `<input name="amount" type="number" inputmode="numeric" value="${i.amount ?? ''}" required aria-label="${T.amount}">
-          <input name="day" type="date" value="${i.day || ''}" aria-label="${T.day}">` : ''}
+          ${dateField(i.day || '')}` : ''}
         <input name="memo" value="${esc(i.memo)}" maxlength="2000" placeholder="${T.memo}">
         ${SPOTS.includes(i.kind) ? stars(i.rating, true) : ''}
         <div class="tg-actions"><button class="btn btn-ghost" type="button" data-act="cancel">${T.cancel}</button><button class="btn btn-solid">${T.save}</button></div>
@@ -557,7 +563,7 @@
       <form class="tg-card tg-ledger-add" data-form="item" data-kind="ledger">
         <input class="tg-amount-in" name="amount" type="number" inputmode="numeric" min="0" placeholder="${T.amount}" required aria-label="${T.amount}">
         <div class="tg-two"><input name="title" placeholder="${T.ledgerPlaceholder}" required maxlength="120" aria-label="${T.title_}">
-          <input name="day" type="date" value="${month === data.question.day.slice(0, 7) ? data.question.day : `${month}-01`}" aria-label="${T.day}"></div>
+          ${dateField(month === data.question.day.slice(0, 7) ? data.question.day : `${month}-01`, true)}</div>
         <button class="btn btn-solid">${T.add}</button>
       </form>
       ${list.length ? Object.keys(groups).sort().reverse().map((d) => `<section class="tg-section"><h3 class="tg-sub">${fmtDay(d, { month: 'long', day: 'numeric', weekday: 'short' })}</h3>
@@ -591,6 +597,7 @@
       b.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } };
     });
     body.querySelectorAll('[data-rate]').forEach((b) => { b.onclick = () => patch(b.dataset.rate, { rating: Number(b.dataset.v) }); });
+    body.querySelectorAll('.tg-date input').forEach((d) => { d.oninput = d.onchange = () => { d.parentNode.querySelector('span').textContent = dateText(d.value); }; });
     body.querySelectorAll('[data-done]').forEach((c) => { c.onchange = () => patch(c.dataset.done, { done: c.checked }); });
     body.querySelectorAll('[data-zoom]').forEach((img) => { img.onclick = () => { $('img', box).src = img.src; box.hidden = false; }; });
     body.querySelectorAll('[data-month]').forEach((b) => {

@@ -1153,5 +1153,10 @@ ok('and is left alone', savedLocale().length === 0, fetches);
   const cols = /\.tg-nav \{\s*display: grid; grid-template-columns: repeat\((\d+), 1fr\)/.exec(readFileSync('public/style.css', 'utf8'))[1];
   ok('the Us tab bar has one column per tab', tabs === Number(cols), `${tabs} tabs, ${cols} columns`);
 }
+// 네이티브 날짜 입력을 그대로 보이면 폰에서 칸 밖으로 튀어나옵니다 — 날짜 칸은 dateField 하나로만
+{
+  const bare = readFileSync('public/together.js', 'utf8').match(/type="date"/g).length;
+  ok('date inputs go through dateField', bare === 1, `${bare} found`);
+}
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

@@ -487,7 +487,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .btn:active { transform: scale(.96); }
 .btn-solid {
-  background: linear-gradient(135deg, var(--accent-hi), var(--accent-lo));
+  background: linear-gradient(135deg, var(--accent-hi), var(--accent-lo)) border-box; /* 투명 테두리 밑에서 그라데이션이 되풀이되면 양끝에 세로줄이 생깁니다 */
   color: var(--on-accent);
   box-shadow: 0 8px 18px -8px rgba(var(--accent-rgb), .7);
 }
@@ -1891,7 +1891,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-section { display: grid; gap: 10px; }
 .tg-section > h3 { margin: 4px 4px 0; font-size: 14px; }
 .tg-grow { flex: 1; }
-.tg-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+.tg-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; } /* 그냥 1fr 이면 긴 칸이 옆 칸을 밉니다 */
 .tg-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .tg-actions .btn { padding: 10px 18px; }
 .together input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), .together textarea {
@@ -1904,6 +1904,19 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 }
 @supports (-webkit-touch-callout: none) { .together input, .together textarea { font-size: 16px !important; } }
 .together textarea { resize: none; line-height: 1.55; }
+.tg-date {
+  position: relative; overflow: hidden; box-sizing: border-box; min-width: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  padding: 11px 13px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm);
+  background: var(--paper-2); color: var(--ink); font-size: 15px; line-height: 1.2; cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.tg-date span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tg-date svg { flex: none; width: 18px; height: 18px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tg-date:focus-within { border-color: var(--cherry); background: var(--surface); box-shadow: 0 0 0 4px var(--glow); }
+/* 진짜 입력은 보이지 않게 덮습니다. 아이콘만이 아니라 칸 어디를 눌러도 달력이 열리게 */
+.tg-date input { position: absolute; inset: 0; height: 100%; min-width: 0; margin: 0; opacity: 0; cursor: pointer; }
+.tg-date input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; cursor: pointer; }
 .together input:focus, .together textarea:focus { outline: none; border-color: var(--cherry); background: var(--surface); box-shadow: 0 0 0 4px var(--glow); }
 .together input::placeholder, .together textarea::placeholder { color: var(--faint); }
 .together .btn { font-size: 14px; }
@@ -2083,7 +2096,9 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .tg-legend { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); }
 .tg-legend span { display: flex; align-items: center; gap: 6px; }
 .tg-ledger-add { gap: 8px; }
+.tg-ledger-add .tg-two { align-items: stretch; }
 .together input.tg-amount-in { font-family: var(--serif); font-size: 22px !important; font-weight: 700; padding: 12px 14px; }
+.together input.tg-amount-in::placeholder { font-family: var(--body); font-weight: 500; } /* 흐린 굵은 명조는 글자가 뭉개져 보입니다 — 숫자만 명조로 */
 .tg-money .tg-amount { font-family: var(--serif); font-size: 15.5px; white-space: nowrap; }
 
 /* 기록 */
