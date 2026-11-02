@@ -20,7 +20,7 @@ push itself.
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
 | **Stack** | Vanilla JS · Vercel serverless (12 functions max, enforced by a test) · Neon Postgres · Vercel Blob · Web Push / FCM / APNs · Capacitor |
-| **Tests** | 749, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
+| **Tests** | 750, `npm test` (the real handlers against an in-memory Postgres, the screen, i18n, holidays, service worker, public pages) |
 | **Cost** | $0 a month (free tiers) |
 | **Read next** | [How it works](#how-it-works) · [Why it is built this way](#why-it-is-built-this-way) |
 
@@ -65,9 +65,9 @@ push itself.
   with FAQ structured data, hreflang, a sitemap and `llms.txt`
 
 About 15,000 lines across `api/`, `lib/` and `public/` (nine language packs
-included), with 435 integration tests that run the real handlers against an
-in-memory Postgres, 224 that run the screen itself, 58 for i18n and holidays,
-and 16 for the service worker.
+included), with 448 integration tests that run the real handlers against an
+in-memory Postgres, 226 that run the screen itself, 58 for i18n and holidays,
+and 18 for the service worker.
 
 ## Your data stays with you
 
@@ -333,8 +333,8 @@ android/ ios/       Capacitor shells for the store apps
 fastlane/ .github/  store builds in CI, no Mac needed
 schema.sql          eighteen tables — the app runs it itself on first start
 landing.mjs         builds the public pages (words in landing-content.mjs)
-test.mjs            435 integration tests against the real handlers
-screen-test.mjs     224 tests that drive public/app.js: sign-in, editor, settings, app push, install
+test.mjs            448 integration tests against the real handlers
+screen-test.mjs     226 tests that drive public/app.js: sign-in, editor, settings, app push, install
 ```
 
 ```bash
