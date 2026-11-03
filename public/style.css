@@ -79,6 +79,10 @@
   /* 폰 화면 폭 — 데스크탑에서도 이 폭 기둥 하나로만 그립니다 (10/27, 모바일 전용) */
   --frame: 440px;
   --nav-h: 64px;  /* 맨 아래 탭 [달력 | 우리] 높이 */
+
+  /* 화면 폭·높이. 폰을 눕히면 html.turned 가 둘을 맞바꿉니다 (화면은 세로로 돌려 그리니까) */
+  --vw: 100vw;
+  --vh: 100dvh;
 }
 
 /* ═══════════════ 테마 ═══════════════
@@ -354,7 +358,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ═══════════════ 로그인 · 인트로 ═══════════════ */
 .gate {
-  min-height: 100dvh;
+  min-height: var(--vh);
   display: grid;
   place-items: center;
   padding: 28px;
@@ -470,7 +474,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   0% { transform: translateY(-40px) rotate(0); opacity: 0; }
   10% { opacity: .5; }
   90% { opacity: .5; }
-  100% { transform: translateY(105dvh) rotate(320deg); opacity: 0; }
+  100% { transform: translateY(calc(var(--vh) * 1.05)) rotate(320deg); opacity: 0; }
 }
 
 
@@ -905,7 +909,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
   box-shadow: 0 -18px 50px -20px rgba(var(--shade-rgb), .5);
-  max-height: 80dvh; overflow-y: auto;
+  max-height: calc(var(--vh) * .8); overflow-y: auto;
   animation: rise .32s var(--tap);
 }
 @keyframes rise { from { transform: translateY(100%); } }
@@ -920,8 +924,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border: none;
   border-radius: var(--r-xl);
   padding: 0;
-  width: min(430px, calc(100vw - 28px));
-  max-height: calc(100dvh - 56px);
+  width: min(430px, calc(var(--vw) - 28px));
+  max-height: calc(var(--vh) - 56px);
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-pop);
@@ -1322,9 +1326,9 @@ img.install-step-icon { padding: 0; }
   /* 화면 한가운데 — 폰에서 아래쪽은 손이나 키보드에 가려지기 쉬움.
      dvh라 키보드가 올라와도 보이는 영역의 가운데를 따라갑니다. */
   position: fixed;
-  top: 50dvh; left: 50%;
+  top: calc(var(--vh) / 2); left: 50%;
   transform: translate(-50%, -50%);
-  max-width: min(calc(100vw - 56px), 320px);
+  max-width: min(calc(var(--vw) - 56px), 320px);
   z-index: 60;
   background: var(--toast-bg);
   /* 토스트 바탕은 테마마다 늘 어두워서 글자는 늘 흰색 — --on-accent는 밤 테마에서 어두운 색이라 묻혔습니다 */
@@ -1356,6 +1360,14 @@ img.install-step-icon { padding: 0; }
   .cherry-dot { width: 6.5px; height: 6.5px; }
   .day { min-height: 58px; }
   .gate-title { font-size: 38px; }
+}
+/* 폰을 눕히면 화면 폭 = 창 높이. 위 규칙을 그대로 (:where 라 우선순위는 위와 같음) */
+@media (max-height: 400px) {
+  :where(html.turned) .app { padding-left: 12px; padding-right: 12px; }
+  :where(html.turned) .branch { gap: 3.5px; }
+  :where(html.turned) .cherry-dot { width: 6.5px; height: 6.5px; }
+  :where(html.turned) .day { min-height: 58px; }
+  :where(html.turned) .gate-title { font-size: 38px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1401,8 +1413,8 @@ img.install-step-icon { padding: 0; }
   border: none;
   border-radius: var(--r-xl);
   padding: 16px;
-  width: min(340px, calc(100vw - 40px));
-  max-height: calc(100dvh - 56px);
+  width: min(340px, calc(var(--vw) - 40px));
+  max-height: calc(var(--vh) - 56px);
   background: var(--surface);
   box-shadow: var(--shadow-pop);
   overflow-y: auto;
@@ -1481,7 +1493,7 @@ img.install-step-icon { padding: 0; }
   border: none;
   border-radius: var(--r-xl);
   padding: 0;
-  width: min(320px, calc(100vw - 48px));
+  width: min(320px, calc(var(--vw) - 48px));
   background: var(--surface);
   box-shadow: var(--shadow-pop);
 }
@@ -2290,7 +2302,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .glance[hidden] { display: none; }
 .glance-panel {
   width: 100%; max-width: var(--frame);
-  max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+  max-height: calc(var(--vh) * .88); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
   padding: env(safe-area-inset-top) 0 6px;
   background:
     radial-gradient(120% 60% at 0% 0%, var(--bg-1) 0%, transparent 55%),
@@ -2319,7 +2331,7 @@ html.tg-open, html.tg-open body { overflow: hidden; }
 .push-q[hidden] { display: none; }
 
 /* 폰을 눕혔을 때 (app.js) — 화면을 반대로 돌려 세로 모습 그대로. 대화상자는 맨 위층이라 따로 돌립니다 */
-html.turned { overflow: hidden; }
+html.turned { overflow: hidden; --vw: 100dvh; --vh: 100dvw; }
 html.turned body {
   position: fixed; left: 50%; top: 50%; margin: 0;
   width: 100vh; width: 100dvh; height: 100vw; height: 100dvw;
