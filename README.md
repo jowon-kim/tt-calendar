@@ -2,8 +2,9 @@
 
 **English** · [한국어](README.ko.md)
 
-An open-source shared calendar for two people that **you run yourself** — so your
-plans stay in your own database, not on a couple-app company's server. Each of
+An open-source shared calendar for two people that **you run yourself** — your
+own copy, so you can make it yours: pick its name and icon, change or add features,
+and shape it around the two of you. Each of
 you signs in, one invites the other, and from then on you share a calendar. When
 one of you adds something, it shows up on the other's lock screen, and on the
 morning of the day it speaks up again. No KakaoTalk, no Slack — the app sends the
@@ -15,7 +16,7 @@ push itself.
 
 | | |
 |---|---|
-| **In one line** | A couples' calendar you host yourself in 15 minutes, for free — your data in your own Postgres. Plain JavaScript, no framework, no build step |
+| **In one line** | A couples' calendar you host yourself in 15 minutes, for free — your own copy to change as you like. Plain JavaScript, no framework, no build step |
 | **Live** | [tt-calendar.vercel.app](https://tt-calendar.vercel.app) is the author's own copy · [what it is](https://tt-calendar.vercel.app/en/) · [days-together calculator](https://tt-calendar.vercel.app/en/days-together/) |
 | **Demo** | ![Mina adds a plan; it is already on Leo’s phone](docs/demo/demo.gif) · [mp4](docs/demo/demo.mp4) — 25 s, a demo couple on the live service |
 | **Status** | Open source (MIT). Runs on the web as a PWA; the Capacitor store shells build in CI but are not published. Run your own: [no-code guide](docs/GUIDE.md) · [for coding agents](AGENTS.md) · [keeping it running](docs/RUNNING.md) |
